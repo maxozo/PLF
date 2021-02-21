@@ -8,16 +8,17 @@ from Structural.Structural_Algorythm.Functions_Clean import retrieve_reviewed, M
     Master_Run_Structural_Analysis, Master_Run_Score_Calculations
 import json
 import mysql.connector
-from Structural.Structural_Algorythm.Auth.Auth_Keys import PASSWORD, USER, HOST
+from MSP.settings import PASSWORD, USER, HOST, DB
 
 n = 15
 k = 0
 record_every_nr_steps =1
 connection_db = mysql.connector.connect(host=HOST,
-                                        database='MSP',
+                                        database=DB,
                                         user=USER,
                                         password=PASSWORD,
-                                        auth_plugin='mysql_native_password')
+                                        auth_plugin='mysql_native_password',
+                                        )
 cursor_query = connection_db.cursor()
 
 

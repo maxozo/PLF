@@ -1,11 +1,15 @@
+import os
+PASSWORD = os.getenv('MYSQL_PASSWORD')
+USER = os.getenv('MYSQL_USER')
+HOST = os.getenv('MYSQL_HOST')
 import re
 import statistics
 from Structural.Structural_Algorythm.General_Functions import *
 import pandas as pd
 import mysql.connector
 from Structural.Structural_Algorythm.anova import Two_Way_mixed_Anova
-from Structural.Structural_Algorythm.Auth.Auth_Keys import PASSWORD, USER, HOST
 import itertools
+
 
 
 def retrieve_reviewed(Protein_list):
