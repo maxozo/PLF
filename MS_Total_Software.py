@@ -20,8 +20,15 @@ def collect_result(result):
 
     Structural_Json[Protein1] = Structural_Json1
 
-
 def record_data(Structural_Json,Coverage_Json,Owner_ID,id):
+    import mysql.connector
+    from MSP.settings import PASSWORD, USER, HOST, DB
+    connection_db = mysql.connector.connect(host=HOST,
+                                        database='MSP',
+                                        user=USER,
+                                        password=PASSWORD,
+                                        auth_plugin='mysql_native_password')
+
     Significant_Protein_Count = Structural_Json.keys().__len__()
     experiment_coverages = json.dumps(Coverage_Json)
     structural_analysis_results = json.dumps(Structural_Json)
@@ -76,7 +83,8 @@ def run_full_analysis( Domain_types, Protein_peptides, experiment_feed, Owner_ID
     # If we do decide to remove the protein entry then we have to look up each peptide in the library and find all the peptides for the protein thatr are provided.
     import multiprocessing as mp
     # pool.close()
-    pool = mp.Pool(mp.cpu_count())
+    # pool = mp.Pool(mp.cpu_count())
+    pool = mp.Pool(1)
     Reference_Proteome = pd.read_csv("/home/matiss/work/expansion/MPLF/outputs/Uniprot_HUMAN.tsv",sep="\t",index_col=0)
     Reference_Domains = pd.read_csv("/home/matiss/work/expansion/MPLF/outputs/Domains_Uniprot_HUMAN.tsv",sep="\t",index_col=0)
 
@@ -99,6 +107,15 @@ def run_full_analysis( Domain_types, Protein_peptides, experiment_feed, Owner_ID
     pool.join() 
     print(Coverage_Json)
 
+
+    with open("./bin/Coverage_Json.json", 'w') as json_file:
+        json.dump(Coverage_Json, json_file)
+    with open("./bin/Structural_Json.json", 'w') as json_file:
+        json.dump(Structural_Json, json_file)
+
+    with open("./bin/Structural_Json.json", 'r') as myfile:
+        Structural_Json2=myfile.read()
+    Structural_Json2=json.loads(Structural_Json2)
     # here we wait for the process to finish and then HPC should send the data back.
 
 
