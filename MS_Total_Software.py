@@ -1,25 +1,24 @@
-##This is the new Python 3 version of the software to analyse the MS Files
 import pandas as pd
-
 import sys
-from sqlalchemy import create_engine
 
-from Structural.Structural_Algorythm.Functions_Clean import retrieve_reviewed, Master_Run_Counting_Algorythm_Clean, \
+from Functions_Clean import retrieve_reviewed, Master_Run_Counting_Algorythm_Clean, \
     Master_Run_Structural_Analysis, Master_Run_Score_Calculations
 import json
-import mysql.connector
-from MSP.settings import PASSWORD, USER, HOST, DB
+Structural_Json = {}
+Coverage_Json = {}
+Experimental_coverages_all = {}
+Reference_Proteome=None
+Reference_Domains=None
 
-n = 15
-k = 0
-record_every_nr_steps =1
-connection_db = mysql.connector.connect(host=HOST,
-                                        database=DB,
-                                        user=USER,
-                                        password=PASSWORD,
-                                        auth_plugin='mysql_native_password',
-                                        )
-cursor_query = connection_db.cursor()
+def collect_result(result):
+    
+    Protein1=result[2]
+    Coverage_Json1=result[0]
+    Structural_Json1=result[1]
+    
+    Coverage_Json[Protein1] = Coverage_Json1
+
+    Structural_Json[Protein1] = Structural_Json1
 
 
 def record_data(Structural_Json,Coverage_Json,Owner_ID,id):
@@ -38,89 +37,108 @@ def record_data(Structural_Json,Coverage_Json,Owner_ID,id):
     print("successfuly recorded significant domain")
     return Structural_Json, Coverage_Json
 
-def run_full_analysis(Proteins_to_Analyse, Domain_types, Protein_peptides, experiment_feed, Owner_ID, id, paired=False):
+def run_protein(Protein,Reference_Proteome,Reference_Domains):
+    print(f"Here: : {Protein}")
+
+    Experiment_Coverages, Fasta = Master_Run_Counting_Algorythm_Clean(Protein=Protein,
+                                                                    Domain_Types=Domain_types,
+                                                                    Protein_peptides=Protein_peptides,Reference_Proteome=Reference_Proteome,
+                                                                    Reference_Domains=Reference_Domains)
+
+    Structural_Analysis_Results, Norm_Factors = Master_Run_Structural_Analysis(experiment_feed=experiment_feed,
+                                                                            Results=Experiment_Coverages,
+                                                                            Protein=Protein, paired=paired)
+
+
+    if Structural_Analysis_Results.__len__()>0:
+        Structural_Analysis_Results.drop("GeneAC", axis=1, inplace=True)
+        Experiment_Coverages.drop("GeneAC", axis=1, inplace=True)
+        # k_val = k_val + 1
+        Experiment_Coverages = Experiment_Coverages[
+            Experiment_Coverages["Domain Type"].isin(Structural_Analysis_Results["Domain Type"].unique())]
+        Experiment_Coverages.set_index("Domain_Name", drop=False, inplace=True)
+
+
+        Coverage = Experiment_Coverages.to_dict()
+        Structural_Json= {"Data": Structural_Analysis_Results.to_dict('index'),
+                                    "Norm_Factors": Norm_Factors.to_dict()}
+        return (Coverage,Structural_Json,Protein)
+
+
+        # if k_val % record_every_nr_steps == 0:
+        #     Structural_Json, Coverage_Json=record_data(Structural_Json, Coverage_Json, Owner_ID,id)
+    
+    else:
+        print("Next: no p values to record")
+        return (0,0,0)
+        
+def run_full_analysis( Domain_types, Protein_peptides, experiment_feed, Owner_ID, id, paired=False):
     # If we do decide to remove the protein entry then we have to look up each peptide in the library and find all the peptides for the protein thatr are provided.
+    import multiprocessing as mp
+    # pool.close()
+    pool = mp.Pool(mp.cpu_count())
+    Reference_Proteome = pd.read_csv("/home/matiss/work/expansion/MPLF/outputs/Uniprot_HUMAN.tsv",sep="\t",index_col=0)
+    Reference_Domains = pd.read_csv("/home/matiss/work/expansion/MPLF/outputs/Domains_Uniprot_HUMAN.tsv",sep="\t",index_col=0)
 
     k_val=0
     # paired=True
-    Structural_Json = {}
-    Coverage_Json = {}
-    Experimental_coverages_all = {}
 
-    for i, entry in enumerate(Proteins_to_Analyse):
-        # if i>50:
-        #     break
+
+    for i, Protein in enumerate(Protein_peptides.Protein.str.split(";").explode().unique()):
+
+
         try:
-            print(f"Here: {i}: {entry}")
-            # if "F213A_HUMAN" in entry:
-            Protein_list = entry.split(',')
-            Protein = retrieve_reviewed(Protein_list)
-
-            # Domain_types=["50.0 AA STEP"] #experiment coverages is a pure peptide counts without normalisation
-            Experiment_Coverages, Fasta = Master_Run_Counting_Algorythm_Clean(Gene_Name_global=Protein,
-                                                                              Domain_Types=Domain_types,
-                                                                              Protein_peptides=Protein_peptides,Protein_list=Protein_list)
-
-            Structural_Analysis_Results, Norm_Factors = Master_Run_Structural_Analysis(experiment_feed=experiment_feed,
-                                                                                       Results=Experiment_Coverages,
-                                                                                       Protein=Protein, paired=paired)
-
-            if Structural_Analysis_Results.__len__()>0:
-                Structural_Analysis_Results.drop("GeneAC", axis=1, inplace=True)
-                Experiment_Coverages.drop("GeneAC", axis=1, inplace=True)
-                k_val = k_val + 1
-                Experiment_Coverages = Experiment_Coverages[
-                    Experiment_Coverages["Domain Type"].isin(Structural_Analysis_Results["Domain Type"].unique())]
-                Experiment_Coverages.set_index("Domain_Name", drop=False, inplace=True)
-                Coverage_Json[Protein] = Experiment_Coverages.to_dict()
-                Structural_Json[Protein] = {"Data": Structural_Analysis_Results.to_dict('index'),
-                                            "Norm_Factors": Norm_Factors.to_dict()}
-
-                if k_val % record_every_nr_steps == 0:
-                    Structural_Json, Coverage_Json=record_data(Structural_Json, Coverage_Json, Owner_ID,id)
-            else:
-                print("Next: no p values to record")
-
+            pool.apply_async(run_protein, args=([Protein,Reference_Proteome,Reference_Domains]),callback=collect_result) #paralel runs - uses all the cores available
+            # run_protein(Protein,Reference_Proteome,Reference_Domains) #individual cores - uses 1 core hence 1 protein at a time is analysed.
         except:
-
-            # Structural_Json = {}
-            # Coverage_Json = {}
             print(sys.exc_info()[0])
             continue
-        # else:
-        #     continue
-    if (Structural_Json.keys().__len__()>0):
-        Structural_Json, Coverage_Json=record_data(Structural_Json, Coverage_Json, Owner_ID,id)
+        if i>10:
+            break
+    pool.close()
+    pool.join() 
+    print(Coverage_Json)
 
-    connection_db.disconnect()
-    cursor_query.close()
+    # here we wait for the process to finish and then HPC should send the data back.
+
+
+    # # this is to record last entries that are not processed
+    # if (Structural_Json.keys().__len__()>0):
+    #     Structural_Json, Coverage_Json=record_data(Structural_Json, Coverage_Json, Owner_ID,id)
+
+    # connection_db.disconnect()
+    # cursor_query.close()
     return "success"
 
-# if __name__ == '__main__':
-#
-#     file4='Skin_Epidermis_' #no need
-#     Data_Table = 'Experiment_setup2' #no need
-#     file_name='Epidermis_Structural3.csv' #no need #'Peptide Report for Elastase_HDF Fbn MF_SSR_UVB5.csv'#'Peptide Report for Dermis_Full_Skin_MS.csv'
-#     database='Experiments_MS'  #no need
-#     table_prefix = file_name.split('.')[0] #no need
-#     table_prefix=table_prefix.replace(" ","");table_prefix=table_prefix.replace("_","")+" " #no need
-#     Protein_peptides = pd.read_csv('/home/matiss/Documents/Projects/Structural_Analysis/Working_Data_File.csv', index_col=False, sep=',', ) #no need
-#     Experiments = Protein_peptides['MS/MS sample name'].unique()
-#
-#     #Epidermis
-#     experiment_feed = {'Buttock':['20180601_SherrattM_MO_01.raw (Full_Skin_1)','20180601_SherrattM_MO_03.raw (Full_Skin_3)','20180601_SherrattM_MO_05.raw (Full_Skin_5)','20180601_SherrattM_MO_07.raw (Full_Skin_7)','20180601_SherrattM_MO_09.raw (Full_Skin_9)','20180601_SherrattM_MO_11.raw (Full_Skin_11)','20180601_SherrattM_MO_13.raw (Full_Skin_13)'],
-#                        'Forearm':['20180601_SherrattM_MO_02.raw (Full_Skin_2)','20180601_SherrattM_MO_04.raw (Full_Skin_4)','20180601_SherrattM_MO_06.raw (Full_Skin_6)','20180601_SherrattM_MO_08.raw (Full_Skin_8)','20180601_SherrattM_MO_10.raw (Full_Skin_10)','20180601_SherrattM_MO_12.raw (Full_Skin_12)','20180601_SherrattM_MO_14.raw (Full_Skin_14)']} #epidermis
-#
-#
-#     Proteins_to_Analyse = pd.Series(Protein_peptides['Protein accession numbers'].unique()).dropna()
-#     Reviewed_proteins = (pd.read_csv('Uploaded_MS_files/Reviewed', index_col=False))
-#
-#     Domain_types = ['REGIONS','TOPO_DOM','DOMAINS','REPEAT','50.0 AA STEP']
-#     Domain_types = ['REGIONS']
-#     engine = create_engine("mysql+pymysql://{user}:{pw}@localhost/{db}"
-#                            .format(user="root",
-#                                    pw="Weafrae1",
-#                                    db="Experiments_MS"))
-#
-#     Proteins_to_Analyse=["APOE_HUMAN"]
-#     run_full_analysis(Proteins_to_Analyse)
+def match_peptide_to_protein(Protein_peptides):
+    
+    # limit to the protein of interest.
+    Reference_Proteome = Reference_Proteome[Reference_Proteome.Uniprot_Type=="Uniprot"]
+
+
+    Protein_peptides["Protein"]=""
+    count=0
+    for peptide in Protein_peptides.Peptide.unique():
+        count+=1
+        # print(count)
+        Proteins_containing_peptide = Reference_Proteome[Reference_Proteome.FASTA.str.contains(peptide)]["Uniprot_ID"]
+        All_Proteins = ";".join(Proteins_containing_peptide)
+        Protein_peptides.loc[Protein_peptides.Peptide == peptide,"Protein"]=All_Proteins
+
+    return Protein_peptides
+
+
+if __name__ == '__main__':
+
+    import json
+    paired=1
+    id='1'
+    Owner_ID='1'
+    with open("/home/matiss/work/expansion/MPLF/sample_input/experiment_feed.json", 'r') as myfile:
+        experiment_feed=myfile.read()
+    experiment_feed=json.loads(experiment_feed)
+    Protein_peptides=pd.read_csv("/home/matiss/work/expansion/MPLF/sample_input/Protein_peptides.tsv",sep="\t",index_col=0)
+    Domain_types=pd.read_csv("/home/matiss/work/expansion/MPLF/sample_input/Domain_types.tsv",sep="\t",index_col=0,names=["Dom"],header=1)
+    Domain_types=Domain_types.Dom.values.tolist()
+    Protein_peptides=pd.read_csv("tmp_working_file.csv",sep="\t",index_col=0)
+    run_full_analysis(Domain_types, Protein_peptides, experiment_feed,Owner_ID,id,paired=paired)
