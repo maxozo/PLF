@@ -1,7 +1,7 @@
 #!/bin/bash --login
 #$ -cwd
-#$ -pe smp.pe 12       # Each task will use 4 cores in this example
-#$ -t 1-2
+#$ -pe smp.pe 2       # Each task will use 4 cores in this example
+
 
 # Task id 1 will read line 1 from my_file_list.txt
 # Task id 2 will read line 2 from my_file_list.txt
@@ -25,4 +25,4 @@ module load apps/binapps/anaconda3/2019.07
 # ... and so on ...
 
 # Run the app with the .dat filename specific to this task
-python ProcesMS_Total_Software.py
+python MS_Total_Software.py

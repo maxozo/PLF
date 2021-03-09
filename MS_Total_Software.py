@@ -83,8 +83,8 @@ def run_full_analysis( Domain_types, Protein_peptides, experiment_feed, Owner_ID
     # If we do decide to remove the protein entry then we have to look up each peptide in the library and find all the peptides for the protein thatr are provided.
     import multiprocessing as mp
     # pool.close()
-    # pool = mp.Pool(mp.cpu_count())
-    pool = mp.Pool(1)
+    pool = mp.Pool(mp.cpu_count())
+    # pool = mp.Pool(1)
     Reference_Proteome = pd.read_csv("/home/matiss/work/expansion/MPLF/outputs/Uniprot_HUMAN.tsv",sep="\t",index_col=0)
     Reference_Domains = pd.read_csv("/home/matiss/work/expansion/MPLF/outputs/Domains_Uniprot_HUMAN.tsv",sep="\t",index_col=0)
 
@@ -105,7 +105,7 @@ def run_full_analysis( Domain_types, Protein_peptides, experiment_feed, Owner_ID
             break
     pool.close()
     pool.join() 
-    print(Coverage_Json)
+    # print(Coverage_Json)
 
 
     with open("./bin/Coverage_Json.json", 'w') as json_file:
