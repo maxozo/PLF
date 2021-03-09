@@ -85,8 +85,8 @@ def run_full_analysis( Domain_types, Protein_peptides, experiment_feed, Owner_ID
     # pool.close()
     pool = mp.Pool(mp.cpu_count())
     # pool = mp.Pool(1)
-    Reference_Proteome = pd.read_csv("/home/matiss/work/expansion/MPLF/outputs/Uniprot_HUMAN.tsv",sep="\t",index_col=0)
-    Reference_Domains = pd.read_csv("/home/matiss/work/expansion/MPLF/outputs/Domains_Uniprot_HUMAN.tsv",sep="\t",index_col=0)
+    Reference_Proteome = pd.read_csv("./outputs/Uniprot_HUMAN.tsv",sep="\t",index_col=0)
+    Reference_Domains = pd.read_csv("./outputs/Domains_Uniprot_HUMAN.tsv",sep="\t",index_col=0)
 
     k_val=0
     # paired=True
@@ -151,11 +151,11 @@ if __name__ == '__main__':
     paired=1
     id='1'
     Owner_ID='1'
-    with open("/home/matiss/work/expansion/MPLF/sample_input/experiment_feed.json", 'r') as myfile:
+    with open("./sample_input/experiment_feed.json", 'r') as myfile:
         experiment_feed=myfile.read()
     experiment_feed=json.loads(experiment_feed)
-    Protein_peptides=pd.read_csv("/home/matiss/work/expansion/MPLF/sample_input/Protein_peptides.tsv",sep="\t",index_col=0)
-    Domain_types=pd.read_csv("/home/matiss/work/expansion/MPLF/sample_input/Domain_types.tsv",sep="\t",index_col=0,names=["Dom"],header=1)
+    Protein_peptides=pd.read_csv("./sample_input/Protein_peptides.tsv",sep="\t",index_col=0)
+    Domain_types=pd.read_csv("./sample_input/Domain_types.tsv",sep="\t",index_col=0,names=["Dom"],header=1)
     Domain_types=Domain_types.Dom.values.tolist()
     Protein_peptides=pd.read_csv("tmp_working_file.csv",sep="\t",index_col=0)
     run_full_analysis(Domain_types, Protein_peptides, experiment_feed,Owner_ID,id,paired=paired)
