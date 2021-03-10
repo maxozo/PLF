@@ -22,10 +22,10 @@ def collect_result(result):
 
 def record_data(Structural_Json,Coverage_Json,Owner_ID,id):
     import mysql.connector
-    from MSP.settings import PASSWORD, USER, HOST, DB
-    connection_db = mysql.connector.connect(host=HOST,
-                                        database='MSP',
-                                        user=USER,
+    from secret import HOST, PORT, PASSWORD, DB
+    connection = mysql.connector.connect(host=HOST,
+                                        database=DB,
+                                        user=USER,port=PORT,
                                         password=PASSWORD,
                                         auth_plugin='mysql_native_password')
 
@@ -144,9 +144,36 @@ def match_peptide_to_protein(Protein_peptides):
 
     return Protein_peptides
 
+def retrieve_mysql_data():
+    import mysql.connector
+    from secret import HOST, PORT, PASSWORD, DB, USER
+    connection = mysql.connector.connect(host=HOST,
+                                        database=DB,
+                                        user=USER,port=PORT,
+                                        password=PASSWORD,
+                                        auth_plugin='mysql_native_password')
+    cursor_query = connection.cursor()
+
+    sql="SELECT * FROM `Structural_userdata` WHERE name LIKE 'Dermis test match'"
+    cursor = connection.cursor()
+    cursor.execute(sql)
+    Data = pd.DataFrame(cursor.fetchall())
+    if not Data.empty:
+        field_names = [i[0] for i in cursor.description]
+        Data.columns = field_names
+    Domain_types=json.loads(Data.Domain_Types[0])
+    experiment_feed = json.loads(Data.experimental_design[0])
+    Owner_ID = Data.owner_id[0]
+    id = Data.id[0]
+    Data_Val = Data.data[0]
+    Data_Val = json.loads(Data_Val)
+    Protein_peptides = pd.DataFrame(Data_Val)
+    Paired= Data.Paired[0]
+    run_full_analysis(Domain_types, Protein_peptides, experiment_feed,Owner_ID,id,paired=paired)
+
 
 if __name__ == '__main__':
-
+    retrieve_mysql_data()
     import json
     paired=1
     id='1'
