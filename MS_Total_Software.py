@@ -113,8 +113,8 @@ def run_full_analysis( Domain_types, Protein_peptides, experiment_feed, Owner_ID
         except:
             print(sys.exc_info()[0])
             continue
-        # if i>10:
-        #     break
+        if i>100:
+            break
     pool.close()
     pool.join() 
     # print(Coverage_Json)
