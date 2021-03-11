@@ -113,7 +113,7 @@ def run_full_analysis( Domain_types, Protein_peptides, experiment_feed, Owner_ID
         except:
             print(sys.exc_info()[0])
             continue
-        if i>100:
+        if i>10:
             break
     pool.close()
     pool.join() 
@@ -194,7 +194,6 @@ def match_peptide_to_protein(Protein_peptides,Reference_Proteome):
     return Protein_peptides
 
 def retrieve_mysql_data():
-
     import mysql.connector
     from secret import HOST, PORT, PASSWORD, DB, USER
     connection = mysql.connector.connect(host=HOST,
