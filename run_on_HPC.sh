@@ -1,6 +1,6 @@
 #!/bin/bash --login
 #$ -cwd
-#$ -pe smp.pe 2       # Each task will use 4 cores in this example
+#$ -pe smp.pe 12       # Each task will use 4 cores in this example
 
 
 # Task id 1 will read line 1 from my_file_list.txt
@@ -19,6 +19,7 @@ export OMP_NUM_THREADS=$NSLOTS
     # INFILE=`sed -n "${SGE_TASK_ID}p" my_file_list.txt`
     # Load the version you require
 module load apps/binapps/anaconda3/2019.07
+module load tools/env/proxy
 # We now use the value of our variable by using $INFILE.
 # In task 1, $INFILE will be replaced with C2H4O.dat
 # In task 2, $INFILE will be replaced with NH3.dat
