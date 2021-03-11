@@ -69,7 +69,10 @@ def calculate_P_values(MS_Resid,DF_Resid, df):
                     colname = 'p: ' + list(df.keys())[i2]+' vs '+list(df.keys())[i1]
                     if(i==0):#first time going through; make a new columns for each experimental condition
                         list_p_values[colname] = ''
-                    Df_Data = pd.DataFrame({list(df.keys())[i1]: df[list(df.keys())[i1]].iloc[i].drop("Domain_Name").tolist(),list(df.keys())[i2]:df[list(df.keys())[i2]].iloc[i].drop("Domain_Name").tolist()})
+                    Df_Data = {list(df.keys())[i1]: df[list(df.keys())[i1]].iloc[i].drop("Domain_Name").tolist(),
+                                            list(df.keys())[i2]:df[list(df.keys())[i2]].iloc[i].drop("Domain_Name").tolist()}
+                    
+
                     # D1 = Df_Data[list(df.keys())[i1]]
                     # D2 = Df_Data[list(df.keys())[i2]]
                     M1=np.mean(Df_Data[list(df.keys())[i1]])

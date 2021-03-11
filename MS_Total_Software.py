@@ -9,42 +9,52 @@ Coverage_Json = {}
 Experimental_coverages_all = {}
 Reference_Proteome=None
 Reference_Domains=None
+# Protein_peptides2=pd.DataFrame(columns=['Sample', 'Peptide', 'Protein', 'spectra'])
+# Protein_peptides2=pd.DataFrame(columns=['Sample', 'Peptide', 'Protein', 'spectra'])
+Protein_peptides2=[]
+# Reference_Proteome=[]
+# Reference_Domains=[]
 
 def collect_result(result):
-    
     Protein1=result[2]
     Coverage_Json1=result[0]
     Structural_Json1=result[1]
-    
     Coverage_Json[Protein1] = Coverage_Json1
-
     Structural_Json[Protein1] = Structural_Json1
 
 def record_data(Structural_Json,Coverage_Json,Owner_ID,id):
     import mysql.connector
-    from secret import HOST, PORT, PASSWORD, DB
+    from secret import HOST, PORT, PASSWORD, DB, USER
     connection = mysql.connector.connect(host=HOST,
                                         database=DB,
                                         user=USER,port=PORT,
                                         password=PASSWORD,
                                         auth_plugin='mysql_native_password')
-
+    cursor_query = connection.cursor()
     Significant_Protein_Count = Structural_Json.keys().__len__()
     experiment_coverages = json.dumps(Coverage_Json)
     structural_analysis_results = json.dumps(Structural_Json)
-    sql_query = f"UPDATE `Structural_userdata` SET Structural_Results=JSON_MERGE_PATCH(`Structural_Results`, '{structural_analysis_results}')," \
-                f" Experimental_Coverages=JSON_MERGE_PATCH(`Experimental_Coverages`,'{experiment_coverages}')," \
-                f" Progress='Analysing', Significant_Protein_Count=`Significant_Protein_Count`+{Significant_Protein_Count} " \
-                f"WHERE (`id` like {id} and `owner_id` LIKE {Owner_ID})"
+    # sql_query = f"UPDATE `Structural_userdata` SET Structural_Results=JSON_MERGE_PATCH(`Structural_Results`, '{structural_analysis_results}')," \
+    #             f" Experimental_Coverages=JSON_MERGE_PATCH(`Experimental_Coverages`,'{experiment_coverages}')," \
+    #             f" Progress='Analysing', Significant_Protein_Count=`Significant_Protein_Count`+{Significant_Protein_Count} " \
+    #             f"WHERE (`id` like {id} and `owner_id` LIKE {Owner_ID})"
+
+    sql_query = f"UPDATE `Structural_userdata` SET Structural_Results='{structural_analysis_results}'," \
+            f" Experimental_Coverages='{experiment_coverages}'," \
+            f" Progress='Finished', Significant_Protein_Count=`Significant_Protein_Count`+{Significant_Protein_Count} " \
+            f"WHERE (`id` like {id} and `owner_id` LIKE {Owner_ID})"
+
     cursor_query.execute(sql_query)
-    connection_db.commit()
+    connection.commit()
+    connection.disconnect()
+    cursor_query.close()
     # clear the memory
-    Structural_Json = {}
-    Coverage_Json = {}
+    # Structural_Json = {}
+    # Coverage_Json = {}
     print("successfuly recorded significant domain")
     return Structural_Json, Coverage_Json
 
-def run_protein(Protein,Reference_Proteome,Reference_Domains):
+def run_protein(Protein,Reference_Proteome,Reference_Domains,Domain_types,Protein_peptides,experiment_feed,paired):
     print(f"Here: : {Protein}")
 
     Experiment_Coverages, Fasta = Master_Run_Counting_Algorythm_Clean(Protein=Protein,
@@ -77,27 +87,30 @@ def run_protein(Protein,Reference_Proteome,Reference_Domains):
     
     else:
         print("Next: no p values to record")
-        return (0,0,0)
+        next()
         
-def run_full_analysis( Domain_types, Protein_peptides, experiment_feed, Owner_ID, id, paired=False):
+def run_full_analysis( Domain_types, Protein_peptides, experiment_feed, Owner_ID, id, paired=False, Spiecies="HUMAN"):
     # If we do decide to remove the protein entry then we have to look up each peptide in the library and find all the peptides for the protein thatr are provided.
-    import multiprocessing as mp
-    # pool.close()
-    pool = mp.Pool(mp.cpu_count())
-    # pool = mp.Pool(1)
-    Reference_Proteome = pd.read_csv("./outputs/Uniprot_HUMAN.tsv",sep="\t",index_col=0)
-    Reference_Domains = pd.read_csv("./outputs/Domains_Uniprot_HUMAN.tsv",sep="\t",index_col=0)
+    #
+    
+    Reference_Proteome = pd.read_csv(f"./outputs/Uniprot_{Spiecies}.tsv",sep="\t",index_col=0)
+    Reference_Domains = pd.read_csv(f"./outputs/Domains_Uniprot_{Spiecies}.tsv",sep="\t",index_col=0)
 
+    # Protein_peptides=match_peptide_to_protein(Protein_peptides,Reference_Proteome)
+    # Protein_peptides.to_csv("Protein_peptides_Mouse_Aorta.tsv",sep="\t")
+    Protein_peptides=pd.read_csv("Protein_peptides_Mouse_Aorta.tsv",sep="\t",index_col=0)
     k_val=0
     # paired=True
-
-
+    import multiprocessing as mp
+    # pool.close()
+    pool = mp.Pool(mp.cpu_count()-1)
+     # pool = mp.Pool(1)
+    
+    Protein_peptides=Protein_peptides.dropna(subset=['spectra']) # Drop the NaN vales on spectra. ie - peptides are not detected in that sample
     for i, Protein in enumerate(Protein_peptides.Protein.str.split(";").explode().unique()):
-
-
         try:
-            pool.apply_async(run_protein, args=([Protein,Reference_Proteome,Reference_Domains]),callback=collect_result) #paralel runs - uses all the cores available
-            # run_protein(Protein,Reference_Proteome,Reference_Domains) #individual cores - uses 1 core hence 1 protein at a time is analysed.
+            pool.apply_async(run_protein, args=([Protein,Reference_Proteome,Reference_Domains,Domain_types,Protein_peptides,experiment_feed,paired]),callback=collect_result) #paralel runs - uses all the cores available
+            # run_protein(Protein,Reference_Proteome,Reference_Domains,Domain_types,Protein_peptides,experiment_feed,paired) #individual cores - uses 1 core hence 1 protein at a time is analysed.
         except:
             print(sys.exc_info()[0])
             continue
@@ -113,12 +126,12 @@ def run_full_analysis( Domain_types, Protein_peptides, experiment_feed, Owner_ID
     with open("./bin/Structural_Json.json", 'w') as json_file:
         json.dump(Structural_Json, json_file)
 
-    with open("./bin/Structural_Json.json", 'r') as myfile:
-        Structural_Json2=myfile.read()
-    Structural_Json2=json.loads(Structural_Json2)
+    # with open("./bin/Structural_Json.json", 'r') as myfile:
+    #     Structural_Json2=myfile.read()
+    # Structural_Json2=json.loads(Structural_Json2)
     # here we wait for the process to finish and then HPC should send the data back.
 
-
+    record_data(Structural_Json, Coverage_Json, Owner_ID,id)
     # # this is to record last entries that are not processed
     # if (Structural_Json.keys().__len__()>0):
     #     Structural_Json, Coverage_Json=record_data(Structural_Json, Coverage_Json, Owner_ID,id)
@@ -126,21 +139,59 @@ def run_full_analysis( Domain_types, Protein_peptides, experiment_feed, Owner_ID
     # connection_db.disconnect()
     # cursor_query.close()
     return "success"
-
-def match_peptide_to_protein(Protein_peptides):
     
-    # limit to the protein of interest.
-    Reference_Proteome = Reference_Proteome[Reference_Proteome.Uniprot_Type=="Uniprot"]
+def retrieve_all_proteins(peptide,Reference_Proteome,Protein_peptides,i):
+    # print(f"{peptide} {i}")
+    Proteins_containing_peptide = Reference_Proteome[Reference_Proteome.FASTA.str.contains(peptide)]["Uniprot_ID"]
+    All_Proteins = ";".join(Proteins_containing_peptide)
+    
+    # All_Prots = Protein_peptides[Protein_peptides.Peptide == peptide]
+    # All_Prots["Protein"] = All_Proteins
 
+    return All_Proteins
+
+
+def append_results(result):
+    for i,row in result.iterrows():
+        Protein_peptides2.append(row)
+
+def match_peptide_to_protein(Protein_peptides,Reference_Proteome):
+    # limit to the protein of interest.
+    # Reference_Proteome = Reference_Proteome[Reference_Proteome.Uniprot_Type=="Uniprot"]
 
     Protein_peptides["Protein"]=""
+    # sometimes data outputs contain a peptide sequence in brackets - the folowing will remove this
+    Protein_peptides.Peptide=Protein_peptides.Peptide.str.replace(".*\]\.",'')
+    Protein_peptides.Peptide=Protein_peptides.Peptide.str.replace("\.\[.*","")
+
+    # import multiprocessing as mp
+    # pool = mp.Pool(mp.cpu_count()-1)
+
     count=0
+    # from time import process_time
+    # t1_start = process_time()
+
     for peptide in Protein_peptides.Peptide.unique():
         count+=1
-        # print(count)
-        Proteins_containing_peptide = Reference_Proteome[Reference_Proteome.FASTA.str.contains(peptide)]["Uniprot_ID"]
-        All_Proteins = ";".join(Proteins_containing_peptide)
+        # len(Protein_peptides.Peptide.unique())
+        All_Proteins = retrieve_all_proteins(peptide,Reference_Proteome,Protein_peptides,count)
         Protein_peptides.loc[Protein_peptides.Peptide == peptide,"Protein"]=All_Proteins
+
+        # pool.apply_async(retrieve_all_proteins, args=([peptide,Reference_Proteome,Protein_peptides,count]),callback=append_results) #paralel runs - uses all the cores available
+        # if count>100:
+        #     break
+    
+    
+    # pool.close()
+    # pool.join() 
+
+    # Protein_peptides=pd.DataFrame(Protein_peptides2)
+
+    # t1_stop = process_time() 
+    # print("Elapsed time:", t1_stop, t1_start)  
+   
+    # print("Elapsed time during the whole program in seconds:", 
+    #                                         t1_stop-t1_start)  
 
     return Protein_peptides
 
@@ -153,8 +204,7 @@ def retrieve_mysql_data():
                                         password=PASSWORD,
                                         auth_plugin='mysql_native_password')
     cursor_query = connection.cursor()
-
-    sql="SELECT * FROM `Structural_userdata` WHERE name LIKE 'Dermis test match'"
+    sql="SELECT * FROM `Structural_userdata` WHERE name LIKE 't1'"
     cursor = connection.cursor()
     cursor.execute(sql)
     Data = pd.DataFrame(cursor.fetchall())
@@ -169,20 +219,21 @@ def retrieve_mysql_data():
     Data_Val = json.loads(Data_Val)
     Protein_peptides = pd.DataFrame(Data_Val)
     Paired= Data.Paired[0]
-    run_full_analysis(Domain_types, Protein_peptides, experiment_feed,Owner_ID,id,paired=paired)
+    Spiecies="MOUSE"
+    run_full_analysis(Domain_types, Protein_peptides, experiment_feed,Owner_ID,id,paired=Paired, Spiecies=Spiecies)
 
 
 if __name__ == '__main__':
     retrieve_mysql_data()
-    import json
-    paired=1
-    id='1'
-    Owner_ID='1'
-    with open("./sample_input/experiment_feed.json", 'r') as myfile:
-        experiment_feed=myfile.read()
-    experiment_feed=json.loads(experiment_feed)
-    Protein_peptides=pd.read_csv("./sample_input/Protein_peptides.tsv",sep="\t",index_col=0)
-    Domain_types=pd.read_csv("./sample_input/Domain_types.tsv",sep="\t",index_col=0,names=["Dom"],header=1)
-    Domain_types=Domain_types.Dom.values.tolist()
-    Protein_peptides=pd.read_csv("tmp_working_file.csv",sep="\t",index_col=0)
-    run_full_analysis(Domain_types, Protein_peptides, experiment_feed,Owner_ID,id,paired=paired)
+    # import json
+    # paired=1
+    # id='1'
+    # Owner_ID='1'
+    # with open("./sample_input/experiment_feed.json", 'r') as myfile:
+    #     experiment_feed=myfile.read()
+    # experiment_feed=json.loads(experiment_feed)
+    # Protein_peptides=pd.read_csv("./sample_input/Protein_peptides.tsv",sep="\t",index_col=0)
+    # Domain_types=pd.read_csv("./sample_input/Domain_types.tsv",sep="\t",index_col=0,names=["Dom"],header=1)
+    # Domain_types=Domain_types.Dom.values.tolist()
+    # Protein_peptides=pd.read_csv("tmp_working_file.csv",sep="\t",index_col=0)
+    # run_full_analysis(Domain_types, Protein_peptides, experiment_feed,Owner_ID,id,paired=paired)

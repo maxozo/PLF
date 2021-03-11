@@ -409,7 +409,11 @@ def Master_Run_Structural_Analysis(experiment_feed=None, Results=None, Protein=N
     for value1 in value:
         # print(value1)
         if Spectral_total_counts[(value1 == Spectral_total_counts.experiment_name)].experiment_name.count()>0:
-            continue
+            if (float(Spectral_total_counts[(value1 == Spectral_total_counts.experiment_name)].Exclusive_spectrum_count)==0.0):
+                Spectral_total_counts[(value1 == Spectral_total_counts.experiment_name)].Exclusive_spectrum_count=0.0000001
+            else:
+                continue
+        
         else:
             Spectral_total_counts=Spectral_total_counts.append({"experiment_name": value1, "Exclusive_spectrum_count": 0.0000001}, ignore_index=True)
     # here have to check whether all the samples are in the file, if not we add 0 as a norm factor.
