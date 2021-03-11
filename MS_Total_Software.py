@@ -40,7 +40,6 @@ def record_data(Structural_Json,Coverage_Json,Owner_ID,id):
     #             f"WHERE (`id` like {id} and `owner_id` LIKE {Owner_ID})"
 
     sql_query = f"UPDATE `Structural_userdata` SET Structural_Results='{structural_analysis_results}'," \
-            f" Experimental_Coverages='{experiment_coverages}'," \
             f" Progress='Finished', Significant_Protein_Count=`Significant_Protein_Count`+{Significant_Protein_Count} " \
             f"WHERE (`id` like {id} and `owner_id` LIKE {Owner_ID})"
 
@@ -114,8 +113,8 @@ def run_full_analysis( Domain_types, Protein_peptides, experiment_feed, Owner_ID
         except:
             print(sys.exc_info()[0])
             continue
-        if i>10:
-            break
+        # if i>10:
+        #     break
     pool.close()
     pool.join() 
     # print(Coverage_Json)
@@ -149,7 +148,6 @@ def retrieve_all_proteins(peptide,Reference_Proteome,Protein_peptides,i):
     # All_Prots["Protein"] = All_Proteins
 
     return All_Proteins
-
 
 def append_results(result):
     for i,row in result.iterrows():
@@ -196,6 +194,7 @@ def match_peptide_to_protein(Protein_peptides,Reference_Proteome):
     return Protein_peptides
 
 def retrieve_mysql_data():
+
     import mysql.connector
     from secret import HOST, PORT, PASSWORD, DB, USER
     connection = mysql.connector.connect(host=HOST,
@@ -204,7 +203,18 @@ def retrieve_mysql_data():
                                         password=PASSWORD,
                                         auth_plugin='mysql_native_password')
     cursor_query = connection.cursor()
-    sql="SELECT * FROM `Structural_userdata` WHERE name LIKE 't1'"
+
+    # here could select the jobs that are qued - do this every 6h and if a new job is qued then process on the HPC cloud
+    sql="SELECT id FROM `Structural_userdata` WHERE Progress LIKE 'Que'"
+    cursor = connection.cursor()
+    cursor.execute(sql)
+    Data_ids = pd.DataFrame(cursor.fetchall())
+    if not Data_ids.empty:
+        field_names = [i[0] for i in cursor.description]
+        Data_ids.columns = field_names
+
+
+    sql=f"SELECT * FROM `Structural_userdata` WHERE `id` LIKE '{Data_ids.id[1]}'"
     cursor = connection.cursor()
     cursor.execute(sql)
     Data = pd.DataFrame(cursor.fetchall())
