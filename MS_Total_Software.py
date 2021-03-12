@@ -274,8 +274,8 @@ def retrieve_mysql_data_test():
 
 
 if __name__ == '__main__':
-    retrieve_mysql_data_test()
-    # retrieve_save_and_process()
+    # retrieve_mysql_data_test()
+    retrieve_save_and_process()
     # import json
     # paired=1
     # id='1'
