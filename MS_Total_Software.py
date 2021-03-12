@@ -195,12 +195,12 @@ def match_peptide_to_protein(Protein_peptides,Reference_Proteome):
 
 def retrieve_mysql_data():
 
-    import requests
-    response = requests.get("http://www.manchesterproteome.manchester.ac.uk/run_api/MSP_api/?page=1&search=")
-    print(response.json())
-    d=response.json()
-    with open("test_output.json", 'w') as json_file:
-        json.dump(d, json_file)
+    # import requests
+    # response = requests.get("http://www.manchesterproteome.manchester.ac.uk/run_api/MSP_api/?page=1&search=")
+    # print(response.json())
+    # d=response.json()
+    # with open("test_output.json", 'w') as json_file:
+    #     json.dump(d, json_file)
 
 
     import mysql.connector
@@ -239,9 +239,32 @@ def retrieve_mysql_data():
     Spiecies="MOUSE"
     run_full_analysis(Domain_types, Protein_peptides, experiment_feed,Owner_ID,id,paired=Paired, Spiecies=Spiecies)
 
+def retrieve_save_and_process():
+    import mysql.connector
+    from secret import HOST, PORT, PASSWORD, DB, USER
+    connection = mysql.connector.connect(host=HOST,
+                                        database=DB,
+                                        user=USER,port=PORT,
+                                        password=PASSWORD,
+                                        auth_plugin='mysql_native_password')
+    cursor_query = connection.cursor()
+
+    # here could select the jobs that are qued - do this every 6h and if a new job is qued then process on the HPC cloud
+    sql="SELECT id FROM `Structural_userdata` WHERE Progress LIKE 'Que'"
+    cursor = connection.cursor()
+    cursor.execute(sql)
+    Data_ids = pd.DataFrame(cursor.fetchall())
+    if not Data_ids.empty:
+        field_names = [i[0] for i in cursor.description]
+        Data_ids.columns = field_names
+    print(Data_ids)
+    Data_ids.to_csv("tmp_ids.csv")
+
+
 
 if __name__ == '__main__':
-    retrieve_mysql_data()
+    # retrieve_mysql_data()
+    retrieve_save_and_process()
     # import json
     # paired=1
     # id='1'
