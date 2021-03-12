@@ -261,10 +261,21 @@ def retrieve_save_and_process():
     Data_ids.to_csv("tmp_ids.csv")
 
 
+def retrieve_mysql_data_test():
+
+    import requests
+    response = requests.get("https://www.uniprot.org/uniprot/P68307.txt")
+    print(response.json())
+    d=response.json()
+    with open('do_re_mi.txt', 'w') as f:
+        f.write('Doe, a deer, a female deer\n')
+        f.write('Ray, a drop of golden sun\n')
+
+
 
 if __name__ == '__main__':
-    # retrieve_mysql_data()
-    retrieve_save_and_process()
+    retrieve_mysql_data_test()
+    # retrieve_save_and_process()
     # import json
     # paired=1
     # id='1'
