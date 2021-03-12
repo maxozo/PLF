@@ -263,7 +263,7 @@ def retrieve_save_and_process():
 
 def retrieve_mysql_data_test():
     import requests
-    response = requests.get('https://api.github.com')
+    response = requests.get('http://www.manchesterproteome.manchester.ac.uk/run_api/MSP_api/?page=1&search=')
     d = response.json()
     with open("test_output.json", 'w') as json_file:
         json.dump(d, json_file)
