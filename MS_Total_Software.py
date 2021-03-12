@@ -194,6 +194,15 @@ def match_peptide_to_protein(Protein_peptides,Reference_Proteome):
     return Protein_peptides
 
 def retrieve_mysql_data():
+
+    import requests
+    response = requests.get("http://www.manchesterproteome.manchester.ac.uk/run_api/MSP_api/?page=1&search=")
+    print(response.json())
+    d=response.json()
+    with open("test_output.json", 'w') as json_file:
+        json.dump(d, json_file)
+
+
     import mysql.connector
     from secret import HOST, PORT, PASSWORD, DB, USER
     connection = mysql.connector.connect(host=HOST,
@@ -211,12 +220,6 @@ def retrieve_mysql_data():
     if not Data_ids.empty:
         field_names = [i[0] for i in cursor.description]
         Data_ids.columns = field_names
-    import requests
-    response = requests.get("http://www.manchesterproteome.manchester.ac.uk/run_api/MSP_api/?page=1&search=")
-    print(response.json())
-    d=response.json()
-    with open("test_output.json", 'w') as json_file:
-        json.dump(d, json_file)
 
     sql=f"SELECT * FROM `Structural_userdata` WHERE `id` LIKE '{Data_ids.id[1]}'"
     cursor = connection.cursor()
