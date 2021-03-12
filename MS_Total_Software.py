@@ -262,18 +262,14 @@ def retrieve_save_and_process():
 
 
 def retrieve_mysql_data_test():
+    import requests
+    response = requests.get('https://api.github.com')
+    d = response.json()
+    with open("test_output.json", 'w') as json_file:
+        json.dump(d, json_file)
 
-    import urllib.request
-    link = f"https://www.uniprot.org/uniprot/P68307.txt"
-    with urllib.request.urlopen(link) as url:
-        s = url.read().decode()
-        # I'm guessing this would output the html source code ?
-        Data = pd.DataFrame(s.split("\n"))
-        print(Data)
-    Data.to_csv("test.csv")
-    # with open('do_re_mi.txt', 'w') as f:
-    #     f.write('Doe, a deer, a female deer\n')
-    #     f.write('Ray, a drop of golden sun\n')
+    print("Done")
+        
 
 
 
