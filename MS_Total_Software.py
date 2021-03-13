@@ -101,7 +101,7 @@ def run_full_analysis( Domain_types, Protein_peptides, experiment_feed, Owner_ID
     k_val=0
     # paired=True
     import multiprocessing as mp
-    print(pd.__version__)
+    
     # pool.close()
     Protein_peptides=Protein_peptides.dropna(subset=['spectra']) # Drop the NaN vales on spectra. ie - peptides are not detected in that sample
     pool = mp.Pool(mp.cpu_count()-1)
