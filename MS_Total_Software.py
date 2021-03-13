@@ -95,17 +95,19 @@ def run_full_analysis( Domain_types, Protein_peptides, experiment_feed, Owner_ID
     Reference_Proteome = pd.read_csv(f"./outputs/Uniprot_{Spiecies}.tsv",sep="\t",index_col=0)
     Reference_Domains = pd.read_csv(f"./outputs/Domains_Uniprot_{Spiecies}.tsv",sep="\t",index_col=0)
 
-    # Protein_peptides=match_peptide_to_protein(Protein_peptides,Reference_Proteome)
-    # Protein_peptides.to_csv("Protein_peptides_Mouse_Aorta.tsv",sep="\t")
-    Protein_peptides=pd.read_csv("Protein_peptides_Mouse_Aorta.tsv",sep="\t",index_col=0)
+    Protein_peptides=match_peptide_to_protein(Protein_peptides,Reference_Proteome)
+    # Protein_peptides.to_csv(f"Protein_peptides_{Spiecies}_{Owner_ID}_{id}.tsv", sep="\t")
+    # Protein_peptides=pd.read_csv("Protein_peptides_Mouse_Aorta.tsv",sep="\t",index_col=0)
     k_val=0
     # paired=True
     import multiprocessing as mp
+    print(pd.__version__)
     # pool.close()
+    Protein_peptides=Protein_peptides.dropna(subset=['spectra']) # Drop the NaN vales on spectra. ie - peptides are not detected in that sample
     pool = mp.Pool(mp.cpu_count()-1)
      # pool = mp.Pool(1)
     
-    Protein_peptides=Protein_peptides.dropna(subset=['spectra']) # Drop the NaN vales on spectra. ie - peptides are not detected in that sample
+
     for i, Protein in enumerate(Protein_peptides.Protein.str.split(";").explode().unique()):
         try:
             pool.apply_async(run_protein, args=([Protein,Reference_Proteome,Reference_Domains,Domain_types,Protein_peptides,experiment_feed,paired]),callback=collect_result) #paralel runs - uses all the cores available
@@ -176,8 +178,8 @@ def match_peptide_to_protein(Protein_peptides,Reference_Proteome):
         Protein_peptides.loc[Protein_peptides.Peptide == peptide,"Protein"]=All_Proteins
 
         # pool.apply_async(retrieve_all_proteins, args=([peptide,Reference_Proteome,Protein_peptides,count]),callback=append_results) #paralel runs - uses all the cores available
-        # if count>100:
-        #     break
+        if count>100:
+             break
     
     
     # pool.close()
@@ -236,7 +238,7 @@ def retrieve_mysql_data():
     Data_Val = json.loads(Data_Val)
     Protein_peptides = pd.DataFrame(Data_Val)
     Paired= Data.Paired[0]
-    Spiecies="MOUSE"
+    Spiecies="MOUSE" #Data.Spiecies[0]
     run_full_analysis(Domain_types, Protein_peptides, experiment_feed,Owner_ID,id,paired=Paired, Spiecies=Spiecies)
 
 def retrieve_save_and_process():
@@ -275,7 +277,8 @@ def retrieve_mysql_data_test():
 
 if __name__ == '__main__':
     # retrieve_mysql_data_test()
-    retrieve_save_and_process()
+    # retrieve_save_and_process()
+    retrieve_mysql_data()
     # import json
     # paired=1
     # id='1'
