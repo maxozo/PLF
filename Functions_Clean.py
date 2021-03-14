@@ -4,10 +4,10 @@ USER = os.getenv('MYSQL_USER')
 HOST = os.getenv('MYSQL_HOST')
 import re
 import statistics
-from Structural.Structural_Algorythm.General_Functions import *
+from General_Functions import *
 import pandas as pd
-import mysql.connector
-from Structural.Structural_Algorythm.anova import Two_Way_mixed_Anova
+
+from anova import Two_Way_mixed_Anova
 import itertools
 
 
@@ -199,35 +199,32 @@ def Get_all_Experiment_Domains(Gene_Name_global, sample, Analysis_Type, Results)
     mycursor.close()
 
 
-def Master_Run_Counting_Algorythm_Clean(Gene_Name_global=None, Domain_Types=None, Protein_peptides=None,Protein_list=None):
+def Master_Run_Counting_Algorythm_Clean(Protein=None, Domain_Types=None, Protein_peptides=None,Reference_Proteome=None,Reference_Domains=None):
 
-    Fasta = retrieve_FASTA(Gene_Name_global)
-    if Fasta == None:
-        #
-        Fasta= retrieve_FASTA(Protein_list[1])
-        Gene_Name_global=Protein_list[1]
-    domains = Get_Domains_SQL(Gene_Name_global)
+    Fasta = Reference_Proteome[Reference_Proteome.Uniprot_ID==Protein]["FASTA"][0]
+    domains=Reference_Domains[Reference_Domains.Uniprot_ID == Protein]
+
+    
     if domains.empty:
         pass
     else:
         domains.Name=domains.Name.str.replace("'", "")
     domain_ranges = [float(s.replace(" AA STEP", "")) for s in Domain_Types if "AA STEP" in s]
-
-    # domain_ranges= [20.,40.,50.,60.,80.,100.]
     for range_elem in domain_ranges:
-        dom= Fasta_Analysis_Arbitarely_Domains(sequence=Fasta,
-                                                                        step_size=range_elem)
+        dom= Fasta_Analysis_Arbitarely_Domains(sequence=Fasta,step_size=range_elem)
         dom.Name = str(int(range_elem)) + "Step_" + dom.Name
         domains = pd.concat([domains, dom])
 
     # Here filter out the data
     if Domain_Types != None:
         domains = domains[domains.Type.isin(Domain_Types)]
+
     domains.loc[domains.Name.duplicated(), "Name"] = domains[domains.Name.duplicated()].Name + "_" + domains[
         domains.Name.duplicated()].start.astype(int).astype(str) + "_" + domains[
                                                          domains.Name.duplicated()].finish.astype(int).astype(str)
+
     Protein_Entries = Protein_peptides[
-        Protein_peptides['Protein'].str.contains(Gene_Name_global, na=False)]
+        Protein_peptides['Protein'].str.contains(Protein, na=False)]
     experiment_names = Protein_Entries['Sample'].unique()
     Experiment_dict = {}
     Experiment_Coverages = pd.DataFrame()
@@ -253,7 +250,7 @@ def Master_Run_Counting_Algorythm_Clean(Gene_Name_global=None, Domain_Types=None
                      'Exclusive_spectrum_count': Exclusive_spectrum_count,  #
                      'experiment_name': experiment,  #
                      # 'Experiment_Setup': domains , #????
-                     'GeneAC': Gene_Name_global,  #
+                     'GeneAC': Protein,  #
                      'peptides_found': peptides_found  #
                      }, ignore_index=True)
             except:
@@ -412,7 +409,11 @@ def Master_Run_Structural_Analysis(experiment_feed=None, Results=None, Protein=N
     for value1 in value:
         # print(value1)
         if Spectral_total_counts[(value1 == Spectral_total_counts.experiment_name)].experiment_name.count()>0:
-            continue
+            if (float(Spectral_total_counts[(value1 == Spectral_total_counts.experiment_name)].Exclusive_spectrum_count)==0.0):
+                Spectral_total_counts[(value1 == Spectral_total_counts.experiment_name)].Exclusive_spectrum_count=0.0000001
+            else:
+                continue
+        
         else:
             Spectral_total_counts=Spectral_total_counts.append({"experiment_name": value1, "Exclusive_spectrum_count": 0.0000001}, ignore_index=True)
     # here have to check whether all the samples are in the file, if not we add 0 as a norm factor.
@@ -422,6 +423,7 @@ def Master_Run_Structural_Analysis(experiment_feed=None, Results=None, Protein=N
     Median_Norm_Factor = statistics.median(
         [Spectral_total_counts["Exclusive_spectrum_count"].max(),
          Spectral_total_counts["Exclusive_spectrum_count"].min()])
+         
     Spectral_total_counts["Median_Norm"] = Median_Norm_Factor
     Spectral_total_counts["Factor"] = Spectral_total_counts["Median_Norm"] / Spectral_total_counts[
         "Exclusive_spectrum_count"]

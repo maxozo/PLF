@@ -1,9 +1,8 @@
-import matplotlib as mpl
 import pandas as pd
 import os
 import urllib
 import urllib.request  as urllib2
-import mysql.connector
+
 
 def find_str(s, char):
     # from http://stackoverflow.com/questions/21842885/python-find-a-substring-in-a-string-and-returning-the-index-of-the-substring
