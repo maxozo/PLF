@@ -222,8 +222,8 @@ def retrieve_mysql_data():
     if not Data_ids.empty:
         field_names = [i[0] for i in cursor.description]
         Data_ids.columns = field_names
-
-    sql=f"SELECT * FROM `Structural_userdata` WHERE `id` LIKE '{Data_ids.id[1]}'"
+    id_to_process="126"
+    sql=f"SELECT * FROM `Structural_userdata` WHERE `id` LIKE '{id_to_process}'"
     cursor = connection.cursor()
     cursor.execute(sql)
     Data = pd.DataFrame(cursor.fetchall())
@@ -278,7 +278,7 @@ def retrieve_mysql_data_test():
 if __name__ == '__main__':
     # retrieve_mysql_data_test()
     # retrieve_save_and_process()
-    retrieve_mysql_data()
+    # retrieve_mysql_data()
     # import json
     # paired=1
     # id='1'
