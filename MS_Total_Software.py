@@ -96,7 +96,7 @@ def run_full_analysis( Domain_types, Protein_peptides, experiment_feed, Owner_ID
     Reference_Domains = pd.read_csv(f"./outputs/Domains_Uniprot_{Spiecies}.tsv",sep="\t",index_col=0)
 
     Protein_peptides=match_peptide_to_protein(Protein_peptides,Reference_Proteome)
-    # Protein_peptides.to_csv(f"Protein_peptides_{Spiecies}_{Owner_ID}_{id}.tsv", sep="\t")
+    Protein_peptides.to_csv(f"Protein_peptides_{Spiecies}_{Owner_ID}_{id}.tsv", sep="\t")
     # Protein_peptides=pd.read_csv("Protein_peptides_Mouse_Aorta.tsv",sep="\t",index_col=0)
     k_val=0
     # paired=True
@@ -122,9 +122,9 @@ def run_full_analysis( Domain_types, Protein_peptides, experiment_feed, Owner_ID
     # print(Coverage_Json)
 
 
-    with open("./bin/Coverage_Json.json", 'w') as json_file:
+    with open(f"./bin/Coverage_Json_{Spiecies}_{Owner_ID}_{id}.json", 'w') as json_file:
         json.dump(Coverage_Json, json_file)
-    with open("./bin/Structural_Json.json", 'w') as json_file:
+    with open(f"./bin/Structural_Json_{Spiecies}_{Owner_ID}_{id}.json", 'w') as json_file:
         json.dump(Structural_Json, json_file)
 
     # with open("./bin/Structural_Json.json", 'r') as myfile:
@@ -215,14 +215,14 @@ def retrieve_mysql_data():
     cursor_query = connection.cursor()
 
     # here could select the jobs that are qued - do this every 6h and if a new job is qued then process on the HPC cloud
-    sql="SELECT id FROM `Structural_userdata` WHERE Progress LIKE 'Que'"
+    sql="SELECT id,name FROM `Structural_userdata` WHERE Progress LIKE 'Que'"
     cursor = connection.cursor()
     cursor.execute(sql)
     Data_ids = pd.DataFrame(cursor.fetchall())
     if not Data_ids.empty:
         field_names = [i[0] for i in cursor.description]
         Data_ids.columns = field_names
-    id_to_process="126"
+    id_to_process="127"
     sql=f"SELECT * FROM `Structural_userdata` WHERE `id` LIKE '{id_to_process}'"
     cursor = connection.cursor()
     cursor.execute(sql)
@@ -231,6 +231,7 @@ def retrieve_mysql_data():
         field_names = [i[0] for i in cursor.description]
         Data.columns = field_names
     Domain_types=json.loads(Data.Domain_Types[0])
+    # Domain_types=['DOMAINS', 'REGIONS', 'TOPO_DOM', 'TRANSMEM', 'REPEAT', '50.0 AA STEP']
     experiment_feed = json.loads(Data.experimental_design[0])
     Owner_ID = Data.owner_id[0]
     id = Data.id[0]
@@ -259,7 +260,7 @@ def retrieve_save_and_process():
     if not Data_ids.empty:
         field_names = [i[0] for i in cursor.description]
         Data_ids.columns = field_names
-    print(Data_ids)
+    
     Data_ids.to_csv("tmp_ids.csv")
 
 
@@ -278,7 +279,7 @@ def retrieve_mysql_data_test():
 if __name__ == '__main__':
     # retrieve_mysql_data_test()
     # retrieve_save_and_process()
-    # retrieve_mysql_data()
+    retrieve_mysql_data()
     # import json
     # paired=1
     # id='1'
