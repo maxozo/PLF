@@ -1,6 +1,6 @@
 import pandas as pd
 import sys
-
+import mysql.connector
 from Functions_Clean import retrieve_reviewed, Master_Run_Counting_Algorythm_Clean, \
     Master_Run_Structural_Analysis, Master_Run_Score_Calculations
 import json
@@ -22,7 +22,7 @@ def collect_result(result):
     Coverage_Json[Protein1] = Coverage_Json1
     Structural_Json[Protein1] = Structural_Json1
 
-def record_data(Structural_Json,Coverage_Json,Owner_ID,id):
+def record_data(Structural_Json,Owner_ID,id):
     import mysql.connector
     from secret import HOST, PORT, PASSWORD, DB, USER
     connection = mysql.connector.connect(host=HOST,
@@ -32,7 +32,7 @@ def record_data(Structural_Json,Coverage_Json,Owner_ID,id):
                                         auth_plugin='mysql_native_password')
     cursor_query = connection.cursor()
     Significant_Protein_Count = Structural_Json.keys().__len__()
-    experiment_coverages = json.dumps(Coverage_Json)
+    # experiment_coverages = json.dumps(Coverage_Json)
     structural_analysis_results = json.dumps(Structural_Json)
     # sql_query = f"UPDATE `Structural_userdata` SET Structural_Results=JSON_MERGE_PATCH(`Structural_Results`, '{structural_analysis_results}')," \
     #             f" Experimental_Coverages=JSON_MERGE_PATCH(`Experimental_Coverages`,'{experiment_coverages}')," \
@@ -94,11 +94,11 @@ def run_full_analysis( Domain_types, Protein_peptides, experiment_feed, Owner_ID
     
     Reference_Proteome = pd.read_csv(f"./outputs/Uniprot_{Spiecies}.tsv",sep="\t",index_col=0)
     Reference_Domains = pd.read_csv(f"./outputs/Domains_Uniprot_{Spiecies}.tsv",sep="\t",index_col=0)
-
+    
+    # Protein_peptides=pd.read_csv(f"Protein_peptides_{Spiecies}_{Owner_ID}_{id}.tsv",sep="\t",index_col=0)
     Protein_peptides=match_peptide_to_protein(Protein_peptides,Reference_Proteome)
     Protein_peptides.to_csv(f"Protein_peptides_{Spiecies}_{Owner_ID}_{id}.tsv", sep="\t")
-    # Protein_peptides=pd.read_csv("Protein_peptides_Mouse_Aorta.tsv",sep="\t",index_col=0)
-    k_val=0
+    # k_val=0
     # paired=True
     import multiprocessing as mp
     
@@ -127,12 +127,9 @@ def run_full_analysis( Domain_types, Protein_peptides, experiment_feed, Owner_ID
     with open(f"./bin/Structural_Json_{Spiecies}_{Owner_ID}_{id}.json", 'w') as json_file:
         json.dump(Structural_Json, json_file)
 
-    # with open("./bin/Structural_Json.json", 'r') as myfile:
-    #     Structural_Json2=myfile.read()
-    # Structural_Json2=json.loads(Structural_Json2)
     # here we wait for the process to finish and then HPC should send the data back.
 
-    record_data(Structural_Json, Coverage_Json, Owner_ID,id)
+    record_data(Structural_Json, Owner_ID,id)
     # # this is to record last entries that are not processed
     # if (Structural_Json.keys().__len__()>0):
     #     Structural_Json, Coverage_Json=record_data(Structural_Json, Coverage_Json, Owner_ID,id)
@@ -205,7 +202,7 @@ def retrieve_mysql_data():
     #     json.dump(d, json_file)
 
 
-    import mysql.connector
+    
     from secret import HOST, PORT, PASSWORD, DB, USER
     connection = mysql.connector.connect(host=HOST,
                                         database=DB,
@@ -231,7 +228,7 @@ def retrieve_mysql_data():
         field_names = [i[0] for i in cursor.description]
         Data.columns = field_names
     Domain_types=json.loads(Data.Domain_Types[0])
-    # Domain_types=['DOMAINS', 'REGIONS', 'TOPO_DOM', 'TRANSMEM', 'REPEAT', '50.0 AA STEP']
+    Domain_types=['DOMAINS', 'REGIONS', 'TOPO_DOM', 'TRANSMEM', 'REPEAT', '50.0 AA STEP']
     experiment_feed = json.loads(Data.experimental_design[0])
     Owner_ID = Data.owner_id[0]
     id = Data.id[0]
@@ -240,7 +237,18 @@ def retrieve_mysql_data():
     Protein_peptides = pd.DataFrame(Data_Val)
     Paired= Data.Paired[0]
     Spiecies="MOUSE" #Data.Spiecies[0]
-    run_full_analysis(Domain_types, Protein_peptides, experiment_feed,Owner_ID,id,paired=Paired, Spiecies=Spiecies)
+
+
+    # run_full_analysis(Domain_types, Protein_peptides, experiment_feed,Owner_ID,id,paired=Paired, Spiecies=Spiecies)
+
+    # '''
+    with open(f"./bin/Structural_Json_{Spiecies}_{Owner_ID}_{id}.json", 'r') as myfile:
+        Structural_Json=myfile.read()
+    Structural_Json=json.loads(Structural_Json)
+    record_data(Structural_Json, Owner_ID,id)
+    # '''
+
+
 
 def retrieve_save_and_process():
     import mysql.connector
@@ -277,9 +285,19 @@ def retrieve_mysql_data_test():
 
 
 if __name__ == '__main__':
+    '''bsub -o exercise5.output -n10 -R"select[mem>2500] rusage[mem=2500]" -M2500 python MS_Total_Software.py '''
+    # export  LSB_DEFAULTGROUP=hgi
+
+
     # retrieve_mysql_data_test()
     # retrieve_save_and_process()
     retrieve_mysql_data()
+
+
+
+
+
+
     # import json
     # paired=1
     # id='1'
