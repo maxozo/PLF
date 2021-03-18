@@ -40,7 +40,7 @@ def record_data(Structural_Json,Owner_ID,id):
     #             f"WHERE (`id` like {id} and `owner_id` LIKE {Owner_ID})"
 
     sql_query = f"UPDATE `Structural_userdata` SET Structural_Results='{structural_analysis_results}'," \
-            f" Progress='Finished', Significant_Protein_Count=`Significant_Protein_Count`+{Significant_Protein_Count} " \
+            f" Progress='Finished', Significant_Protein_Count='{Significant_Protein_Count}' " \
             f"WHERE (`id` like {id} and `owner_id` LIKE {Owner_ID})"
 
     cursor_query.execute(sql_query)
@@ -105,26 +105,56 @@ def run_full_analysis( Domain_types, Protein_peptides, experiment_feed, Owner_ID
     
     # pool.close()
     Protein_peptides=Protein_peptides.dropna(subset=['spectra']) # Drop the NaN vales on spectra. ie - peptides are not detected in that sample
-    pool = mp.Pool(mp.cpu_count()-1)
-     # pool = mp.Pool(1)
-    
-
+    All_proteins={}
     for i, Protein in enumerate(Protein_peptides.Protein.str.split(";").explode().unique()):
+        # here gather all the unique gene names - all the revirewed entries + each unique non uniprot entry
+        # print(Protein)
+        Prot1=Reference_Proteome[Reference_Proteome["Uniprot_ID"]==Protein]
+        try:
+            Gene=Prot1["Uniprot_Gene"][0].split(" {")[0]
+        except:
+            Gene=Protein
+        try:
+            Type=Prot1["Uniprot_Type"][0]
+        except:
+            next
+        try:
+            All_proteins[Gene][Type].append(Protein)
+        except:
+            try:
+                All_proteins[Gene][Type]=[]
+                All_proteins[Gene][Type].append(Protein)
+            except:
+                All_proteins[Gene]={}
+                All_proteins[Gene][Type]=[]
+                All_proteins[Gene][Type].append(Protein)
+
+    i=0    
+    pool = mp.Pool(mp.cpu_count()-1)
+    for key in All_proteins.keys():
+        try:
+            Protein= All_proteins[key]['Uniprot'][0]
+        except:
+            Protein= All_proteins[key]['Trembl'][0]
+
         try:
             pool.apply_async(run_protein, args=([Protein,Reference_Proteome,Reference_Domains,Domain_types,Protein_peptides,experiment_feed,paired]),callback=collect_result) #paralel runs - uses all the cores available
             # run_protein(Protein,Reference_Proteome,Reference_Domains,Domain_types,Protein_peptides,experiment_feed,paired) #individual cores - uses 1 core hence 1 protein at a time is analysed.
         except:
             print(sys.exc_info()[0])
             continue
-        if i>15:
-            break
+        i+=1
+    
+        # if i>15:
+        #     break
+    
     pool.close()
     pool.join() 
     # print(Coverage_Json)
 
 
-    with open(f"./bin/Coverage_Json_{Spiecies}_{Owner_ID}_{id}.json", 'w') as json_file:
-        json.dump(Coverage_Json, json_file)
+    # with open(f"./bin/Coverage_Json_{Spiecies}_{Owner_ID}_{id}.json", 'w') as json_file:
+    #     json.dump(Coverage_Json, json_file)
     with open(f"./bin/Structural_Json_{Spiecies}_{Owner_ID}_{id}.json", 'w') as json_file:
         json.dump(Structural_Json, json_file)
 
