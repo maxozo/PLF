@@ -94,10 +94,11 @@ def run_full_analysis( Domain_types, Protein_peptides, experiment_feed, Owner_ID
     
     Reference_Proteome = pd.read_csv(f"./outputs/Uniprot_{Spiecies}.tsv",sep="\t",index_col=0)
     Reference_Domains = pd.read_csv(f"./outputs/Domains_Uniprot_{Spiecies}.tsv",sep="\t",index_col=0)
-    
-    # Protein_peptides=pd.read_csv(f"Protein_peptides_{Spiecies}_{Owner_ID}_{id}.tsv",sep="\t",index_col=0)
-    Protein_peptides=match_peptide_to_protein(Protein_peptides,Reference_Proteome)
-    Protein_peptides.to_csv(f"Protein_peptides_{Spiecies}_{Owner_ID}_{id}.tsv", sep="\t")
+    try:
+        Protein_peptides=pd.read_csv(f"Protein_peptides_{Spiecies}_{Owner_ID}_{id}.tsv",sep="\t",index_col=0)
+    except:
+        Protein_peptides=match_peptide_to_protein(Protein_peptides,Reference_Proteome)
+        Protein_peptides.to_csv(f"Protein_peptides_{Spiecies}_{Owner_ID}_{id}.tsv", sep="\t")
     # k_val=0
     # paired=True
     import multiprocessing as mp
@@ -115,8 +116,8 @@ def run_full_analysis( Domain_types, Protein_peptides, experiment_feed, Owner_ID
         except:
             print(sys.exc_info()[0])
             continue
-        # if i>10:
-        #     break
+        if i>15:
+            break
     pool.close()
     pool.join() 
     # print(Coverage_Json)
@@ -239,13 +240,13 @@ def retrieve_mysql_data():
     Spiecies="MOUSE" #Data.Spiecies[0]
 
 
-    # run_full_analysis(Domain_types, Protein_peptides, experiment_feed,Owner_ID,id,paired=Paired, Spiecies=Spiecies)
+    run_full_analysis(Domain_types, Protein_peptides, experiment_feed,Owner_ID,id,paired=Paired, Spiecies=Spiecies)
 
     # '''
-    with open(f"./bin/Structural_Json_{Spiecies}_{Owner_ID}_{id}.json", 'r') as myfile:
-        Structural_Json=myfile.read()
-    Structural_Json=json.loads(Structural_Json)
-    record_data(Structural_Json, Owner_ID,id)
+    # with open(f"./bin/Structural_Json_{Spiecies}_{Owner_ID}_{id}.json", 'r') as myfile:
+    #     Structural_Json=myfile.read()
+    # Structural_Json=json.loads(Structural_Json)
+    # record_data(Structural_Json, Owner_ID,id)
     # '''
 
 
