@@ -22,7 +22,7 @@ def collect_result(result):
     Coverage_Json[Protein1] = Coverage_Json1
     Structural_Json[Protein1] = Structural_Json1
 
-def record_data(Structural_Json,Owner_ID,id):
+def record_data(Structural_Json,Owner_ID,id,Domain_types):
     import mysql.connector
     from secret import HOST, PORT, PASSWORD, DB, USER
     connection = mysql.connector.connect(host=HOST,
@@ -34,13 +34,14 @@ def record_data(Structural_Json,Owner_ID,id):
     Significant_Protein_Count = Structural_Json.keys().__len__()
     # experiment_coverages = json.dumps(Coverage_Json)
     structural_analysis_results = json.dumps(Structural_Json)
+    Domain_types1=json.dumps(Domain_types)
     # sql_query = f"UPDATE `Structural_userdata` SET Structural_Results=JSON_MERGE_PATCH(`Structural_Results`, '{structural_analysis_results}')," \
     #             f" Experimental_Coverages=JSON_MERGE_PATCH(`Experimental_Coverages`,'{experiment_coverages}')," \
     #             f" Progress='Analysing', Significant_Protein_Count=`Significant_Protein_Count`+{Significant_Protein_Count} " \
     #             f"WHERE (`id` like {id} and `owner_id` LIKE {Owner_ID})"
 
     sql_query = f"UPDATE `Structural_userdata` SET Structural_Results='{structural_analysis_results}'," \
-            f" Progress='Finished', Significant_Protein_Count='{Significant_Protein_Count}' " \
+            f" Progress='Finished',Domain_types='{Domain_types1}', Significant_Protein_Count='{Significant_Protein_Count}' " \
             f"WHERE (`id` like {id} and `owner_id` LIKE {Owner_ID})"
 
     cursor_query.execute(sql_query)
@@ -160,7 +161,7 @@ def run_full_analysis( Domain_types, Protein_peptides, experiment_feed, Owner_ID
 
     # here we wait for the process to finish and then HPC should send the data back.
 
-    record_data(Structural_Json, Owner_ID,id)
+    record_data(Structural_Json, Owner_ID,id,Domain_types)
     # # this is to record last entries that are not processed
     # if (Structural_Json.keys().__len__()>0):
     #     Structural_Json, Coverage_Json=record_data(Structural_Json, Coverage_Json, Owner_ID,id)
@@ -250,7 +251,7 @@ def retrieve_mysql_data():
     if not Data_ids.empty:
         field_names = [i[0] for i in cursor.description]
         Data_ids.columns = field_names
-    id_to_process="127"
+    id_to_process="138"
     sql=f"SELECT * FROM `Structural_userdata` WHERE `id` LIKE '{id_to_process}'"
     cursor = connection.cursor()
     cursor.execute(sql)
@@ -267,7 +268,7 @@ def retrieve_mysql_data():
     Data_Val = json.loads(Data_Val)
     Protein_peptides = pd.DataFrame(Data_Val)
     Paired= Data.Paired[0]
-    Spiecies="MOUSE" #Data.Spiecies[0]
+    Spiecies=Data.Spiecies[0]
 
 
     run_full_analysis(Domain_types, Protein_peptides, experiment_feed,Owner_ID,id,paired=Paired, Spiecies=Spiecies)
@@ -276,7 +277,7 @@ def retrieve_mysql_data():
     # with open(f"./bin/Structural_Json_{Spiecies}_{Owner_ID}_{id}.json", 'r') as myfile:
     #     Structural_Json=myfile.read()
     # Structural_Json=json.loads(Structural_Json)
-    # record_data(Structural_Json, Owner_ID,id)
+    # record_data(Structural_Json, Owner_ID,id,Domain_types)
     # '''
 
 
@@ -312,14 +313,35 @@ def retrieve_mysql_data_test():
 
     print("Done")
         
-
+def update_user_id():
+    from secret import HOST, PORT, PASSWORD, DB, USER
+    connection = mysql.connector.connect(host=HOST,
+                                        database=DB,
+                                        user=USER,port=PORT,
+                                        password=PASSWORD,
+                                        auth_plugin='mysql_native_password')
+    cursor_query = connection.cursor()
+    sql="SELECT id,owner_id,name FROM `Structural_userdata` WHERE 1"
+    
+    cursor = connection.cursor()
+    cursor.execute(sql)
+    Data_ids = pd.DataFrame(cursor.fetchall())
+    if not Data_ids.empty:
+        field_names = [i[0] for i in cursor.description]
+        Data_ids.columns = field_names
+    print(Data_ids)
+    id=138
+    sql=f"UPDATE `Structural_userdata` SET `owner_id`=11 WHERE id LIKE {id}"
+    cursor = connection.cursor()
+    cursor.execute(sql)
+    
 
 
 if __name__ == '__main__':
     '''bsub -o exercise5.output -n10 -R"select[mem>2500] rusage[mem=2500]" -M2500 python MS_Total_Software.py '''
     # export  LSB_DEFAULTGROUP=hgi
 
-
+    # update_user_id()
     # retrieve_mysql_data_test()
     # retrieve_save_and_process()
     retrieve_mysql_data()
