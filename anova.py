@@ -42,6 +42,7 @@ def data_set_concerter(df):
                 Yield = Data[Data_line_idx]
                 Individual=names[Data_line_idx]
                 df_returned=df_returned.append({'Individual':Individual,'Treatment':Treatment,"Domain_Name":Domain,'Yield':Yield},ignore_index=True)
+    print("Done with this")
     return df_returned
 
 

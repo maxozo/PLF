@@ -115,6 +115,8 @@ def run_full_analysis( Domain_types, Protein_peptides, experiment_feed, Owner_ID
     for i, Protein in enumerate(Protein_peptides.Protein.str.split(";").explode().unique()):
         # here gather all the unique gene names - all the revirewed entries + each unique non uniprot entry
         # print(Protein)
+        if i>100:
+            break
         Prot1=Reference_Proteome[Reference_Proteome["Uniprot_ID"]==Protein]
         try:
             Gene=Prot1["Uniprot_Gene"][0].split(" {")[0]
