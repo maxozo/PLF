@@ -91,13 +91,15 @@ def calculate_P_values(MS_Resid,DF_Resid, df):
     return list_p_values
 
 def Two_Way_mixed_Anova(df,paired=True):
-    from statsmodels.sandbox.stats.multicomp import multipletests
+    print("anova here 0")
+    
+    print("anova here 01")
     df2 = data_set_concerter(df)
     N = len(df2)
     df1=len(df2["Domain_Name"].unique())-1
     df_2=len(df2['Treatment'].unique())-1
     df_axb = df1*df_2
-
+    print("anova here 1")
     df_w = N-(len(df2['Treatment'].unique())*(len(df2["Domain_Name"].unique())))
     grand_mean = df2['Yield'].mean() #1
     ssq_t = sum((df2.Yield - grand_mean)**2) #2
@@ -113,7 +115,7 @@ def Two_Way_mixed_Anova(df,paired=True):
             (vc.Yield - vc_dose_means) ** 2)
     ssq_axb = ssq_t-ssq_a-ssq_b-ssq_w
 
-
+    print("anova here 2")
     ms_a = ssq_a / float(df1)
 
     ms_b = ssq_b / float(df_2)
@@ -126,7 +128,7 @@ def Two_Way_mixed_Anova(df,paired=True):
 
     p_a = stats.f.sf(f_a, df1, df_w)
     p_b = stats.f.sf(f_b, df_2, df_w)
-
+    print("anova here 3")
     p_axb = stats.f.sf(f_axb, df_axb, df_w)
 
     DF_subjects = len(df2.Individual.unique())*len(df2.Domain_Name.unique())-len(df2.Domain_Name.unique())
@@ -143,7 +145,7 @@ def Two_Way_mixed_Anova(df,paired=True):
 
     Subject = SS_Subj =len(df1.Treatment.unique())*pre_SS_Subj
     Residual = SS_Resid = ssq_w-SS_Subj
-
+    print("anova here 4")
 
     '''SS values'''
     Row_Factor_x_Time = ssq_axb
@@ -177,10 +179,10 @@ def Two_Way_mixed_Anova(df,paired=True):
                 'MS': [ms_a, ms_b, ms_axb, ms_w,MS_Subj,MS_Resid],
                'F': [f_a, f_b, f_axb, 'NaN'],
                'PR(>F)': [p_a, p_b, p_axb, 'NaN']}
-
+    print("anova here 6")
     p_values = calculate_P_values(MS_Resid,DF_Resid,df)
     p_values_adjusted = p_values.copy()
-
+    from statsmodels.sandbox.stats.multicomp import multipletests
     # Now feed the p-values in a bonferoni correction
     if(p_values.columns.__len__()>2):
         for i in range(0,p_values.__len__()):

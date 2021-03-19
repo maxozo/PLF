@@ -1,6 +1,6 @@
 #!/bin/bash --login
 #$ -cwd
-#$ -pe smp.pe 3       # Each task will use 4 cores in this example
+#$ -pe smp.pe 4       # Each task will use 4 cores in this example
 
 
 # Task id 1 will read line 1 from my_file_list.txt
@@ -18,12 +18,15 @@ export OMP_NUM_THREADS=$NSLOTS
     # Can also use another linux tool named 'sed' to get the n-th line of a file:
     # INFILE=`sed -n "${SGE_TASK_ID}p" my_file_list.txt`
     # Load the version you require
-source activate myenv
+source activate env3
+
 module load tools/env/proxy
+pip install --user -r requirements.txt 
 # We now use the value of our variable by using $INFILE.
 # In task 1, $INFILE will be replaced with C2H4O.dat
 # In task 2, $INFILE will be replaced with NH3.dat
 # ... and so on ...
 
 # Run the app with the .dat filename specific to this task
-python MS_Total_Software.py
+
+python MS_Total_Software.py $1

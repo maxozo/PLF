@@ -1,0 +1,76 @@
+,0
+0,ID   NU3M_BALMU              Reviewed;         115 AA.
+1,AC   P68307; P24973;
+2,"DT   25-OCT-2004, integrated into UniProtKB/Swiss-Prot."
+3,"DT   25-OCT-2004, sequence version 1."
+4,"DT   07-OCT-2020, entry version 51."
+5,DE   RecName: Full=NADH-ubiquinone oxidoreductase chain 3;
+6,DE            EC=7.1.1.2;
+7,DE   AltName: Full=NADH dehydrogenase subunit 3;
+8,"GN   Name=MT-ND3; Synonyms=MTND3, NADH3, ND3;"
+9,OS   Balaenoptera musculus (Blue whale).
+10,OG   Mitochondrion.
+11,OC   Eukaryota; Metazoa; Chordata; Craniata; Vertebrata; Euteleostomi; Mammalia;
+12,OC   Eutheria; Laurasiatheria; Artiodactyla; Whippomorpha; Cetacea; Mysticeti;
+13,OC   Balaenopteridae; Balaenoptera.
+14,OX   NCBI_TaxID=9771;
+15,RN   [1]
+16,RP   NUCLEOTIDE SEQUENCE [GENOMIC DNA].
+17,RX   PubMed=8308901; DOI=10.1007/bf00178861;
+18,"RA   Arnason U., Gullberg A.;"
+19,"RT   ""Comparison between the complete mtDNA sequences of the blue and the fin"
+20,"RT   whale, two species that can hybridize in nature."";"
+21,RL   J. Mol. Evol. 37:312-322(1993).
+22,CC   -!- FUNCTION: Core subunit of the mitochondrial membrane respiratory chain
+23,CC       NADH dehydrogenase (Complex I) that is believed to belong to the
+24,CC       minimal assembly required for catalysis. Complex I functions in the
+25,CC       transfer of electrons from NADH to the respiratory chain. The immediate
+26,CC       electron acceptor for the enzyme is believed to be ubiquinone (By
+27,CC       similarity). {ECO:0000250}.
+28,CC   -!- CATALYTIC ACTIVITY:
+29,CC       Reaction=a ubiquinone + 5 H(+)(in) + NADH = a ubiquinol + 4 H(+)(out) +
+30,"CC         NAD(+); Xref=Rhea:RHEA:29091, Rhea:RHEA-COMP:9565, Rhea:RHEA-"
+31,"CC         COMP:9566, ChEBI:CHEBI:15378, ChEBI:CHEBI:16389, ChEBI:CHEBI:17976,"
+32,"CC         ChEBI:CHEBI:57540, ChEBI:CHEBI:57945; EC=7.1.1.2;"
+33,CC   -!- SUBCELLULAR LOCATION: Mitochondrion membrane {ECO:0000250}; Multi-pass
+34,CC       membrane protein {ECO:0000250}.
+35,CC   -!- SIMILARITY: Belongs to the complex I subunit 3 family. {ECO:0000305}.
+36,CC   ---------------------------------------------------------------------------
+37,"CC   Copyrighted by the UniProt Consortium, see https://www.uniprot.org/terms"
+38,CC   Distributed under the Creative Commons Attribution (CC BY 4.0) License
+39,CC   ---------------------------------------------------------------------------
+40,DR   EMBL; X72204; CAA51002.1; -; Genomic_DNA.
+41,DR   PIR; S41827; S41827.
+42,DR   RefSeq; NP_007063.1; NC_001601.1.
+43,DR   SMR; P68307; -.
+44,DR   GeneID; 807741; -.
+45,DR   CTD; 4537; -.
+46,DR   GO; GO:0016021; C:integral component of membrane; IEA:UniProtKB-KW.
+47,DR   GO; GO:0031966; C:mitochondrial membrane; IEA:UniProtKB-SubCell.
+48,DR   GO; GO:0070469; C:respirasome; IEA:UniProtKB-KW.
+49,DR   GO; GO:0008137; F:NADH dehydrogenase (ubiquinone) activity; IEA:UniProtKB-EC.
+50,DR   Gene3D; 1.20.58.1610; -; 1.
+51,DR   InterPro; IPR000440; NADH_UbQ/plastoQ_OxRdtase_su3.
+52,DR   InterPro; IPR038430; NDAH_ubi_oxred_su3_sf.
+53,DR   PANTHER; PTHR11058; PTHR11058; 1.
+54,DR   Pfam; PF00507; Oxidored_q4; 1.
+55,PE   3: Inferred from homology;
+56,KW   Electron transport; Membrane; Mitochondrion; NAD; Respiratory chain;
+57,KW   Translocase; Transmembrane; Transmembrane helix; Transport; Ubiquinone.
+58,FT   CHAIN           1..115
+59,"FT                   /note=""NADH-ubiquinone oxidoreductase chain 3"""
+60,"FT                   /id=""PRO_0000117713"""
+61,FT   TRANSMEM        3..23
+62,"FT                   /note=""Helical"""
+63,"FT                   /evidence=""ECO:0000255"""
+64,FT   TRANSMEM        55..75
+65,"FT                   /note=""Helical"""
+66,"FT                   /evidence=""ECO:0000255"""
+67,FT   TRANSMEM        84..104
+68,"FT                   /note=""Helical"""
+69,"FT                   /evidence=""ECO:0000255"""
+70,SQ   SEQUENCE   115 AA;  13022 MW;  405197D2F5D0AC4B CRC64;
+71,     MNLLLTLLTN TTLALLLVFI AFWLPQLNVY AEKTSPYECG FDPMGSARLP FSMKFFLVAI
+72,     TFLLFDLEIA LLLPLPWAIQ SNNLNTMLTM ALFLISLLAA SLAYEWTQEG LEWAE
+73,//
+74,

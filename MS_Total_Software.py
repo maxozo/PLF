@@ -15,11 +15,11 @@ Protein_peptides2=[]
 # Reference_Proteome=[]
 # Reference_Domains=[]
 
-def collect_result(result):
-    Protein1=result[2]
-    Coverage_Json1=result[0]
-    Structural_Json1=result[1]
+def collect_result(Structural_Json1,Protein1):
+    print("adding")
     Coverage_Json[Protein1] = Coverage_Json1
+    
+    print(Structural_Json1)
     Structural_Json[Protein1] = Structural_Json1
 
 def record_data(Structural_Json,Owner_ID,id,Domain_types):
@@ -40,8 +40,11 @@ def record_data(Structural_Json,Owner_ID,id,Domain_types):
     #             f" Progress='Analysing', Significant_Protein_Count=`Significant_Protein_Count`+{Significant_Protein_Count} " \
     #             f"WHERE (`id` like {id} and `owner_id` LIKE {Owner_ID})"
 
+    # sql_query = f"UPDATE `Structural_userdata` SET Structural_Results='{structural_analysis_results}'," \
+    #         f" Progress='Finished',Domain_types='{Domain_types1}', Significant_Protein_Count='{Significant_Protein_Count}' " \
+    #         f"WHERE (`id` like {id} and `owner_id` LIKE {Owner_ID})"
     sql_query = f"UPDATE `Structural_userdata` SET Structural_Results='{structural_analysis_results}'," \
-            f" Progress='Finished',Domain_types='{Domain_types1}', Significant_Protein_Count='{Significant_Protein_Count}' " \
+            f" Domain_types='{Domain_types1}', Significant_Protein_Count='{Significant_Protein_Count}' " \
             f"WHERE (`id` like {id} and `owner_id` LIKE {Owner_ID})"
 
     cursor_query.execute(sql_query)
@@ -61,11 +64,12 @@ def run_protein(Protein,Reference_Proteome,Reference_Domains,Domain_types,Protei
                                                                     Domain_Types=Domain_types,
                                                                     Protein_peptides=Protein_peptides,Reference_Proteome=Reference_Proteome,
                                                                     Reference_Domains=Reference_Domains)
-
+    print(Experiment_Coverages)
+    print("Done coverage")
     Structural_Analysis_Results, Norm_Factors = Master_Run_Structural_Analysis(experiment_feed=experiment_feed,
                                                                             Results=Experiment_Coverages,
                                                                             Protein=Protein, paired=paired)
-
+    print("Done Structural")
 
     if Structural_Analysis_Results.__len__()>0:
         Structural_Analysis_Results.drop("GeneAC", axis=1, inplace=True)
@@ -79,6 +83,7 @@ def run_protein(Protein,Reference_Proteome,Reference_Domains,Domain_types,Protei
         Coverage = Experiment_Coverages.to_dict()
         Structural_Json= {"Data": Structural_Analysis_Results.to_dict('index'),
                                     "Norm_Factors": Norm_Factors.to_dict()}
+        collect_result(Structural_Json,Protein)
         return (Coverage,Structural_Json,Protein)
 
 
@@ -96,10 +101,10 @@ def run_full_analysis( Domain_types, Protein_peptides, experiment_feed, Owner_ID
     Reference_Proteome = pd.read_csv(f"./outputs/Uniprot_{Spiecies}.tsv",sep="\t",index_col=0)
     Reference_Domains = pd.read_csv(f"./outputs/Domains_Uniprot_{Spiecies}.tsv",sep="\t",index_col=0)
     try:
-        Protein_peptides=pd.read_csv(f"Protein_peptides_{Spiecies}_{Owner_ID}_{id}.tsv",sep="\t",index_col=0)
+        Protein_peptides=pd.read_csv(f"./bin/Protein_peptides_{Spiecies}_{Owner_ID}_{id}.tsv",sep="\t",index_col=0)
     except:
         Protein_peptides=match_peptide_to_protein(Protein_peptides,Reference_Proteome)
-        Protein_peptides.to_csv(f"Protein_peptides_{Spiecies}_{Owner_ID}_{id}.tsv", sep="\t")
+        Protein_peptides.to_csv(f"./bin/Protein_peptides_{Spiecies}_{Owner_ID}_{id}.tsv", sep="\t")
     # k_val=0
     # paired=True
     import multiprocessing as mp
@@ -130,24 +135,27 @@ def run_full_analysis( Domain_types, Protein_peptides, experiment_feed, Owner_ID
                 All_proteins[Gene][Type]=[]
                 All_proteins[Gene][Type].append(Protein)
 
-    i=0    
-    pool = mp.Pool(mp.cpu_count()-1)
+    i=0
+    cpus=4 
+    pool = mp.Pool(cpus)
+    print(f"CPUS: {cpus}")
+
     for key in All_proteins.keys():
         try:
             Protein= All_proteins[key]['Uniprot'][0]
         except:
             Protein= All_proteins[key]['Trembl'][0]
-
+        
         try:
-            pool.apply_async(run_protein, args=([Protein,Reference_Proteome,Reference_Domains,Domain_types,Protein_peptides,experiment_feed,paired]),callback=collect_result) #paralel runs - uses all the cores available
+            pool.apply_async(run_protein, args=([Protein,Reference_Proteome,Reference_Domains,Domain_types,Protein_peptides,experiment_feed,paired])) #paralel runs - uses all the cores available
             # run_protein(Protein,Reference_Proteome,Reference_Domains,Domain_types,Protein_peptides,experiment_feed,paired) #individual cores - uses 1 core hence 1 protein at a time is analysed.
         except:
             print(sys.exc_info()[0])
             continue
         i+=1
     
-        # if i>15:
-        #     break
+        if i>20:
+            break
     
     pool.close()
     pool.join() 
@@ -202,10 +210,12 @@ def match_peptide_to_protein(Protein_peptides,Reference_Proteome):
 
     for peptide in Protein_peptides.Peptide.unique():
         count+=1
+        try:
         # len(Protein_peptides.Peptide.unique())
-        All_Proteins = retrieve_all_proteins(peptide,Reference_Proteome,Protein_peptides,count)
-        Protein_peptides.loc[Protein_peptides.Peptide == peptide,"Protein"]=All_Proteins
-
+            All_Proteins = retrieve_all_proteins(peptide,Reference_Proteome,Protein_peptides,count)
+            Protein_peptides.loc[Protein_peptides.Peptide == peptide,"Protein"]=All_Proteins
+        except:
+            print(f"skipped {peptide}")
         # pool.apply_async(retrieve_all_proteins, args=([peptide,Reference_Proteome,Protein_peptides,count]),callback=append_results) #paralel runs - uses all the cores available
         # if count>100:
         #      break
@@ -224,7 +234,7 @@ def match_peptide_to_protein(Protein_peptides,Reference_Proteome):
 
     return Protein_peptides
 
-def retrieve_mysql_data():
+def retrieve_mysql_data(id_to_process):
 
     # import requests
     # response = requests.get("http://www.manchesterproteome.manchester.ac.uk/run_api/MSP_api/?page=1&search=")
@@ -243,15 +253,15 @@ def retrieve_mysql_data():
                                         auth_plugin='mysql_native_password')
     cursor_query = connection.cursor()
 
-    # here could select the jobs that are qued - do this every 6h and if a new job is qued then process on the HPC cloud
-    sql="SELECT id,name FROM `Structural_userdata` WHERE Progress LIKE 'Que'"
-    cursor = connection.cursor()
-    cursor.execute(sql)
-    Data_ids = pd.DataFrame(cursor.fetchall())
-    if not Data_ids.empty:
-        field_names = [i[0] for i in cursor.description]
-        Data_ids.columns = field_names
-    id_to_process="138"
+    # # here could select the jobs that are qued - do this every 6h and if a new job is qued then process on the HPC cloud
+    # sql="SELECT id,name FROM `Structural_userdata` WHERE Progress LIKE 'Que'"
+    # cursor = connection.cursor()
+    # cursor.execute(sql)
+    # Data_ids = pd.DataFrame(cursor.fetchall())
+    # if not Data_ids.empty:
+    #     field_names = [i[0] for i in cursor.description]
+    #     Data_ids.columns = field_names
+    # id_to_process="138"
     sql=f"SELECT * FROM `Structural_userdata` WHERE `id` LIKE '{id_to_process}'"
     cursor = connection.cursor()
     cursor.execute(sql)
@@ -259,17 +269,21 @@ def retrieve_mysql_data():
     if not Data.empty:
         field_names = [i[0] for i in cursor.description]
         Data.columns = field_names
-    Domain_types=json.loads(Data.Domain_Types[0])
-    Domain_types=['DOMAINS', 'REGIONS', 'TOPO_DOM', 'TRANSMEM', 'REPEAT', '50.0 AA STEP']
-    experiment_feed = json.loads(Data.experimental_design[0])
+    print(f"id = {id_to_process}")
+
     Owner_ID = Data.owner_id[0]
+    
+    Domain_types=json.loads(Data.Domain_Types[0])
+    # Domain_types=['DOMAINS', 'REGIONS', 'TOPO_DOM', 'TRANSMEM', 'REPEAT', '50.0 AA STEP']
+    experiment_feed = json.loads(Data.experimental_design[0])
+    
     id = Data.id[0]
     Data_Val = Data.data[0]
     Data_Val = json.loads(Data_Val)
     Protein_peptides = pd.DataFrame(Data_Val)
     Paired= Data.Paired[0]
     Spiecies=Data.Spiecies[0]
-
+    print(f"Spiecies: {Spiecies}")
 
     run_full_analysis(Domain_types, Protein_peptides, experiment_feed,Owner_ID,id,paired=Paired, Spiecies=Spiecies)
 
@@ -340,12 +354,12 @@ def update_user_id():
 if __name__ == '__main__':
     '''bsub -o exercise5.output -n10 -R"select[mem>2500] rusage[mem=2500]" -M2500 python MS_Total_Software.py '''
     # export  LSB_DEFAULTGROUP=hgi
-
+    id_to_process = sys.argv[1]
     # update_user_id()
     # retrieve_mysql_data_test()
     # retrieve_save_and_process()
-    retrieve_mysql_data()
-
+    retrieve_mysql_data(id_to_process)
+    
 
 
 
