@@ -113,7 +113,7 @@ def run_full_analysis( Domain_types, Protein_peptides, experiment_feed, Owner_ID
     Protein_peptides=Protein_peptides.dropna(subset=['spectra']) # Drop the NaN vales on spectra. ie - peptides are not detected in that sample
     All_proteins={}
     try:
-        with open(f"./bin/All_proteins_{Spiecies}_{Owner_ID}_{id}.json", 'w') as myfile:
+        with open(f"./bin/All_proteins_{Spiecies}_{Owner_ID}_{id}.json", 'r') as myfile:
             All_proteins=myfile.read()
     except:
         for i, Protein in enumerate(Protein_peptides.Protein.str.split(";").explode().unique()):
