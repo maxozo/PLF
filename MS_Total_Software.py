@@ -115,6 +115,7 @@ def run_full_analysis( Domain_types, Protein_peptides, experiment_feed, Owner_ID
     try:
         with open(f"./bin/All_proteins_{Spiecies}_{Owner_ID}_{id}.json", 'r') as myfile:
             All_proteins=myfile.read()
+        All_proteins=json.loads(All_proteins)
     except:
         for i, Protein in enumerate(Protein_peptides.Protein.str.split(";").explode().unique()):
             # here gather all the unique gene names - all the revirewed entries + each unique non uniprot entry

@@ -31,6 +31,7 @@ def data_set_concerter(df):
     
     names = list(string.ascii_lowercase)
     print("data_set_concerter")
+    print(pd.__version__)
     df_returned = pd.DataFrame(columns=['Individual','Treatment',"Domain_Name",'Yield'])
     print("data_set_concerter2")
     key = list(df.keys())
@@ -46,11 +47,7 @@ def data_set_concerter(df):
                 Yield = Data[Data_line_idx]
                 Individual=names[Data_line_idx]
                 df_returned=df_returned.append({'Individual':Individual,'Treatment':Treatment,"Domain_Name":Domain,'Yield':Yield},ignore_index=True)
-<<<<<<< HEAD
-    print("data_set_concerter_finish")
-=======
     print("Done with this")
->>>>>>> b856e708f6c157eded64e7cbe43cc3a692cc002f
     return df_returned
 
 
