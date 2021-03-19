@@ -64,8 +64,8 @@ def run_protein(Protein,Reference_Proteome,Reference_Domains,Domain_types,Protei
                                                                     Domain_Types=Domain_types,
                                                                     Protein_peptides=Protein_peptides,Reference_Proteome=Reference_Proteome,
                                                                     Reference_Domains=Reference_Domains)
-    print(Experiment_Coverages)
-    print("Done coverage")
+    
+    
     Structural_Analysis_Results, Norm_Factors = Master_Run_Structural_Analysis(experiment_feed=experiment_feed,
                                                                             Results=Experiment_Coverages,
                                                                             Protein=Protein, paired=paired)
@@ -112,31 +112,36 @@ def run_full_analysis( Domain_types, Protein_peptides, experiment_feed, Owner_ID
     # pool.close()
     Protein_peptides=Protein_peptides.dropna(subset=['spectra']) # Drop the NaN vales on spectra. ie - peptides are not detected in that sample
     All_proteins={}
-    for i, Protein in enumerate(Protein_peptides.Protein.str.split(";").explode().unique()):
-        # here gather all the unique gene names - all the revirewed entries + each unique non uniprot entry
-        # print(Protein)
-        Prot1=Reference_Proteome[Reference_Proteome["Uniprot_ID"]==Protein]
-        try:
-            Gene=Prot1["Uniprot_Gene"][0].split(" {")[0]
-        except:
-            Gene=Protein
-        try:
-            Type=Prot1["Uniprot_Type"][0]
-        except:
-            next
-        try:
-            All_proteins[Gene][Type].append(Protein)
-        except:
+    try:
+        with open(f"./bin/All_proteins_{Spiecies}_{Owner_ID}_{id}.json", 'w') as myfile:
+            All_proteins=myfile.read()
+    except:
+        for i, Protein in enumerate(Protein_peptides.Protein.str.split(";").explode().unique()):
+            # here gather all the unique gene names - all the revirewed entries + each unique non uniprot entry
+            # print(Protein)
+            Prot1=Reference_Proteome[Reference_Proteome["Uniprot_ID"]==Protein]
             try:
-                All_proteins[Gene][Type]=[]
+                Gene=Prot1["Uniprot_Gene"][0].split(" {")[0]
+            except:
+                Gene=Protein
+            try:
+                Type=Prot1["Uniprot_Type"][0]
+            except:
+                next
+            try:
                 All_proteins[Gene][Type].append(Protein)
             except:
-                All_proteins[Gene]={}
-                All_proteins[Gene][Type]=[]
-                All_proteins[Gene][Type].append(Protein)
-
+                try:
+                    All_proteins[Gene][Type]=[]
+                    All_proteins[Gene][Type].append(Protein)
+                except:
+                    All_proteins[Gene]={}
+                    All_proteins[Gene][Type]=[]
+                    All_proteins[Gene][Type].append(Protein)
+        with open(f"./bin/All_proteins_{Spiecies}_{Owner_ID}_{id}.json", 'w') as json_file:
+            json.dump(All_proteins, json_file)
     i=0
-    cpus=4 
+    cpus=2 
     pool = mp.Pool(cpus)
     print(f"CPUS: {cpus}")
 

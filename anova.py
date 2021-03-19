@@ -28,9 +28,13 @@ import math
 
 def data_set_concerter(df):
     import string
+    
     names = list(string.ascii_lowercase)
+    print("data_set_concerter")
     df_returned = pd.DataFrame(columns=['Individual','Treatment',"Domain_Name",'Yield'])
+    print("data_set_concerter2")
     key = list(df.keys())
+    print("data_set_concerter3")
     for i in range(0,df.__len__()):
         Working_Experimental_Condition = df[key[i]]
         Treatment = key[i]
@@ -42,6 +46,7 @@ def data_set_concerter(df):
                 Yield = Data[Data_line_idx]
                 Individual=names[Data_line_idx]
                 df_returned=df_returned.append({'Individual':Individual,'Treatment':Treatment,"Domain_Name":Domain,'Yield':Yield},ignore_index=True)
+    print("data_set_concerter_finish")
     return df_returned
 
 
@@ -95,6 +100,7 @@ def Two_Way_mixed_Anova(df,paired=True):
     
     print("anova here 01")
     df2 = data_set_concerter(df)
+    print("anova here 02")
     N = len(df2)
     df1=len(df2["Domain_Name"].unique())-1
     df_2=len(df2['Treatment'].unique())-1

@@ -471,6 +471,7 @@ def Master_Run_Structural_Analysis(experiment_feed=None, Results=None, Protein=N
                 #     f"/run/user/1000/gvfs/smb-share:server=10.2.82.9,share=bmhrss$/snapped/replicated/Sherratt_Lab/Matiss Ozols/Structural_Debug/{Protein}.csv")
                 Averages = pd.DataFrame(Averages)
                 print("s2")
+                print(experiments_all_Spectra_For_Stats)
                 p_values_adjusted = Two_Way_mixed_Anova(experiments_all_Spectra_For_Stats,paired=paired)
                 p_values = p_values_adjusted.set_index(p_values_adjusted.Domain_Name)
                 p_values.fillna(value=1,inplace=True)
@@ -481,7 +482,7 @@ def Master_Run_Structural_Analysis(experiment_feed=None, Results=None, Protein=N
                 Data = pd.concat([All_Spectra, Differences, p_values, Averages, Peptides_PD,Dataframes], axis=1)
                 Data2 = Data2.append(Data)
                 print("Data2")
-                print(Data2)
+                # print(Data2)
                 # else:
                 #     print("No p values with significance!")
             else:
