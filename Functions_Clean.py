@@ -402,7 +402,7 @@ def Master_Run_Structural_Analysis(experiment_feed=None, Results=None, Protein=N
     DataVal = []
     Spectral_total_counts = Results[["experiment_name", "Exclusive_spectrum_count"]].drop_duplicates()
     value=[]
-    print("Analysing structural")
+    
     # adding 0 to the normalisation
     for key,value2 in experiment_feed.items():
         value.extend(value2)
@@ -464,24 +464,24 @@ def Master_Run_Structural_Analysis(experiment_feed=None, Results=None, Protein=N
 
                 Domain_lengths = Norm_Stats_Spectra.Domain_Length
                 Differences, Averages = determine_differences(experiments_all_Spectra, Domain_lengths)
-                print("s1")
+              
                 Peptides_PD = keys_to_Pandas(experiments_all_Peptides)
                 All_Spectra = keys_to_Pandas(experiments_all_Spectra).drop_duplicates()
                 # All_Spectra.to_csv(
                 #     f"/run/user/1000/gvfs/smb-share:server=10.2.82.9,share=bmhrss$/snapped/replicated/Sherratt_Lab/Matiss Ozols/Structural_Debug/{Protein}.csv")
                 Averages = pd.DataFrame(Averages)
-                print("s2")
-                print(experiments_all_Spectra_For_Stats)
+                
+               
                 p_values_adjusted = Two_Way_mixed_Anova(experiments_all_Spectra_For_Stats,paired=paired)
                 p_values = p_values_adjusted.set_index(p_values_adjusted.Domain_Name)
                 p_values.fillna(value=1,inplace=True)
-                print("s3")
+                
                 Data_Values = p_values_adjusted.iloc[:, 1:]
                 DataVal.extend(Data_Values.values)
                 # if((Data_Values <0.05).any()[0]):
                 Data = pd.concat([All_Spectra, Differences, p_values, Averages, Peptides_PD,Dataframes], axis=1)
                 Data2 = Data2.append(Data)
-                print("Data2")
+                
                 # print(Data2)
                 # else:
                 #     print("No p values with significance!")
@@ -495,6 +495,7 @@ def Master_Run_Structural_Analysis(experiment_feed=None, Results=None, Protein=N
         #     print(Data_Type)
         #     print("failed with domains!")
     if DataVal.__len__()>0:
+
         if (pd.DataFrame(DataVal) < 0.05).any()[0]:
             Data2['GeneAC'] = Protein
             # Data2 = pd.concat([Data2, Dataframes], axis=1, sort=False)

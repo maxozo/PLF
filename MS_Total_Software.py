@@ -15,11 +15,12 @@ Protein_peptides2=[]
 # Reference_Proteome=[]
 # Reference_Domains=[]
 
-def collect_result(Structural_Json1,Protein1):
-    print("adding")
+def collect_result(result):
+    print("collected")
+    Protein1=result[2]
+    Coverage_Json1=result[0]
+    Structural_Json1=result[1]
     Coverage_Json[Protein1] = Coverage_Json1
-    
-    print(Structural_Json1)
     Structural_Json[Protein1] = Structural_Json1
 
 def record_data(Structural_Json,Owner_ID,id,Domain_types):
@@ -40,12 +41,12 @@ def record_data(Structural_Json,Owner_ID,id,Domain_types):
     #             f" Progress='Analysing', Significant_Protein_Count=`Significant_Protein_Count`+{Significant_Protein_Count} " \
     #             f"WHERE (`id` like {id} and `owner_id` LIKE {Owner_ID})"
 
-    # sql_query = f"UPDATE `Structural_userdata` SET Structural_Results='{structural_analysis_results}'," \
-    #         f" Progress='Finished',Domain_types='{Domain_types1}', Significant_Protein_Count='{Significant_Protein_Count}' " \
-    #         f"WHERE (`id` like {id} and `owner_id` LIKE {Owner_ID})"
     sql_query = f"UPDATE `Structural_userdata` SET Structural_Results='{structural_analysis_results}'," \
-            f" Domain_types='{Domain_types1}', Significant_Protein_Count='{Significant_Protein_Count}' " \
+            f" Progress='Finished',Domain_types='{Domain_types1}', Significant_Protein_Count='{Significant_Protein_Count}' " \
             f"WHERE (`id` like {id} and `owner_id` LIKE {Owner_ID})"
+    # sql_query = f"UPDATE `Structural_userdata` SET Structural_Results='{structural_analysis_results}'," \
+    #         f" Domain_types='{Domain_types1}', Significant_Protein_Count='{Significant_Protein_Count}' " \
+    #         f"WHERE (`id` like {id} and `owner_id` LIKE {Owner_ID})"
 
     cursor_query.execute(sql_query)
     connection.commit()
@@ -83,7 +84,7 @@ def run_protein(Protein,Reference_Proteome,Reference_Domains,Domain_types,Protei
         Coverage = Experiment_Coverages.to_dict()
         Structural_Json= {"Data": Structural_Analysis_Results.to_dict('index'),
                                     "Norm_Factors": Norm_Factors.to_dict()}
-        collect_result(Structural_Json,Protein)
+        
         return (Coverage,Structural_Json,Protein)
 
 
@@ -153,15 +154,15 @@ def run_full_analysis( Domain_types, Protein_peptides, experiment_feed, Owner_ID
             Protein= All_proteins[key]['Trembl'][0]
         
         try:
-            pool.apply_async(run_protein, args=([Protein,Reference_Proteome,Reference_Domains,Domain_types,Protein_peptides,experiment_feed,paired])) #paralel runs - uses all the cores available
+            pool.apply_async(run_protein, args=([Protein,Reference_Proteome,Reference_Domains,Domain_types,Protein_peptides,experiment_feed,paired]),callback=collect_result) #paralel runs - uses all the cores available
             # run_protein(Protein,Reference_Proteome,Reference_Domains,Domain_types,Protein_peptides,experiment_feed,paired) #individual cores - uses 1 core hence 1 protein at a time is analysed.
         except:
             print(sys.exc_info()[0])
             continue
         i+=1
     
-        if i>20:
-            break
+        # if i>20:
+        #     break
     
     pool.close()
     pool.join() 
@@ -349,7 +350,7 @@ def update_user_id():
     if not Data_ids.empty:
         field_names = [i[0] for i in cursor.description]
         Data_ids.columns = field_names
-    print(Data_ids)
+    # print(Data_ids)
     id=138
     sql=f"UPDATE `Structural_userdata` SET `owner_id`=11 WHERE id LIKE {id}"
     cursor = connection.cursor()

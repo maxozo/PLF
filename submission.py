@@ -29,8 +29,8 @@ def start_tasks():
     for id in Data_ids.id:
         os.system(f"qsub run_on_HPC.sh {id}")
         print(id)
-        if count>0:
-            break
+        # if count>0:
+        #     break
         count+=1
         
 

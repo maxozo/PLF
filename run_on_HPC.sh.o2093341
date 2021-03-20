@@ -1,0 +1,1250 @@
+Requirement already satisfied: mysql-connector in /mnt/iusers01/mhs01/mbchpmo2/.local/lib/python3.7/site-packages (from -r requirements.txt (line 1)) (2.2.9)
+Requirement already satisfied: scipy in /mnt/iusers01/mhs01/mbchpmo2/.local/lib/python3.7/site-packages (from -r requirements.txt (line 2)) (1.6.1)
+Requirement already satisfied: pandas==0.25.0 in /mnt/iusers01/mhs01/mbchpmo2/.local/lib/python3.7/site-packages (from -r requirements.txt (line 3)) (0.25.0)
+Requirement already satisfied: numpy in /mnt/iusers01/mhs01/mbchpmo2/.local/lib/python3.7/site-packages (from -r requirements.txt (line 4)) (1.20.1)
+Requirement already satisfied: statsmodels==0.9.0 in /mnt/iusers01/mhs01/mbchpmo2/.local/lib/python3.7/site-packages (from -r requirements.txt (line 5)) (0.9.0)
+Requirement already satisfied: pytz>=2017.2 in /mnt/iusers01/mhs01/mbchpmo2/.local/lib/python3.7/site-packages (from pandas==0.25.0->-r requirements.txt (line 3)) (2020.1)
+Requirement already satisfied: python-dateutil>=2.6.1 in /mnt/iusers01/mhs01/mbchpmo2/.local/lib/python3.7/site-packages (from pandas==0.25.0->-r requirements.txt (line 3)) (2.8.1)
+Requirement already satisfied: patsy in /mnt/iusers01/mhs01/mbchpmo2/.local/lib/python3.7/site-packages (from statsmodels==0.9.0->-r requirements.txt (line 5)) (0.5.1)
+Requirement already satisfied: six>=1.5 in /mnt/iusers01/mhs01/mbchpmo2/.local/lib/python3.7/site-packages (from python-dateutil>=2.6.1->pandas==0.25.0->-r requirements.txt (line 3)) (1.15.0)
+id = 140
+Spiecies: HUMAN
+Here: : LMNA_HUMAN
+    Individual         Treatment Domain_Name  Yield
+0            a      fatty streak        Head    3.0
+1            b      fatty streak        Head    2.0
+2            c      fatty streak        Head    3.0
+3            d      fatty streak        Head    3.0
+4            e      fatty streak        Head    4.0
+..         ...               ...         ...    ...
+135          f  internal control        Tail   15.0
+136          g  internal control        Tail   12.0
+137          h  internal control        Tail   13.0
+138          i  internal control        Tail   13.0
+139          j  internal control        Tail   11.0
+
+[140 rows x 4 columns]
+Done with this
+            Domain_Name  ...  Original_W10c - Women 10 - internal control
+Domain_Name              ...                                             
+Head               Head  ...                                          4.0
+Coil 1A         Coil 1A  ...                                          5.0
+Linker 1       Linker 1  ...                                          2.0
+Coil 1B         Coil 1B  ...                                         10.0
+Linker 2       Linker 2  ...                                          1.0
+Coil 2           Coil 2  ...                                         11.0
+Tail               Tail  ...                                         14.0
+
+[7 rows x 52 columns]
+   Individual         Treatment Domain_Name  Yield
+0           a      fatty streak      IF rod   22.0
+1           b      fatty streak      IF rod   15.0
+2           c      fatty streak      IF rod   15.0
+3           d      fatty streak      IF rod   20.0
+4           e      fatty streak      IF rod   16.0
+5           f      fatty streak      IF rod   15.0
+6           g      fatty streak      IF rod   21.0
+7           h      fatty streak      IF rod   20.0
+8           i      fatty streak      IF rod   22.0
+9           j      fatty streak      IF rod   21.0
+10          a      fatty streak         LTD    9.0
+11          b      fatty streak         LTD    8.0
+12          c      fatty streak         LTD    6.0
+13          d      fatty streak         LTD    4.0
+14          e      fatty streak         LTD    4.0
+15          f      fatty streak         LTD    6.0
+16          g      fatty streak         LTD    4.0
+17          h      fatty streak         LTD    6.0
+18          i      fatty streak         LTD    3.0
+19          j      fatty streak         LTD    3.0
+20          a  internal control      IF rod   23.0
+21          b  internal control      IF rod   18.0
+22          c  internal control      IF rod   19.0
+23          d  internal control      IF rod   17.0
+24          e  internal control      IF rod   14.0
+25          f  internal control      IF rod   15.0
+26          g  internal control      IF rod   20.0
+27          h  internal control      IF rod   20.0
+28          i  internal control      IF rod   20.0
+29          j  internal control      IF rod   21.0
+30          a  internal control         LTD    5.0
+31          b  internal control         LTD    4.0
+32          c  internal control         LTD    5.0
+33          d  internal control         LTD    8.0
+34          e  internal control         LTD    5.0
+35          f  internal control         LTD    4.0
+36          g  internal control         LTD    5.0
+37          h  internal control         LTD    6.0
+38          i  internal control         LTD    3.0
+39          j  internal control         LTD    4.0
+Done with this
+            Domain_Name  ...  Original_W10c - Women 10 - internal control
+Domain_Name              ...                                             
+Head               Head  ...                                          4.0
+Coil 1A         Coil 1A  ...                                          5.0
+Linker 1       Linker 1  ...                                          2.0
+Coil 1B         Coil 1B  ...                                         10.0
+Linker 2       Linker 2  ...                                          1.0
+Coil 2           Coil 2  ...                                         11.0
+Tail               Tail  ...                                         14.0
+IF rod           IF rod  ...                                         26.0
+LTD                 LTD  ...                                          5.0
+
+[9 rows x 52 columns]
+    Individual         Treatment                    Domain_Name  Yield
+0            a      fatty streak         50Step_Domain_p0_to_50    3.0
+1            b      fatty streak         50Step_Domain_p0_to_50    2.0
+2            c      fatty streak         50Step_Domain_p0_to_50    3.0
+3            d      fatty streak         50Step_Domain_p0_to_50    4.0
+4            e      fatty streak         50Step_Domain_p0_to_50    4.0
+..         ...               ...                            ...    ...
+275          f  internal control  50Step_Domain_p650.0_to_664.0    0.0
+276          g  internal control  50Step_Domain_p650.0_to_664.0    0.0
+277          h  internal control  50Step_Domain_p650.0_to_664.0    0.0
+278          i  internal control  50Step_Domain_p650.0_to_664.0    0.0
+279          j  internal control  50Step_Domain_p650.0_to_664.0    0.0
+
+[280 rows x 4 columns]
+Done with this
+                                                 Domain_Name  ...  Original_W10c - Women 10 - internal control
+Domain_Name                                                   ...                                             
+Head                                                    Head  ...                                          4.0
+Coil 1A                                              Coil 1A  ...                                          5.0
+Linker 1                                            Linker 1  ...                                          2.0
+Coil 1B                                              Coil 1B  ...                                         10.0
+Linker 2                                            Linker 2  ...                                          1.0
+Coil 2                                                Coil 2  ...                                         11.0
+Tail                                                    Tail  ...                                         14.0
+IF rod                                                IF rod  ...                                         26.0
+LTD                                                      LTD  ...                                          5.0
+50Step_Domain_p0_to_50                50Step_Domain_p0_to_50  ...                                          5.0
+50Step_Domain_p50.0_to_100.0    50Step_Domain_p50.0_to_100.0  ...                                          2.0
+50Step_Domain_p100.0_to_150.0  50Step_Domain_p100.0_to_150.0  ...                                          4.0
+50Step_Domain_p150.0_to_200.0  50Step_Domain_p150.0_to_200.0  ...                                          4.0
+50Step_Domain_p200.0_to_250.0  50Step_Domain_p200.0_to_250.0  ...                                          6.0
+50Step_Domain_p250.0_to_300.0  50Step_Domain_p250.0_to_300.0  ...                                          6.0
+50Step_Domain_p300.0_to_350.0  50Step_Domain_p300.0_to_350.0  ...                                          4.0
+50Step_Domain_p350.0_to_400.0  50Step_Domain_p350.0_to_400.0  ...                                          2.0
+50Step_Domain_p400.0_to_450.0  50Step_Domain_p400.0_to_450.0  ...                                          5.0
+50Step_Domain_p450.0_to_500.0  50Step_Domain_p450.0_to_500.0  ...                                          2.0
+50Step_Domain_p500.0_to_550.0  50Step_Domain_p500.0_to_550.0  ...                                          2.0
+50Step_Domain_p550.0_to_600.0  50Step_Domain_p550.0_to_600.0  ...                                          4.0
+50Step_Domain_p600.0_to_650.0  50Step_Domain_p600.0_to_650.0  ...                                          4.0
+50Step_Domain_p650.0_to_664.0  50Step_Domain_p650.0_to_664.0  ...                                          0.0
+
+[23 rows x 52 columns]
+here now1
+No p values with significance here!
+Done Structural
+Next: no p values to record
+Here: : W5X314_HUMAN
+Only 1 domain avaliable. Cant do stats on 1 Domain
+Only 1 domain avaliable. Cant do stats on 1 Domain
+   Individual         Treatment                  Domain_Name  Yield
+0           a      fatty streak       50Step_Domain_p0_to_50    2.0
+1           b      fatty streak       50Step_Domain_p0_to_50    2.0
+2           c      fatty streak       50Step_Domain_p0_to_50    2.0
+3           d      fatty streak       50Step_Domain_p0_to_50    3.0
+4           e      fatty streak       50Step_Domain_p0_to_50    3.0
+5           f      fatty streak       50Step_Domain_p0_to_50    2.0
+6           g      fatty streak       50Step_Domain_p0_to_50    3.0
+7           h      fatty streak       50Step_Domain_p0_to_50    3.0
+8           i      fatty streak       50Step_Domain_p0_to_50    4.0
+9           j      fatty streak       50Step_Domain_p0_to_50    2.0
+10          a      fatty streak  50Step_Domain_p50.0_to_90.0    2.0
+11          b      fatty streak  50Step_Domain_p50.0_to_90.0    3.0
+12          c      fatty streak  50Step_Domain_p50.0_to_90.0    3.0
+13          d      fatty streak  50Step_Domain_p50.0_to_90.0    2.0
+14          e      fatty streak  50Step_Domain_p50.0_to_90.0    2.0
+15          f      fatty streak  50Step_Domain_p50.0_to_90.0    2.0
+16          g      fatty streak  50Step_Domain_p50.0_to_90.0    2.0
+17          h      fatty streak  50Step_Domain_p50.0_to_90.0    2.0
+18          i      fatty streak  50Step_Domain_p50.0_to_90.0    1.0
+19          j      fatty streak  50Step_Domain_p50.0_to_90.0    2.0
+20          a  internal control       50Step_Domain_p0_to_50    2.0
+21          b  internal control       50Step_Domain_p0_to_50    3.0
+22          c  internal control       50Step_Domain_p0_to_50    2.0
+23          d  internal control       50Step_Domain_p0_to_50    3.0
+24          e  internal control       50Step_Domain_p0_to_50    3.0
+25          f  internal control       50Step_Domain_p0_to_50    3.0
+26          g  internal control       50Step_Domain_p0_to_50    4.0
+27          h  internal control       50Step_Domain_p0_to_50    3.0
+28          i  internal control       50Step_Domain_p0_to_50    4.0
+29          j  internal control       50Step_Domain_p0_to_50    4.0
+30          a  internal control  50Step_Domain_p50.0_to_90.0    3.0
+31          b  internal control  50Step_Domain_p50.0_to_90.0    2.0
+32          c  internal control  50Step_Domain_p50.0_to_90.0    2.0
+33          d  internal control  50Step_Domain_p50.0_to_90.0    2.0
+34          e  internal control  50Step_Domain_p50.0_to_90.0    2.0
+35          f  internal control  50Step_Domain_p50.0_to_90.0    2.0
+36          g  internal control  50Step_Domain_p50.0_to_90.0    1.0
+37          h  internal control  50Step_Domain_p50.0_to_90.0    2.0
+38          i  internal control  50Step_Domain_p50.0_to_90.0    1.0
+39          j  internal control  50Step_Domain_p50.0_to_90.0    1.0
+Done with this
+                                             Domain_Name  ...  Original_W10c - Women 10 - internal control
+Domain_Name                                               ...                                             
+50Step_Domain_p0_to_50            50Step_Domain_p0_to_50  ...                                          5.0
+50Step_Domain_p50.0_to_90.0  50Step_Domain_p50.0_to_90.0  ...                                          2.0
+
+[2 rows x 52 columns]
+here now1
+No p values with significance here!
+Done Structural
+Next: no p values to record
+Here: : Q8N519_HUMAN
+   Individual         Treatment         Domain_Name  Yield
+0           a      fatty streak          Disordered    3.0
+1           b      fatty streak          Disordered    2.0
+2           c      fatty streak          Disordered    3.0
+3           d      fatty streak          Disordered    3.0
+4           e      fatty streak          Disordered    4.0
+5           f      fatty streak          Disordered    3.0
+6           g      fatty streak          Disordered    2.0
+7           h      fatty streak          Disordered    3.0
+8           i      fatty streak          Disordered    5.0
+9           j      fatty streak          Disordered    2.0
+10          a      fatty streak  Disordered_384_465    3.0
+11          b      fatty streak  Disordered_384_465    5.0
+12          c      fatty streak  Disordered_384_465    7.0
+13          d      fatty streak  Disordered_384_465    4.0
+14          e      fatty streak  Disordered_384_465    7.0
+15          f      fatty streak  Disordered_384_465    7.0
+16          g      fatty streak  Disordered_384_465    3.0
+17          h      fatty streak  Disordered_384_465    6.0
+18          i      fatty streak  Disordered_384_465    3.0
+19          j      fatty streak  Disordered_384_465    7.0
+20          a  internal control          Disordered    2.0
+21          b  internal control          Disordered    7.0
+22          c  internal control          Disordered    2.0
+23          d  internal control          Disordered    2.0
+24          e  internal control          Disordered    4.0
+25          f  internal control          Disordered    4.0
+26          g  internal control          Disordered    3.0
+27          h  internal control          Disordered    3.0
+28          i  internal control          Disordered    2.0
+29          j  internal control          Disordered    2.0
+30          a  internal control  Disordered_384_465    2.0
+31          b  internal control  Disordered_384_465    0.0
+32          c  internal control  Disordered_384_465    6.0
+33          d  internal control  Disordered_384_465    5.0
+34          e  internal control  Disordered_384_465    8.0
+35          f  internal control  Disordered_384_465    7.0
+36          g  internal control  Disordered_384_465    3.0
+37          h  internal control  Disordered_384_465    3.0
+38          i  internal control  Disordered_384_465    3.0
+39          j  internal control  Disordered_384_465    4.0
+Done with this
+                           Domain_Name  ...  Original_W10c - Women 10 - internal control
+Domain_Name                             ...                                             
+Disordered                  Disordered  ...                                          3.0
+Disordered_384_465  Disordered_384_465  ...                                          5.0
+
+[2 rows x 52 columns]
+Only 1 domain avaliable. Cant do stats on 1 Domain
+    Individual         Treatment                    Domain_Name  Yield
+0            a      fatty streak         50Step_Domain_p0_to_50    3.0
+1            b      fatty streak         50Step_Domain_p0_to_50    2.0
+2            c      fatty streak         50Step_Domain_p0_to_50    3.0
+3            d      fatty streak         50Step_Domain_p0_to_50    4.0
+4            e      fatty streak         50Step_Domain_p0_to_50    4.0
+..         ...               ...                            ...    ...
+195          f  internal control  50Step_Domain_p450.0_to_465.0    0.0
+196          g  internal control  50Step_Domain_p450.0_to_465.0    0.0
+197          h  internal control  50Step_Domain_p450.0_to_465.0    0.0
+198          i  internal control  50Step_Domain_p450.0_to_465.0    0.0
+199          j  internal control  50Step_Domain_p450.0_to_465.0    0.0
+
+[200 rows x 4 columns]
+Done with this
+                                                 Domain_Name  ...  Original_W10c - Women 10 - internal control
+Domain_Name                                                   ...                                             
+Disordered                                        Disordered  ...                                          3.0
+Disordered_384_465                        Disordered_384_465  ...                                          5.0
+50Step_Domain_p0_to_50                50Step_Domain_p0_to_50  ...                                          5.0
+50Step_Domain_p50.0_to_100.0    50Step_Domain_p50.0_to_100.0  ...                                          2.0
+50Step_Domain_p100.0_to_150.0  50Step_Domain_p100.0_to_150.0  ...                                          4.0
+50Step_Domain_p150.0_to_200.0  50Step_Domain_p150.0_to_200.0  ...                                          4.0
+50Step_Domain_p200.0_to_250.0  50Step_Domain_p200.0_to_250.0  ...                                          6.0
+50Step_Domain_p250.0_to_300.0  50Step_Domain_p250.0_to_300.0  ...                                          6.0
+50Step_Domain_p300.0_to_350.0  50Step_Domain_p300.0_to_350.0  ...                                          4.0
+50Step_Domain_p350.0_to_400.0  50Step_Domain_p350.0_to_400.0  ...                                          2.0
+50Step_Domain_p400.0_to_450.0  50Step_Domain_p400.0_to_450.0  ...                                          4.0
+50Step_Domain_p450.0_to_465.0  50Step_Domain_p450.0_to_465.0  ...                                          0.0
+
+[12 rows x 52 columns]
+here now1
+No p values with significance here!
+Done Structural
+Next: no p values to record
+Here: : A0A384MQX1_HUMAN
+   Individual         Treatment         Domain_Name  Yield
+0           a      fatty streak          Disordered    2.0
+1           b      fatty streak          Disordered    2.0
+2           c      fatty streak          Disordered    2.0
+3           d      fatty streak          Disordered    1.0
+4           e      fatty streak          Disordered    1.0
+..        ...               ...                 ...    ...
+75          f  internal control  Disordered_598_619    0.0
+76          g  internal control  Disordered_598_619    0.0
+77          h  internal control  Disordered_598_619    0.0
+78          i  internal control  Disordered_598_619    0.0
+79          j  internal control  Disordered_598_619    0.0
+
+[80 rows x 4 columns]
+Done with this
+                           Domain_Name  ...  Original_W10c - Women 10 - internal control
+Domain_Name                             ...                                             
+Disordered                  Disordered  ...                                          1.0
+Disordered_384_442  Disordered_384_442  ...                                          6.0
+Disordered_552_576  Disordered_552_576  ...                                          0.0
+Disordered_598_619  Disordered_598_619  ...                                          0.0
+
+[4 rows x 52 columns]
+   Individual         Treatment Domain_Name  Yield
+0           a      fatty streak      IF rod   22.0
+1           b      fatty streak      IF rod   15.0
+2           c      fatty streak      IF rod   15.0
+3           d      fatty streak      IF rod   20.0
+4           e      fatty streak      IF rod   16.0
+5           f      fatty streak      IF rod   15.0
+6           g      fatty streak      IF rod   21.0
+7           h      fatty streak      IF rod   20.0
+8           i      fatty streak      IF rod   22.0
+9           j      fatty streak      IF rod   21.0
+10          a      fatty streak         LTD    9.0
+11          b      fatty streak         LTD    8.0
+12          c      fatty streak         LTD    6.0
+13          d      fatty streak         LTD    4.0
+14          e      fatty streak         LTD    4.0
+15          f      fatty streak         LTD    6.0
+16          g      fatty streak         LTD    4.0
+17          h      fatty streak         LTD    6.0
+18          i      fatty streak         LTD    3.0
+19          j      fatty streak         LTD    3.0
+20          a  internal control      IF rod   23.0
+21          b  internal control      IF rod   18.0
+22          c  internal control      IF rod   19.0
+23          d  internal control      IF rod   17.0
+24          e  internal control      IF rod   14.0
+25          f  internal control      IF rod   15.0
+26          g  internal control      IF rod   20.0
+27          h  internal control      IF rod   20.0
+28          i  internal control      IF rod   20.0
+29          j  internal control      IF rod   21.0
+30          a  internal control         LTD    5.0
+31          b  internal control         LTD    4.0
+32          c  internal control         LTD    5.0
+33          d  internal control         LTD    8.0
+34          e  internal control         LTD    5.0
+35          f  internal control         LTD    4.0
+36          g  internal control         LTD    5.0
+37          h  internal control         LTD    6.0
+38          i  internal control         LTD    3.0
+39          j  internal control         LTD    4.0
+Done with this
+                           Domain_Name  ...  Original_W10c - Women 10 - internal control
+Domain_Name                             ...                                             
+Disordered                  Disordered  ...                                          1.0
+Disordered_384_442  Disordered_384_442  ...                                          6.0
+Disordered_552_576  Disordered_552_576  ...                                          0.0
+Disordered_598_619  Disordered_598_619  ...                                          0.0
+IF rod                          IF rod  ...                                         26.0
+LTD                                LTD  ...                                          5.0
+
+[6 rows x 52 columns]
+    Individual         Treatment                    Domain_Name  Yield
+0            a      fatty streak         50Step_Domain_p0_to_50    3.0
+1            b      fatty streak         50Step_Domain_p0_to_50    2.0
+2            c      fatty streak         50Step_Domain_p0_to_50    3.0
+3            d      fatty streak         50Step_Domain_p0_to_50    4.0
+4            e      fatty streak         50Step_Domain_p0_to_50    4.0
+..         ...               ...                            ...    ...
+275          f  internal control  50Step_Domain_p650.0_to_664.0    0.0
+276          g  internal control  50Step_Domain_p650.0_to_664.0    0.0
+277          h  internal control  50Step_Domain_p650.0_to_664.0    0.0
+278          i  internal control  50Step_Domain_p650.0_to_664.0    0.0
+279          j  internal control  50Step_Domain_p650.0_to_664.0    0.0
+
+[280 rows x 4 columns]
+Done with this
+                                                 Domain_Name  ...  Original_W10c - Women 10 - internal control
+Domain_Name                                                   ...                                             
+Disordered                                        Disordered  ...                                          1.0
+Disordered_384_442                        Disordered_384_442  ...                                          6.0
+Disordered_552_576                        Disordered_552_576  ...                                          0.0
+Disordered_598_619                        Disordered_598_619  ...                                          0.0
+IF rod                                                IF rod  ...                                         26.0
+LTD                                                      LTD  ...                                          5.0
+50Step_Domain_p0_to_50                50Step_Domain_p0_to_50  ...                                          5.0
+50Step_Domain_p50.0_to_100.0    50Step_Domain_p50.0_to_100.0  ...                                          2.0
+50Step_Domain_p100.0_to_150.0  50Step_Domain_p100.0_to_150.0  ...                                          4.0
+50Step_Domain_p150.0_to_200.0  50Step_Domain_p150.0_to_200.0  ...                                          4.0
+50Step_Domain_p200.0_to_250.0  50Step_Domain_p200.0_to_250.0  ...                                          6.0
+50Step_Domain_p250.0_to_300.0  50Step_Domain_p250.0_to_300.0  ...                                          6.0
+50Step_Domain_p300.0_to_350.0  50Step_Domain_p300.0_to_350.0  ...                                          4.0
+50Step_Domain_p350.0_to_400.0  50Step_Domain_p350.0_to_400.0  ...                                          2.0
+50Step_Domain_p400.0_to_450.0  50Step_Domain_p400.0_to_450.0  ...                                          5.0
+50Step_Domain_p450.0_to_500.0  50Step_Domain_p450.0_to_500.0  ...                                          2.0
+50Step_Domain_p500.0_to_550.0  50Step_Domain_p500.0_to_550.0  ...                                          2.0
+50Step_Domain_p550.0_to_600.0  50Step_Domain_p550.0_to_600.0  ...                                          4.0
+50Step_Domain_p600.0_to_650.0  50Step_Domain_p600.0_to_650.0  ...                                          4.0
+50Step_Domain_p650.0_to_664.0  50Step_Domain_p650.0_to_664.0  ...                                          0.0
+
+[20 rows x 52 columns]
+here now1
+Done Structural
+adding
+Here: : V9HWI6_HUMAN
+   Individual         Treatment      Domain_Name  Yield
+0           a      fatty streak          Albumin    7.0
+1           b      fatty streak          Albumin    6.0
+2           c      fatty streak          Albumin    7.0
+3           d      fatty streak          Albumin    0.0
+4           e      fatty streak          Albumin    6.0
+5           f      fatty streak          Albumin    5.0
+6           g      fatty streak          Albumin    6.0
+7           h      fatty streak          Albumin    7.0
+8           i      fatty streak          Albumin    5.0
+9           j      fatty streak          Albumin    5.0
+10          a      fatty streak  Albumin_209_394    8.0
+11          b      fatty streak  Albumin_209_394    9.0
+12          c      fatty streak  Albumin_209_394    7.0
+13          d      fatty streak  Albumin_209_394    0.0
+14          e      fatty streak  Albumin_209_394    9.0
+15          f      fatty streak  Albumin_209_394   11.0
+16          g      fatty streak  Albumin_209_394    9.0
+17          h      fatty streak  Albumin_209_394    9.0
+18          i      fatty streak  Albumin_209_394    9.0
+19          j      fatty streak  Albumin_209_394   12.0
+20          a  internal control          Albumin    7.0
+21          b  internal control          Albumin    7.0
+22          c  internal control          Albumin    3.0
+23          d  internal control          Albumin    4.0
+24          e  internal control          Albumin    6.0
+25          f  internal control          Albumin    6.0
+26          g  internal control          Albumin    7.0
+27          h  internal control          Albumin    5.0
+28          i  internal control          Albumin    7.0
+29          j  internal control          Albumin    7.0
+30          a  internal control  Albumin_209_394    8.0
+31          b  internal control  Albumin_209_394    8.0
+32          c  internal control  Albumin_209_394   10.0
+33          d  internal control  Albumin_209_394   11.0
+34          e  internal control  Albumin_209_394    9.0
+35          f  internal control  Albumin_209_394    9.0
+36          g  internal control  Albumin_209_394   15.0
+37          h  internal control  Albumin_209_394   10.0
+38          i  internal control  Albumin_209_394   11.0
+39          j  internal control  Albumin_209_394    8.0
+Done with this
+                     Domain_Name  ...  Original_W10c - Women 10 - internal control
+Domain_Name                       ...                                             
+Albumin                  Albumin  ...                                          9.0
+Albumin_209_394  Albumin_209_394  ...                                         10.0
+
+[2 rows x 52 columns]
+    Individual         Treatment                    Domain_Name  Yield
+0            a      fatty streak         50Step_Domain_p0_to_50    0.0
+1            b      fatty streak         50Step_Domain_p0_to_50    1.0
+2            c      fatty streak         50Step_Domain_p0_to_50    0.0
+3            d      fatty streak         50Step_Domain_p0_to_50    0.0
+4            e      fatty streak         50Step_Domain_p0_to_50    0.0
+..         ...               ...                            ...    ...
+195          f  internal control  50Step_Domain_p450.0_to_474.0    0.0
+196          g  internal control  50Step_Domain_p450.0_to_474.0    0.0
+197          h  internal control  50Step_Domain_p450.0_to_474.0    0.0
+198          i  internal control  50Step_Domain_p450.0_to_474.0    0.0
+199          j  internal control  50Step_Domain_p450.0_to_474.0    0.0
+
+[200 rows x 4 columns]
+Done with this
+                                                 Domain_Name  ...  Original_W10c - Women 10 - internal control
+Domain_Name                                                   ...                                             
+Albumin                                              Albumin  ...                                          9.0
+Albumin_209_394                              Albumin_209_394  ...                                         10.0
+50Step_Domain_p0_to_50                50Step_Domain_p0_to_50  ...                                          0.0
+50Step_Domain_p50.0_to_100.0    50Step_Domain_p50.0_to_100.0  ...                                          3.0
+50Step_Domain_p100.0_to_150.0  50Step_Domain_p100.0_to_150.0  ...                                          2.0
+50Step_Domain_p150.0_to_200.0  50Step_Domain_p150.0_to_200.0  ...                                          2.0
+50Step_Domain_p200.0_to_250.0  50Step_Domain_p200.0_to_250.0  ...                                          7.0
+50Step_Domain_p250.0_to_300.0  50Step_Domain_p250.0_to_300.0  ...                                          4.0
+50Step_Domain_p300.0_to_350.0  50Step_Domain_p300.0_to_350.0  ...                                          2.0
+50Step_Domain_p350.0_to_400.0  50Step_Domain_p350.0_to_400.0  ...                                          2.0
+50Step_Domain_p400.0_to_450.0  50Step_Domain_p400.0_to_450.0  ...                                          1.0
+50Step_Domain_p450.0_to_474.0  50Step_Domain_p450.0_to_474.0  ...                                          0.0
+
+[12 rows x 52 columns]
+here now1
+No p values with significance here!
+Done Structural
+Next: no p values to record
+Here: : Q2F831_HUMAN
+Only 1 domain avaliable. Cant do stats on 1 Domain
+   Individual         Treatment                    Domain_Name  Yield
+0           a      fatty streak         50Step_Domain_p0_to_50    4.0
+1           b      fatty streak         50Step_Domain_p0_to_50    0.0
+2           c      fatty streak         50Step_Domain_p0_to_50    4.0
+3           d      fatty streak         50Step_Domain_p0_to_50    1.0
+4           e      fatty streak         50Step_Domain_p0_to_50    0.0
+5           f      fatty streak         50Step_Domain_p0_to_50    4.0
+6           g      fatty streak         50Step_Domain_p0_to_50    1.0
+7           h      fatty streak         50Step_Domain_p0_to_50    1.0
+8           i      fatty streak         50Step_Domain_p0_to_50    1.0
+9           j      fatty streak         50Step_Domain_p0_to_50    2.0
+10          a      fatty streak   50Step_Domain_p50.0_to_100.0    0.0
+11          b      fatty streak   50Step_Domain_p50.0_to_100.0    0.0
+12          c      fatty streak   50Step_Domain_p50.0_to_100.0    0.0
+13          d      fatty streak   50Step_Domain_p50.0_to_100.0    2.0
+14          e      fatty streak   50Step_Domain_p50.0_to_100.0    0.0
+15          f      fatty streak   50Step_Domain_p50.0_to_100.0    0.0
+16          g      fatty streak   50Step_Domain_p50.0_to_100.0    2.0
+17          h      fatty streak   50Step_Domain_p50.0_to_100.0    2.0
+18          i      fatty streak   50Step_Domain_p50.0_to_100.0    3.0
+19          j      fatty streak   50Step_Domain_p50.0_to_100.0    1.0
+20          a      fatty streak  50Step_Domain_p100.0_to_106.0    0.0
+21          b      fatty streak  50Step_Domain_p100.0_to_106.0    0.0
+22          c      fatty streak  50Step_Domain_p100.0_to_106.0    0.0
+23          d      fatty streak  50Step_Domain_p100.0_to_106.0    0.0
+24          e      fatty streak  50Step_Domain_p100.0_to_106.0    0.0
+25          f      fatty streak  50Step_Domain_p100.0_to_106.0    0.0
+26          g      fatty streak  50Step_Domain_p100.0_to_106.0    0.0
+27          h      fatty streak  50Step_Domain_p100.0_to_106.0    0.0
+28          i      fatty streak  50Step_Domain_p100.0_to_106.0    0.0
+29          j      fatty streak  50Step_Domain_p100.0_to_106.0    0.0
+30          a  internal control         50Step_Domain_p0_to_50    4.0
+31          b  internal control         50Step_Domain_p0_to_50    0.0
+32          c  internal control         50Step_Domain_p0_to_50    4.0
+33          d  internal control         50Step_Domain_p0_to_50    4.0
+34          e  internal control         50Step_Domain_p0_to_50    0.0
+35          f  internal control         50Step_Domain_p0_to_50    4.0
+36          g  internal control         50Step_Domain_p0_to_50    2.0
+37          h  internal control         50Step_Domain_p0_to_50    1.0
+38          i  internal control         50Step_Domain_p0_to_50    3.0
+39          j  internal control         50Step_Domain_p0_to_50    2.0
+40          a  internal control   50Step_Domain_p50.0_to_100.0    0.0
+41          b  internal control   50Step_Domain_p50.0_to_100.0    0.0
+42          c  internal control   50Step_Domain_p50.0_to_100.0    0.0
+43          d  internal control   50Step_Domain_p50.0_to_100.0    0.0
+44          e  internal control   50Step_Domain_p50.0_to_100.0    0.0
+45          f  internal control   50Step_Domain_p50.0_to_100.0    0.0
+46          g  internal control   50Step_Domain_p50.0_to_100.0    2.0
+47          h  internal control   50Step_Domain_p50.0_to_100.0    2.0
+48          i  internal control   50Step_Domain_p50.0_to_100.0    1.0
+49          j  internal control   50Step_Domain_p50.0_to_100.0    2.0
+50          a  internal control  50Step_Domain_p100.0_to_106.0    0.0
+51          b  internal control  50Step_Domain_p100.0_to_106.0    0.0
+52          c  internal control  50Step_Domain_p100.0_to_106.0    0.0
+53          d  internal control  50Step_Domain_p100.0_to_106.0    0.0
+54          e  internal control  50Step_Domain_p100.0_to_106.0    0.0
+55          f  internal control  50Step_Domain_p100.0_to_106.0    0.0
+56          g  internal control  50Step_Domain_p100.0_to_106.0    0.0
+57          h  internal control  50Step_Domain_p100.0_to_106.0    0.0
+58          i  internal control  50Step_Domain_p100.0_to_106.0    0.0
+59          j  internal control  50Step_Domain_p100.0_to_106.0    0.0
+Done with this
+                                                 Domain_Name  ...  Original_W10c - Women 10 - internal control
+Domain_Name                                                   ...                                             
+50Step_Domain_p0_to_50                50Step_Domain_p0_to_50  ...                                          2.0
+50Step_Domain_p50.0_to_100.0    50Step_Domain_p50.0_to_100.0  ...                                          2.0
+50Step_Domain_p100.0_to_106.0  50Step_Domain_p100.0_to_106.0  ...                                          0.0
+
+[3 rows x 52 columns]
+here now1
+No p values with significance here!
+Done Structural
+Next: no p values to record
+Here: : 1433S_HUMAN
+   Individual         Treatment                    Domain_Name  Yield
+0           a      fatty streak         50Step_Domain_p0_to_50    2.0
+1           b      fatty streak         50Step_Domain_p0_to_50    2.0
+2           c      fatty streak         50Step_Domain_p0_to_50    0.0
+3           d      fatty streak         50Step_Domain_p0_to_50    1.0
+4           e      fatty streak         50Step_Domain_p0_to_50    2.0
+..        ...               ...                            ...    ...
+95          f  internal control  50Step_Domain_p200.0_to_248.0    0.0
+96          g  internal control  50Step_Domain_p200.0_to_248.0    1.0
+97          h  internal control  50Step_Domain_p200.0_to_248.0    1.0
+98          i  internal control  50Step_Domain_p200.0_to_248.0    1.0
+99          j  internal control  50Step_Domain_p200.0_to_248.0    1.0
+
+[100 rows x 4 columns]
+Done with this
+                                                 Domain_Name  ...  Original_W10c - Women 10 - internal control
+Domain_Name                                                   ...                                             
+50Step_Domain_p0_to_50                50Step_Domain_p0_to_50  ...                                          2.0
+50Step_Domain_p50.0_to_100.0    50Step_Domain_p50.0_to_100.0  ...                                          0.0
+50Step_Domain_p100.0_to_150.0  50Step_Domain_p100.0_to_150.0  ...                                          0.0
+50Step_Domain_p150.0_to_200.0  50Step_Domain_p150.0_to_200.0  ...                                          0.0
+50Step_Domain_p200.0_to_248.0  50Step_Domain_p200.0_to_248.0  ...                                          1.0
+
+[5 rows x 52 columns]
+here now1
+No p values with significance here!
+Done Structural
+Next: no p values to record
+Here: : 1433F_HUMAN
+   Individual         Treatment                    Domain_Name  Yield
+0           a      fatty streak         50Step_Domain_p0_to_50    6.0
+1           b      fatty streak         50Step_Domain_p0_to_50    3.0
+2           c      fatty streak         50Step_Domain_p0_to_50    1.0
+3           d      fatty streak         50Step_Domain_p0_to_50    1.0
+4           e      fatty streak         50Step_Domain_p0_to_50    6.0
+..        ...               ...                            ...    ...
+95          f  internal control  50Step_Domain_p200.0_to_246.0    0.0
+96          g  internal control  50Step_Domain_p200.0_to_246.0    2.0
+97          h  internal control  50Step_Domain_p200.0_to_246.0    2.0
+98          i  internal control  50Step_Domain_p200.0_to_246.0    2.0
+99          j  internal control  50Step_Domain_p200.0_to_246.0    1.0
+
+[100 rows x 4 columns]
+Done with this
+                                                 Domain_Name  ...  Original_W10c - Women 10 - internal control
+Domain_Name                                                   ...                                             
+50Step_Domain_p0_to_50                50Step_Domain_p0_to_50  ...                                          3.0
+50Step_Domain_p50.0_to_100.0    50Step_Domain_p50.0_to_100.0  ...                                          3.0
+50Step_Domain_p100.0_to_150.0  50Step_Domain_p100.0_to_150.0  ...                                          3.0
+50Step_Domain_p150.0_to_200.0  50Step_Domain_p150.0_to_200.0  ...                                          1.0
+50Step_Domain_p200.0_to_246.0  50Step_Domain_p200.0_to_246.0  ...                                          2.0
+
+[5 rows x 52 columns]
+here now1
+No p values with significance here!
+Done Structural
+Next: no p values to record
+Here: : 1433B_HUMAN
+   Individual         Treatment                    Domain_Name  Yield
+0           a      fatty streak         50Step_Domain_p0_to_50    8.0
+1           b      fatty streak         50Step_Domain_p0_to_50    5.0
+2           c      fatty streak         50Step_Domain_p0_to_50    3.0
+3           d      fatty streak         50Step_Domain_p0_to_50    4.0
+4           e      fatty streak         50Step_Domain_p0_to_50    5.0
+..        ...               ...                            ...    ...
+95          f  internal control  50Step_Domain_p200.0_to_246.0    0.0
+96          g  internal control  50Step_Domain_p200.0_to_246.0    1.0
+97          h  internal control  50Step_Domain_p200.0_to_246.0    2.0
+98          i  internal control  50Step_Domain_p200.0_to_246.0    1.0
+99          j  internal control  50Step_Domain_p200.0_to_246.0    2.0
+
+[100 rows x 4 columns]
+Done with this
+                                                 Domain_Name  ...  Original_W10c - Women 10 - internal control
+Domain_Name                                                   ...                                             
+50Step_Domain_p0_to_50                50Step_Domain_p0_to_50  ...                                          6.0
+50Step_Domain_p50.0_to_100.0    50Step_Domain_p50.0_to_100.0  ...                                          2.0
+50Step_Domain_p100.0_to_150.0  50Step_Domain_p100.0_to_150.0  ...                                          1.0
+50Step_Domain_p150.0_to_200.0  50Step_Domain_p150.0_to_200.0  ...                                          4.0
+50Step_Domain_p200.0_to_246.0  50Step_Domain_p200.0_to_246.0  ...                                          3.0
+
+[5 rows x 52 columns]
+here now1
+No p values with significance here!
+Done Structural
+Next: no p values to record
+Here: : V9HWD6_HUMAN
+Only 1 domain avaliable. Cant do stats on 1 Domain
+   Individual         Treatment                    Domain_Name  Yield
+0           a      fatty streak         50Step_Domain_p0_to_50    8.0
+1           b      fatty streak         50Step_Domain_p0_to_50    5.0
+2           c      fatty streak         50Step_Domain_p0_to_50    3.0
+3           d      fatty streak         50Step_Domain_p0_to_50    4.0
+4           e      fatty streak         50Step_Domain_p0_to_50    5.0
+..        ...               ...                            ...    ...
+95          f  internal control  50Step_Domain_p200.0_to_246.0    0.0
+96          g  internal control  50Step_Domain_p200.0_to_246.0    1.0
+97          h  internal control  50Step_Domain_p200.0_to_246.0    2.0
+98          i  internal control  50Step_Domain_p200.0_to_246.0    1.0
+99          j  internal control  50Step_Domain_p200.0_to_246.0    2.0
+
+[100 rows x 4 columns]
+Done with this
+                                                 Domain_Name  ...  Original_W10c - Women 10 - internal control
+Domain_Name                                                   ...                                             
+50Step_Domain_p0_to_50                50Step_Domain_p0_to_50  ...                                          6.0
+50Step_Domain_p50.0_to_100.0    50Step_Domain_p50.0_to_100.0  ...                                          2.0
+50Step_Domain_p100.0_to_150.0  50Step_Domain_p100.0_to_150.0  ...                                          1.0
+50Step_Domain_p150.0_to_200.0  50Step_Domain_p150.0_to_200.0  ...                                          4.0
+50Step_Domain_p200.0_to_246.0  50Step_Domain_p200.0_to_246.0  ...                                          3.0
+
+[5 rows x 52 columns]
+here now1
+No p values with significance here!
+Done Structural
+Next: no p values to record
+Here: : B2R6N6_HUMAN
+Only 1 domain avaliable. Cant do stats on 1 Domain
+   Individual         Treatment                    Domain_Name  Yield
+0           a      fatty streak         50Step_Domain_p0_to_50    5.0
+1           b      fatty streak         50Step_Domain_p0_to_50    2.0
+2           c      fatty streak         50Step_Domain_p0_to_50    0.0
+3           d      fatty streak         50Step_Domain_p0_to_50    1.0
+4           e      fatty streak         50Step_Domain_p0_to_50    5.0
+..        ...               ...                            ...    ...
+95          f  internal control  50Step_Domain_p200.0_to_246.0    0.0
+96          g  internal control  50Step_Domain_p200.0_to_246.0    2.0
+97          h  internal control  50Step_Domain_p200.0_to_246.0    2.0
+98          i  internal control  50Step_Domain_p200.0_to_246.0    2.0
+99          j  internal control  50Step_Domain_p200.0_to_246.0    1.0
+
+[100 rows x 4 columns]
+Done with this
+                                                 Domain_Name  ...  Original_W10c - Women 10 - internal control
+Domain_Name                                                   ...                                             
+50Step_Domain_p0_to_50                50Step_Domain_p0_to_50  ...                                          3.0
+50Step_Domain_p50.0_to_100.0    50Step_Domain_p50.0_to_100.0  ...                                          3.0
+50Step_Domain_p100.0_to_150.0  50Step_Domain_p100.0_to_150.0  ...                                          3.0
+50Step_Domain_p150.0_to_200.0  50Step_Domain_p150.0_to_200.0  ...                                          1.0
+50Step_Domain_p200.0_to_246.0  50Step_Domain_p200.0_to_246.0  ...                                          2.0
+
+[5 rows x 52 columns]
+here now1
+No p values with significance here!
+Done Structural
+Next: no p values to record
+Here: : SPTA1_HUMAN
+   Individual         Treatment Domain_Name  Yield
+0           a      fatty streak         SH3    1.0
+1           b      fatty streak         SH3    9.0
+2           c      fatty streak         SH3    0.0
+3           d      fatty streak         SH3    0.0
+4           e      fatty streak         SH3    0.0
+..        ...               ...         ...    ...
+75          f  internal control   EF-hand 3    0.0
+76          g  internal control   EF-hand 3    0.0
+77          h  internal control   EF-hand 3    0.0
+78          i  internal control   EF-hand 3    0.0
+79          j  internal control   EF-hand 3    0.0
+
+[80 rows x 4 columns]
+Done with this
+            Domain_Name  ...  Original_W10c - Women 10 - internal control
+Domain_Name              ...                                             
+SH3                 SH3  ...                                          0.0
+EF-hand 1     EF-hand 1  ...                                          0.0
+EF-hand 2     EF-hand 2  ...                                          0.0
+EF-hand 3     EF-hand 3  ...                                          0.0
+
+[4 rows x 52 columns]
+    Individual         Treatment  Domain_Name  Yield
+0            a      fatty streak   Spectrin 1    2.0
+1            b      fatty streak   Spectrin 1    0.0
+2            c      fatty streak   Spectrin 1    0.0
+3            d      fatty streak   Spectrin 1    0.0
+4            e      fatty streak   Spectrin 1    0.0
+..         ...               ...          ...    ...
+395          f  internal control  Spectrin 20    0.0
+396          g  internal control  Spectrin 20    0.0
+397          h  internal control  Spectrin 20    0.0
+398          i  internal control  Spectrin 20    0.0
+399          j  internal control  Spectrin 20    0.0
+
+[400 rows x 4 columns]
+Done with this
+             Domain_Name  ...  Original_W10c - Women 10 - internal control
+Domain_Name               ...                                             
+SH3                  SH3  ...                                          0.0
+EF-hand 1      EF-hand 1  ...                                          0.0
+EF-hand 2      EF-hand 2  ...                                          0.0
+EF-hand 3      EF-hand 3  ...                                          0.0
+Spectrin 1    Spectrin 1  ...                                          0.0
+Spectrin 2    Spectrin 2  ...                                          0.0
+Spectrin 3    Spectrin 3  ...                                          0.0
+Spectrin 4    Spectrin 4  ...                                          0.0
+Spectrin 5    Spectrin 5  ...                                          0.0
+Spectrin 6    Spectrin 6  ...                                          0.0
+Spectrin 7    Spectrin 7  ...                                          0.0
+Spectrin 8    Spectrin 8  ...                                          0.0
+Spectrin 9    Spectrin 9  ...                                          0.0
+Spectrin 10  Spectrin 10  ...                                          0.0
+Spectrin 11  Spectrin 11  ...                                          0.0
+Spectrin 12  Spectrin 12  ...                                          0.0
+Spectrin 13  Spectrin 13  ...                                          0.0
+Spectrin 14  Spectrin 14  ...                                          0.0
+Spectrin 15  Spectrin 15  ...                                          0.0
+Spectrin 16  Spectrin 16  ...                                          0.0
+Spectrin 17  Spectrin 17  ...                                          0.0
+Spectrin 18  Spectrin 18  ...                                          0.0
+Spectrin 19  Spectrin 19  ...                                          0.0
+Spectrin 20  Spectrin 20  ...                                          0.0
+
+[24 rows x 52 columns]
+    Individual         Treatment                      Domain_Name  Yield
+0            a      fatty streak           50Step_Domain_p0_to_50    1.0
+1            b      fatty streak           50Step_Domain_p0_to_50    0.0
+2            c      fatty streak           50Step_Domain_p0_to_50    0.0
+3            d      fatty streak           50Step_Domain_p0_to_50    0.0
+4            e      fatty streak           50Step_Domain_p0_to_50    0.0
+..         ...               ...                              ...    ...
+975          f  internal control  50Step_Domain_p2400.0_to_2419.0    0.0
+976          g  internal control  50Step_Domain_p2400.0_to_2419.0    0.0
+977          h  internal control  50Step_Domain_p2400.0_to_2419.0    0.0
+978          i  internal control  50Step_Domain_p2400.0_to_2419.0    0.0
+979          j  internal control  50Step_Domain_p2400.0_to_2419.0    0.0
+
+[980 rows x 4 columns]
+Done with this
+                                                     Domain_Name  ...  Original_W10c - Women 10 - internal control
+Domain_Name                                                       ...                                             
+SH3                                                          SH3  ...                                          0.0
+EF-hand 1                                              EF-hand 1  ...                                          0.0
+EF-hand 2                                              EF-hand 2  ...                                          0.0
+EF-hand 3                                              EF-hand 3  ...                                          0.0
+Spectrin 1                                            Spectrin 1  ...                                          0.0
+...                                                          ...  ...                                          ...
+50Step_Domain_p2200.0_to_2250.0  50Step_Domain_p2200.0_to_2250.0  ...                                          0.0
+50Step_Domain_p2250.0_to_2300.0  50Step_Domain_p2250.0_to_2300.0  ...                                          0.0
+50Step_Domain_p2300.0_to_2350.0  50Step_Domain_p2300.0_to_2350.0  ...                                          0.0
+50Step_Domain_p2350.0_to_2400.0  50Step_Domain_p2350.0_to_2400.0  ...                                          0.0
+50Step_Domain_p2400.0_to_2419.0  50Step_Domain_p2400.0_to_2419.0  ...                                          0.0
+
+[73 rows x 52 columns]
+here now1
+Done Structural
+adding
+Here: : B4DFR3_HUMAN
+   Individual         Treatment         Domain_Name  Yield
+0           a      fatty streak          Disordered    6.0
+1           b      fatty streak          Disordered    7.0
+2           c      fatty streak          Disordered    8.0
+3           d      fatty streak          Disordered    5.0
+4           e      fatty streak          Disordered    9.0
+5           f      fatty streak          Disordered    7.0
+6           g      fatty streak          Disordered    7.0
+7           h      fatty streak          Disordered    8.0
+8           i      fatty streak          Disordered    9.0
+9           j      fatty streak          Disordered   12.0
+10          a      fatty streak  Disordered_209_228    0.0
+11          b      fatty streak  Disordered_209_228    0.0
+12          c      fatty streak  Disordered_209_228    0.0
+13          d      fatty streak  Disordered_209_228    0.0
+14          e      fatty streak  Disordered_209_228    0.0
+15          f      fatty streak  Disordered_209_228    0.0
+16          g      fatty streak  Disordered_209_228    0.0
+17          h      fatty streak  Disordered_209_228    0.0
+18          i      fatty streak  Disordered_209_228    0.0
+19          j      fatty streak  Disordered_209_228    0.0
+20          a  internal control          Disordered    4.0
+21          b  internal control          Disordered    0.0
+22          c  internal control          Disordered    7.0
+23          d  internal control          Disordered    5.0
+24          e  internal control          Disordered    8.0
+25          f  internal control          Disordered    8.0
+26          g  internal control          Disordered    7.0
+27          h  internal control          Disordered    8.0
+28          i  internal control          Disordered    6.0
+29          j  internal control          Disordered    7.0
+30          a  internal control  Disordered_209_228    0.0
+31          b  internal control  Disordered_209_228    0.0
+32          c  internal control  Disordered_209_228    0.0
+33          d  internal control  Disordered_209_228    0.0
+34          e  internal control  Disordered_209_228    0.0
+35          f  internal control  Disordered_209_228    0.0
+36          g  internal control  Disordered_209_228    0.0
+37          h  internal control  Disordered_209_228    0.0
+38          i  internal control  Disordered_209_228    0.0
+39          j  internal control  Disordered_209_228    0.0
+Done with this
+                           Domain_Name  ...  Original_W10c - Women 10 - internal control
+Domain_Name                             ...                                             
+Disordered                  Disordered  ...                                          6.0
+Disordered_209_228  Disordered_209_228  ...                                          0.0
+
+[2 rows x 52 columns]
+   Individual         Treatment Domain_Name  Yield
+0           a      fatty streak      IF rod    2.0
+1           b      fatty streak      IF rod    0.0
+2           c      fatty streak      IF rod    0.0
+3           d      fatty streak      IF rod    3.0
+4           e      fatty streak      IF rod    0.0
+5           f      fatty streak      IF rod    0.0
+6           g      fatty streak      IF rod    2.0
+7           h      fatty streak      IF rod    2.0
+8           i      fatty streak      IF rod    3.0
+9           j      fatty streak      IF rod    3.0
+10          a      fatty streak         LTD   10.0
+11          b      fatty streak         LTD    7.0
+12          c      fatty streak         LTD    6.0
+13          d      fatty streak         LTD    5.0
+14          e      fatty streak         LTD    4.0
+15          f      fatty streak         LTD    5.0
+16          g      fatty streak         LTD    7.0
+17          h      fatty streak         LTD    6.0
+18          i      fatty streak         LTD    6.0
+19          j      fatty streak         LTD    3.0
+20          a  internal control      IF rod    2.0
+21          b  internal control      IF rod    0.0
+22          c  internal control      IF rod    2.0
+23          d  internal control      IF rod    2.0
+24          e  internal control      IF rod    0.0
+25          f  internal control      IF rod    0.0
+26          g  internal control      IF rod    2.0
+27          h  internal control      IF rod    2.0
+28          i  internal control      IF rod    4.0
+29          j  internal control      IF rod    2.0
+30          a  internal control         LTD    8.0
+31          b  internal control         LTD   12.0
+32          c  internal control         LTD    5.0
+33          d  internal control         LTD    7.0
+34          e  internal control         LTD    4.0
+35          f  internal control         LTD    4.0
+36          g  internal control         LTD    6.0
+37          h  internal control         LTD    9.0
+38          i  internal control         LTD    4.0
+39          j  internal control         LTD    6.0
+Done with this
+                           Domain_Name  ...  Original_W10c - Women 10 - internal control
+Domain_Name                             ...                                             
+Disordered                  Disordered  ...                                          6.0
+Disordered_209_228  Disordered_209_228  ...                                          0.0
+IF rod                          IF rod  ...                                          2.0
+LTD                                LTD  ...                                          5.0
+
+[4 rows x 52 columns]
+   Individual         Treatment                    Domain_Name  Yield
+0           a      fatty streak         50Step_Domain_p0_to_50    2.0
+1           b      fatty streak         50Step_Domain_p0_to_50    0.0
+2           c      fatty streak         50Step_Domain_p0_to_50    0.0
+3           d      fatty streak         50Step_Domain_p0_to_50    3.0
+4           e      fatty streak         50Step_Domain_p0_to_50    0.0
+..        ...               ...                            ...    ...
+95          f  internal control  50Step_Domain_p200.0_to_228.0    0.0
+96          g  internal control  50Step_Domain_p200.0_to_228.0    0.0
+97          h  internal control  50Step_Domain_p200.0_to_228.0    0.0
+98          i  internal control  50Step_Domain_p200.0_to_228.0    0.0
+99          j  internal control  50Step_Domain_p200.0_to_228.0    0.0
+
+[100 rows x 4 columns]
+Done with this
+                                                 Domain_Name  ...  Original_W10c - Women 10 - internal control
+Domain_Name                                                   ...                                             
+Disordered                                        Disordered  ...                                          6.0
+Disordered_209_228                        Disordered_209_228  ...                                          0.0
+IF rod                                                IF rod  ...                                          2.0
+LTD                                                      LTD  ...                                          5.0
+50Step_Domain_p0_to_50                50Step_Domain_p0_to_50  ...                                          2.0
+50Step_Domain_p50.0_to_100.0    50Step_Domain_p50.0_to_100.0  ...                                          5.0
+50Step_Domain_p100.0_to_150.0  50Step_Domain_p100.0_to_150.0  ...                                          3.0
+50Step_Domain_p150.0_to_200.0  50Step_Domain_p150.0_to_200.0  ...                                          2.0
+50Step_Domain_p200.0_to_228.0  50Step_Domain_p200.0_to_228.0  ...                                          0.0
+
+[9 rows x 52 columns]
+here now1
+Done Structural
+adding
+Here: : VTDB_HUMAN
+   Individual         Treatment Domain_Name  Yield
+0           a      fatty streak   Albumin 1    7.0
+1           b      fatty streak   Albumin 1    6.0
+2           c      fatty streak   Albumin 1    7.0
+3           d      fatty streak   Albumin 1    0.0
+4           e      fatty streak   Albumin 1    6.0
+5           f      fatty streak   Albumin 1    5.0
+6           g      fatty streak   Albumin 1    5.0
+7           h      fatty streak   Albumin 1    7.0
+8           i      fatty streak   Albumin 1    5.0
+9           j      fatty streak   Albumin 1    5.0
+10          a      fatty streak   Albumin 2    8.0
+11          b      fatty streak   Albumin 2    9.0
+12          c      fatty streak   Albumin 2    7.0
+13          d      fatty streak   Albumin 2    0.0
+14          e      fatty streak   Albumin 2    9.0
+15          f      fatty streak   Albumin 2   11.0
+16          g      fatty streak   Albumin 2    8.0
+17          h      fatty streak   Albumin 2    9.0
+18          i      fatty streak   Albumin 2    9.0
+19          j      fatty streak   Albumin 2   12.0
+20          a      fatty streak   Albumin 3    1.0
+21          b      fatty streak   Albumin 3    1.0
+22          c      fatty streak   Albumin 3    0.0
+23          d      fatty streak   Albumin 3    0.0
+24          e      fatty streak   Albumin 3    1.0
+25          f      fatty streak   Albumin 3    0.0
+26          g      fatty streak   Albumin 3    2.0
+27          h      fatty streak   Albumin 3    1.0
+28          i      fatty streak   Albumin 3    1.0
+29          j      fatty streak   Albumin 3    0.0
+30          a  internal control   Albumin 1    7.0
+31          b  internal control   Albumin 1    7.0
+32          c  internal control   Albumin 1    3.0
+33          d  internal control   Albumin 1    4.0
+34          e  internal control   Albumin 1    6.0
+35          f  internal control   Albumin 1    6.0
+36          g  internal control   Albumin 1    7.0
+37          h  internal control   Albumin 1    5.0
+38          i  internal control   Albumin 1    7.0
+39          j  internal control   Albumin 1    7.0
+40          a  internal control   Albumin 2    8.0
+41          b  internal control   Albumin 2    8.0
+42          c  internal control   Albumin 2   10.0
+43          d  internal control   Albumin 2   11.0
+44          e  internal control   Albumin 2    9.0
+45          f  internal control   Albumin 2    9.0
+46          g  internal control   Albumin 2   15.0
+47          h  internal control   Albumin 2   10.0
+48          i  internal control   Albumin 2   11.0
+49          j  internal control   Albumin 2    8.0
+50          a  internal control   Albumin 3    1.0
+51          b  internal control   Albumin 3    1.0
+52          c  internal control   Albumin 3    2.0
+53          d  internal control   Albumin 3    1.0
+54          e  internal control   Albumin 3    0.0
+55          f  internal control   Albumin 3    1.0
+56          g  internal control   Albumin 3    0.0
+57          h  internal control   Albumin 3    1.0
+58          i  internal control   Albumin 3    0.0
+59          j  internal control   Albumin 3    1.0
+Done with this
+            Domain_Name  ...  Original_W10c - Women 10 - internal control
+Domain_Name              ...                                             
+Albumin 1     Albumin 1  ...                                          9.0
+Albumin 2     Albumin 2  ...                                         10.0
+Albumin 3     Albumin 3  ...                                          1.0
+
+[3 rows x 52 columns]
+    Individual         Treatment                    Domain_Name  Yield
+0            a      fatty streak         50Step_Domain_p0_to_50    0.0
+1            b      fatty streak         50Step_Domain_p0_to_50    1.0
+2            c      fatty streak         50Step_Domain_p0_to_50    0.0
+3            d      fatty streak         50Step_Domain_p0_to_50    0.0
+4            e      fatty streak         50Step_Domain_p0_to_50    0.0
+..         ...               ...                            ...    ...
+195          f  internal control  50Step_Domain_p450.0_to_474.0    0.0
+196          g  internal control  50Step_Domain_p450.0_to_474.0    0.0
+197          h  internal control  50Step_Domain_p450.0_to_474.0    0.0
+198          i  internal control  50Step_Domain_p450.0_to_474.0    0.0
+199          j  internal control  50Step_Domain_p450.0_to_474.0    0.0
+
+[200 rows x 4 columns]
+Done with this
+                                                 Domain_Name  ...  Original_W10c - Women 10 - internal control
+Domain_Name                                                   ...                                             
+Albumin 1                                          Albumin 1  ...                                          9.0
+Albumin 2                                          Albumin 2  ...                                         10.0
+Albumin 3                                          Albumin 3  ...                                          1.0
+50Step_Domain_p0_to_50                50Step_Domain_p0_to_50  ...                                          0.0
+50Step_Domain_p50.0_to_100.0    50Step_Domain_p50.0_to_100.0  ...                                          3.0
+50Step_Domain_p100.0_to_150.0  50Step_Domain_p100.0_to_150.0  ...                                          2.0
+50Step_Domain_p150.0_to_200.0  50Step_Domain_p150.0_to_200.0  ...                                          2.0
+50Step_Domain_p200.0_to_250.0  50Step_Domain_p200.0_to_250.0  ...                                          7.0
+50Step_Domain_p250.0_to_300.0  50Step_Domain_p250.0_to_300.0  ...                                          4.0
+50Step_Domain_p300.0_to_350.0  50Step_Domain_p300.0_to_350.0  ...                                          2.0
+50Step_Domain_p350.0_to_400.0  50Step_Domain_p350.0_to_400.0  ...                                          2.0
+50Step_Domain_p400.0_to_450.0  50Step_Domain_p400.0_to_450.0  ...                                          1.0
+50Step_Domain_p450.0_to_474.0  50Step_Domain_p450.0_to_474.0  ...                                          0.0
+
+[13 rows x 52 columns]
+here now1
+No p values with significance here!
+Done Structural
+Next: no p values to record
+Here: : 1433Z_HUMAN
+   Individual         Treatment                    Domain_Name  Yield
+0           a      fatty streak         50Step_Domain_p0_to_50    2.0
+1           b      fatty streak         50Step_Domain_p0_to_50   10.0
+2           c      fatty streak         50Step_Domain_p0_to_50    5.0
+3           d      fatty streak         50Step_Domain_p0_to_50    2.0
+4           e      fatty streak         50Step_Domain_p0_to_50    5.0
+..        ...               ...                            ...    ...
+95          f  internal control  50Step_Domain_p200.0_to_245.0    0.0
+96          g  internal control  50Step_Domain_p200.0_to_245.0    2.0
+97          h  internal control  50Step_Domain_p200.0_to_245.0    2.0
+98          i  internal control  50Step_Domain_p200.0_to_245.0    1.0
+99          j  internal control  50Step_Domain_p200.0_to_245.0    2.0
+
+[100 rows x 4 columns]
+Done with this
+                                                 Domain_Name  ...  Original_W10c - Women 10 - internal control
+Domain_Name                                                   ...                                             
+50Step_Domain_p0_to_50                50Step_Domain_p0_to_50  ...                                          3.0
+50Step_Domain_p50.0_to_100.0    50Step_Domain_p50.0_to_100.0  ...                                          2.0
+50Step_Domain_p100.0_to_150.0  50Step_Domain_p100.0_to_150.0  ...                                          5.0
+50Step_Domain_p150.0_to_200.0  50Step_Domain_p150.0_to_200.0  ...                                          3.0
+50Step_Domain_p200.0_to_245.0  50Step_Domain_p200.0_to_245.0  ...                                          2.0
+
+[5 rows x 52 columns]
+here now1
+No p values with significance here!
+Done Structural
+Next: no p values to record
+Here: : 1433E_HUMAN
+    Individual         Treatment                    Domain_Name  Yield
+0            a      fatty streak         50Step_Domain_p0_to_50    2.0
+1            b      fatty streak         50Step_Domain_p0_to_50    1.0
+2            c      fatty streak         50Step_Domain_p0_to_50    0.0
+3            d      fatty streak         50Step_Domain_p0_to_50    1.0
+4            e      fatty streak         50Step_Domain_p0_to_50    6.0
+..         ...               ...                            ...    ...
+115          f  internal control  50Step_Domain_p250.0_to_255.0    0.0
+116          g  internal control  50Step_Domain_p250.0_to_255.0    0.0
+117          h  internal control  50Step_Domain_p250.0_to_255.0    0.0
+118          i  internal control  50Step_Domain_p250.0_to_255.0    0.0
+119          j  internal control  50Step_Domain_p250.0_to_255.0    0.0
+
+[120 rows x 4 columns]
+Done with this
+                                                 Domain_Name  ...  Original_W10c - Women 10 - internal control
+Domain_Name                                                   ...                                             
+50Step_Domain_p0_to_50                50Step_Domain_p0_to_50  ...                                          2.0
+50Step_Domain_p50.0_to_100.0    50Step_Domain_p50.0_to_100.0  ...                                          1.0
+50Step_Domain_p100.0_to_150.0  50Step_Domain_p100.0_to_150.0  ...                                          2.0
+50Step_Domain_p150.0_to_200.0  50Step_Domain_p150.0_to_200.0  ...                                          1.0
+50Step_Domain_p200.0_to_250.0  50Step_Domain_p200.0_to_250.0  ...                                          2.0
+50Step_Domain_p250.0_to_255.0  50Step_Domain_p250.0_to_255.0  ...                                          0.0
+
+[6 rows x 52 columns]
+here now1
+Done Structural
+adding
+Here: : 1433T_HUMAN
+   Individual         Treatment                    Domain_Name  Yield
+0           a      fatty streak         50Step_Domain_p0_to_50    6.0
+1           b      fatty streak         50Step_Domain_p0_to_50    3.0
+2           c      fatty streak         50Step_Domain_p0_to_50    0.0
+3           d      fatty streak         50Step_Domain_p0_to_50    2.0
+4           e      fatty streak         50Step_Domain_p0_to_50    2.0
+..        ...               ...                            ...    ...
+95          f  internal control  50Step_Domain_p200.0_to_245.0    0.0
+96          g  internal control  50Step_Domain_p200.0_to_245.0    2.0
+97          h  internal control  50Step_Domain_p200.0_to_245.0    2.0
+98          i  internal control  50Step_Domain_p200.0_to_245.0    1.0
+99          j  internal control  50Step_Domain_p200.0_to_245.0    2.0
+
+[100 rows x 4 columns]
+Done with this
+                                                 Domain_Name  ...  Original_W10c - Women 10 - internal control
+Domain_Name                                                   ...                                             
+50Step_Domain_p0_to_50                50Step_Domain_p0_to_50  ...                                          3.0
+50Step_Domain_p50.0_to_100.0    50Step_Domain_p50.0_to_100.0  ...                                          3.0
+50Step_Domain_p100.0_to_150.0  50Step_Domain_p100.0_to_150.0  ...                                          2.0
+50Step_Domain_p150.0_to_200.0  50Step_Domain_p150.0_to_200.0  ...                                          3.0
+50Step_Domain_p200.0_to_245.0  50Step_Domain_p200.0_to_245.0  ...                                          3.0
+
+[5 rows x 52 columns]
+here now1
+No p values with significance here!
+Done Structural
+Next: no p values to record
+Here: : 1433G_HUMAN
+   Individual         Treatment                    Domain_Name  Yield
+0           a      fatty streak         50Step_Domain_p0_to_50    8.0
+1           b      fatty streak         50Step_Domain_p0_to_50    5.0
+2           c      fatty streak         50Step_Domain_p0_to_50    3.0
+3           d      fatty streak         50Step_Domain_p0_to_50    3.0
+4           e      fatty streak         50Step_Domain_p0_to_50    4.0
+..        ...               ...                            ...    ...
+95          f  internal control  50Step_Domain_p200.0_to_247.0    0.0
+96          g  internal control  50Step_Domain_p200.0_to_247.0    1.0
+97          h  internal control  50Step_Domain_p200.0_to_247.0    2.0
+98          i  internal control  50Step_Domain_p200.0_to_247.0    1.0
+99          j  internal control  50Step_Domain_p200.0_to_247.0    2.0
+
+[100 rows x 4 columns]
+Done with this
+                                                 Domain_Name  ...  Original_W10c - Women 10 - internal control
+Domain_Name                                                   ...                                             
+50Step_Domain_p0_to_50                50Step_Domain_p0_to_50  ...                                          5.0
+50Step_Domain_p50.0_to_100.0    50Step_Domain_p50.0_to_100.0  ...                                          1.0
+50Step_Domain_p100.0_to_150.0  50Step_Domain_p100.0_to_150.0  ...                                          2.0
+50Step_Domain_p150.0_to_200.0  50Step_Domain_p150.0_to_200.0  ...                                          2.0
+50Step_Domain_p200.0_to_247.0  50Step_Domain_p200.0_to_247.0  ...                                          2.0
+
+[5 rows x 52 columns]
+here now1
+No p values with significance here!
+Done Structural
+Next: no p values to record
+Here: : G9K388_HUMAN
+Only 1 domain avaliable. Cant do stats on 1 Domain
+    Individual         Treatment                    Domain_Name  Yield
+0            a      fatty streak         50Step_Domain_p0_to_50    0.0
+1            b      fatty streak         50Step_Domain_p0_to_50    0.0
+2            c      fatty streak         50Step_Domain_p0_to_50    0.0
+3            d      fatty streak         50Step_Domain_p0_to_50    1.0
+4            e      fatty streak         50Step_Domain_p0_to_50    0.0
+..         ...               ...                            ...    ...
+155          f  internal control  50Step_Domain_p350.0_to_384.0    0.0
+156          g  internal control  50Step_Domain_p350.0_to_384.0    0.0
+157          h  internal control  50Step_Domain_p350.0_to_384.0    0.0
+158          i  internal control  50Step_Domain_p350.0_to_384.0    0.0
+159          j  internal control  50Step_Domain_p350.0_to_384.0    0.0
+
+[160 rows x 4 columns]
+Done with this
+                                                 Domain_Name  ...  Original_W10c - Women 10 - internal control
+Domain_Name                                                   ...                                             
+50Step_Domain_p0_to_50                50Step_Domain_p0_to_50  ...                                          1.0
+50Step_Domain_p50.0_to_100.0    50Step_Domain_p50.0_to_100.0  ...                                          1.0
+50Step_Domain_p100.0_to_150.0  50Step_Domain_p100.0_to_150.0  ...                                          2.0
+50Step_Domain_p150.0_to_200.0  50Step_Domain_p150.0_to_200.0  ...                                          0.0
+50Step_Domain_p200.0_to_250.0  50Step_Domain_p200.0_to_250.0  ...                                          2.0
+50Step_Domain_p250.0_to_300.0  50Step_Domain_p250.0_to_300.0  ...                                          0.0
+50Step_Domain_p300.0_to_350.0  50Step_Domain_p300.0_to_350.0  ...                                          0.0
+50Step_Domain_p350.0_to_384.0  50Step_Domain_p350.0_to_384.0  ...                                          0.0
+
+[8 rows x 52 columns]
+here now1
+Done Structural
+adding
+Here: : B3KNB4_HUMAN
+Only 1 domain avaliable. Cant do stats on 1 Domain
+   Individual         Treatment                    Domain_Name  Yield
+0           a      fatty streak         50Step_Domain_p0_to_50    7.0
+1           b      fatty streak         50Step_Domain_p0_to_50    4.0
+2           c      fatty streak         50Step_Domain_p0_to_50    1.0
+3           d      fatty streak         50Step_Domain_p0_to_50    2.0
+4           e      fatty streak         50Step_Domain_p0_to_50    2.0
+..        ...               ...                            ...    ...
+95          f  internal control  50Step_Domain_p200.0_to_247.0    0.0
+96          g  internal control  50Step_Domain_p200.0_to_247.0    1.0
+97          h  internal control  50Step_Domain_p200.0_to_247.0    2.0
+98          i  internal control  50Step_Domain_p200.0_to_247.0    1.0
+99          j  internal control  50Step_Domain_p200.0_to_247.0    2.0
+
+[100 rows x 4 columns]
+Done with this
+                                                 Domain_Name  ...  Original_W10c - Women 10 - internal control
+Domain_Name                                                   ...                                             
+50Step_Domain_p0_to_50                50Step_Domain_p0_to_50  ...                                          3.0
+50Step_Domain_p50.0_to_100.0    50Step_Domain_p50.0_to_100.0  ...                                          1.0
+50Step_Domain_p100.0_to_150.0  50Step_Domain_p100.0_to_150.0  ...                                          2.0
+50Step_Domain_p150.0_to_200.0  50Step_Domain_p150.0_to_200.0  ...                                          2.0
+50Step_Domain_p200.0_to_247.0  50Step_Domain_p200.0_to_247.0  ...                                          2.0
+
+[5 rows x 52 columns]
+here now1
+No p values with significance here!
+Done Structural
+Next: no p values to record
+Here: : V9HW98_HUMAN
+Only 1 domain avaliable. Cant do stats on 1 Domain
+Only 1 domain avaliable. Cant do stats on 1 Domain
+    Individual         Treatment                    Domain_Name  Yield
+0            a      fatty streak         50Step_Domain_p0_to_50    2.0
+1            b      fatty streak         50Step_Domain_p0_to_50    1.0
+2            c      fatty streak         50Step_Domain_p0_to_50    0.0
+3            d      fatty streak         50Step_Domain_p0_to_50    1.0
+4            e      fatty streak         50Step_Domain_p0_to_50    6.0
+..         ...               ...                            ...    ...
+115          f  internal control  50Step_Domain_p250.0_to_255.0    0.0
+116          g  internal control  50Step_Domain_p250.0_to_255.0    0.0
+117          h  internal control  50Step_Domain_p250.0_to_255.0    0.0
+118          i  internal control  50Step_Domain_p250.0_to_255.0    0.0
+119          j  internal control  50Step_Domain_p250.0_to_255.0    0.0
+
+[120 rows x 4 columns]
+Done with this
+                                                 Domain_Name  ...  Original_W10c - Women 10 - internal control
+Domain_Name                                                   ...                                             
+50Step_Domain_p0_to_50                50Step_Domain_p0_to_50  ...                                          2.0
+50Step_Domain_p50.0_to_100.0    50Step_Domain_p50.0_to_100.0  ...                                          1.0
+50Step_Domain_p100.0_to_150.0  50Step_Domain_p100.0_to_150.0  ...                                          2.0
+50Step_Domain_p150.0_to_200.0  50Step_Domain_p150.0_to_200.0  ...                                          1.0
+50Step_Domain_p200.0_to_250.0  50Step_Domain_p200.0_to_250.0  ...                                          2.0
+50Step_Domain_p250.0_to_255.0  50Step_Domain_p250.0_to_255.0  ...                                          0.0
+
+[6 rows x 52 columns]
+here now1
+Done Structural
+adding
+CPUS: 2
+successfuly recorded significant domain
