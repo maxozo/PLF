@@ -103,9 +103,12 @@ def run_full_analysis( Domain_types, Protein_peptides, experiment_feed, Owner_ID
     Reference_Domains = pd.read_csv(f"./outputs/Domains_Uniprot_{Spiecies}.tsv",sep="\t",index_col=0)
     if 'Protein' in list(Protein_peptides.columns):
         print("protein assigned by other software")
-        Protein_peptides=replace_with_ids(Protein_peptides,Reference_Proteome)
-        Protein_peptides.to_csv(f"./bin/Protein_peptides_{Spiecies}_{Owner_ID}_{id}.tsv", sep="\t")
-   
+        try:
+            Protein_peptides=pd.read_csv(f"./bin/Protein_peptides_{Spiecies}_{Owner_ID}_{id}.tsv",sep="\t",index_col=0)
+        except:
+            Protein_peptides=replace_with_ids(Protein_peptides,Reference_Proteome)
+            Protein_peptides.to_csv(f"./bin/Protein_peptides_{Spiecies}_{Owner_ID}_{id}.tsv", sep="\t")
+    
     else:
         print("protein is not assigned by other software")
         try:
@@ -231,7 +234,7 @@ def replace_with_ids(Protein_peptides,Reference_Proteome):
                     except:
                         AC_String.append(Prot1)
             
-                New_String = ",".join(AC_String)
+                New_String = ";".join(AC_String)
         
 
                 Protein_peptides.loc[Protein_peptides.Protein==Prot_string,"Protein"]=New_String
