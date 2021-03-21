@@ -101,12 +101,21 @@ def run_full_analysis( Domain_types, Protein_peptides, experiment_feed, Owner_ID
     
     Reference_Proteome = pd.read_csv(f"./outputs/Uniprot_{Spiecies}.tsv",sep="\t",index_col=0)
     Reference_Domains = pd.read_csv(f"./outputs/Domains_Uniprot_{Spiecies}.tsv",sep="\t",index_col=0)
-    try:
-        Protein_peptides=pd.read_csv(f"./bin/Protein_peptides_{Spiecies}_{Owner_ID}_{id}.tsv",sep="\t",index_col=0)
-    except:
-        Protein_peptides=match_peptide_to_protein(Protein_peptides,Reference_Proteome)
+    if 'Protein' in list(Protein_peptides.columns):
+        print("protein assigned by other software")
+        Protein_peptides=replace_with_ids(Protein_peptides,Reference_Proteome)
         Protein_peptides.to_csv(f"./bin/Protein_peptides_{Spiecies}_{Owner_ID}_{id}.tsv", sep="\t")
-    # k_val=0
+   
+    else:
+        print("protein is not assigned by other software")
+        try:
+            Protein_peptides=pd.read_csv(f"./bin/Protein_peptides_{Spiecies}_{Owner_ID}_{id}.tsv",sep="\t",index_col=0)
+        except:
+            Protein_peptides=match_peptide_to_protein(Protein_peptides,Reference_Proteome)
+            Protein_peptides.to_csv(f"./bin/Protein_peptides_{Spiecies}_{Owner_ID}_{id}.tsv", sep="\t")
+   
+        
+        # k_val=0
     # paired=True
     import multiprocessing as mp
     
@@ -199,10 +208,42 @@ def append_results(result):
     for i,row in result.iterrows():
         Protein_peptides2.append(row)
 
+def replace_with_ids(Protein_peptides,Reference_Proteome):
+    print("Using assigned UIDs")
+    for Prot_string in Protein_peptides.Protein.unique():
+        AC_String=[]
+        try:
+            if Prot_string is None:
+                print("skip")
+            else:
+                for Prot1 in Prot_string.split(","):
+                    # print(Prot1)
+                    try:
+                        UID=Reference_Proteome[Reference_Proteome.Uniprot_AC.str.contains(Prot1)]["Uniprot_ID"][0]
+                        if isinstance(UID, pd.Series):
+                            for key in UID:
+                                print(key)
+                                AC_String.append(key)
+                        else:
+                            AC_String.append(UID)
+                        # for id1 in UID:
+                        #     AC_String.append(id1)
+                    except:
+                        AC_String.append(Prot1)
+            
+                New_String = ",".join(AC_String)
+        
+
+                Protein_peptides.loc[Protein_peptides.Protein==Prot_string,"Protein"]=New_String
+        except:
+            print("not handled exceptation")
+    return Protein_peptides
+
+
 def match_peptide_to_protein(Protein_peptides,Reference_Proteome):
     # limit to the protein of interest.
     # Reference_Proteome = Reference_Proteome[Reference_Proteome.Uniprot_Type=="Uniprot"]
-
+    print("Assigning protein IDs based on search")
     Protein_peptides["Protein"]=""
     # sometimes data outputs contain a peptide sequence in brackets - the folowing will remove this
     Protein_peptides.Peptide=Protein_peptides.Peptide.str.replace(".*\]\.",'')
@@ -364,6 +405,7 @@ if __name__ == '__main__':
     id_to_process = sys.argv[1]
     # update_user_id()
     # retrieve_mysql_data_test()
+    # retrieve_save_and_process()
     # retrieve_save_and_process()
     retrieve_mysql_data(id_to_process)
     

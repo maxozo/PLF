@@ -7,10 +7,10 @@
         {
             "name": "MPLF",
             "type": "python",
-            "request": "launch",
+            "request":"launch",
             "program": "${file}",
             "args": [
-                "140",
+                "146",
                 
              ],
             "console": "integratedTerminal"
