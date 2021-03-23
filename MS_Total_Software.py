@@ -101,15 +101,7 @@ def run_full_analysis( Domain_types, Protein_peptides, experiment_feed, Owner_ID
     
     Reference_Proteome = pd.read_csv(f"./outputs/Uniprot_{Spiecies}.tsv",sep="\t",index_col=0)
     Reference_Domains = pd.read_csv(f"./outputs/Domains_Uniprot_{Spiecies}.tsv",sep="\t",index_col=0)
-    if 'Protein' in list(Protein_peptides.columns):
-        print("protein assigned by other software")
-        try:
-            Protein_peptides=pd.read_csv(f"./bin/Protein_peptides_{Spiecies}_{Owner_ID}_{id}.tsv",sep="\t",index_col=0)
-        except:
-            Protein_peptides=replace_with_ids(Protein_peptides,Reference_Proteome)
-            Protein_peptides.to_csv(f"./bin/Protein_peptides_{Spiecies}_{Owner_ID}_{id}.tsv", sep="\t")
-    
-    else:
+    if not 'Protein' in list(Protein_peptides.columns):
         print("protein is not assigned by other software")
         try:
             Protein_peptides=pd.read_csv(f"./bin/Protein_peptides_{Spiecies}_{Owner_ID}_{id}.tsv",sep="\t",index_col=0)
@@ -117,6 +109,22 @@ def run_full_analysis( Domain_types, Protein_peptides, experiment_feed, Owner_ID
             Protein_peptides=match_peptide_to_protein(Protein_peptides,Reference_Proteome)
             Protein_peptides.to_csv(f"./bin/Protein_peptides_{Spiecies}_{Owner_ID}_{id}.tsv", sep="\t")
    
+    elif  Protein_peptides.Protein.unique()[0]=='undefined':
+        print("protein is not assigned by other software")
+        try:
+            Protein_peptides=pd.read_csv(f"./bin/Protein_peptides_{Spiecies}_{Owner_ID}_{id}.tsv",sep="\t",index_col=0)
+        except:
+            Protein_peptides=match_peptide_to_protein(Protein_peptides,Reference_Proteome)
+            Protein_peptides.to_csv(f"./bin/Protein_peptides_{Spiecies}_{Owner_ID}_{id}.tsv", sep="\t")
+        
+    else:
+        print("protein assigned by other software")
+        try:
+            Protein_peptides=pd.read_csv(f"./bin/Protein_peptides_{Spiecies}_{Owner_ID}_{id}.tsv",sep="\t",index_col=0)
+        except:
+            Protein_peptides=replace_with_ids(Protein_peptides,Reference_Proteome)
+            Protein_peptides.to_csv(f"./bin/Protein_peptides_{Spiecies}_{Owner_ID}_{id}.tsv", sep="\t")
+
         
         # k_val=0
     # paired=True
