@@ -155,7 +155,7 @@ def run_full_analysis( Domain_types, Protein_peptides, experiment_feed, Owner_ID
         with open(f"./bin/All_proteins_{Spiecies}_{Owner_ID}_{id}.json", 'w') as json_file:
             json.dump(All_proteins, json_file)
     i=0
-    cpus=2 
+    cpus=3 
     pool = mp.Pool(cpus)
     print(f"CPUS: {cpus}")
 

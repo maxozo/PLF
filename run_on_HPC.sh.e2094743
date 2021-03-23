@@ -1,0 +1,138 @@
+/mnt/iusers01/mhs01/mbchpmo2/.local/lib/python3.7/site-packages/pandas/core/generic.py:5209: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  self[name] = value
+/mnt/iusers01/mhs01/mbchpmo2/work/MPLF/Functions_Clean.py:216: FutureWarning: Sorting because non-concatenation axis is not aligned. A future version
+of pandas will change to not sort by default.
+
+To accept the future behavior, pass 'sort=False'.
+
+To retain the current behavior and silence the warning, pass 'sort=True'.
+
+  domains = pd.concat([domains, dom])
+/mnt/iusers01/mhs01/mbchpmo2/.local/lib/python3.7/site-packages/pandas/core/generic.py:5209: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  self[name] = value
+/mnt/iusers01/mhs01/mbchpmo2/work/MPLF/Functions_Clean.py:216: FutureWarning: Sorting because non-concatenation axis is not aligned. A future version
+of pandas will change to not sort by default.
+
+To accept the future behavior, pass 'sort=False'.
+
+To retain the current behavior and silence the warning, pass 'sort=True'.
+
+  domains = pd.concat([domains, dom])
+/mnt/iusers01/mhs01/mbchpmo2/work/MPLF/anova.py:128: RuntimeWarning: invalid value encountered in double_scalars
+  ms_a = ssq_a / float(df1)
+/mnt/iusers01/mhs01/mbchpmo2/work/MPLF/anova.py:131: RuntimeWarning: invalid value encountered in double_scalars
+  ms_axb = ssq_axb/df_axb
+/mnt/iusers01/mhs01/mbchpmo2/work/MPLF/anova.py:134: RuntimeWarning: invalid value encountered in double_scalars
+  f_a = ms_a/ms_w
+/mnt/iusers01/mhs01/mbchpmo2/work/MPLF/anova.py:135: RuntimeWarning: invalid value encountered in double_scalars
+  f_b = ms_b/ms_w
+/mnt/iusers01/mhs01/mbchpmo2/work/MPLF/anova.py:136: RuntimeWarning: invalid value encountered in double_scalars
+  f_axb = ms_axb/ms_w
+/mnt/iusers01/mhs01/mbchpmo2/work/MPLF/anova.py:93: RuntimeWarning: invalid value encountered in double_scalars
+  t_value = M_diff/SE
+/mnt/iusers01/mhs01/mbchpmo2/.local/lib/python3.7/site-packages/statsmodels/stats/multitest.py:147: RuntimeWarning: invalid value encountered in less_equal
+  reject = pvals <= alphacBonf
+/mnt/iusers01/mhs01/mbchpmo2/.local/lib/python3.7/site-packages/statsmodels/stats/multitest.py:251: RuntimeWarning: invalid value encountered in greater
+  pvals_corrected[pvals_corrected>1] = 1
+/mnt/iusers01/mhs01/mbchpmo2/work/MPLF/anova.py:131: RuntimeWarning: divide by zero encountered in double_scalars
+  ms_axb = ssq_axb/df_axb
+/mnt/iusers01/mhs01/mbchpmo2/.local/lib/python3.7/site-packages/pandas/core/generic.py:5209: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  self[name] = value
+/mnt/iusers01/mhs01/mbchpmo2/work/MPLF/Functions_Clean.py:216: FutureWarning: Sorting because non-concatenation axis is not aligned. A future version
+of pandas will change to not sort by default.
+
+To accept the future behavior, pass 'sort=False'.
+
+To retain the current behavior and silence the warning, pass 'sort=True'.
+
+  domains = pd.concat([domains, dom])
+/mnt/iusers01/mhs01/mbchpmo2/.local/lib/python3.7/site-packages/pandas/core/generic.py:5209: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  self[name] = value
+/mnt/iusers01/mhs01/mbchpmo2/work/MPLF/Functions_Clean.py:216: FutureWarning: Sorting because non-concatenation axis is not aligned. A future version
+of pandas will change to not sort by default.
+
+To accept the future behavior, pass 'sort=False'.
+
+To retain the current behavior and silence the warning, pass 'sort=True'.
+
+  domains = pd.concat([domains, dom])
+/mnt/iusers01/mhs01/mbchpmo2/work/MPLF/anova.py:134: RuntimeWarning: invalid value encountered in double_scalars
+  f_a = ms_a/ms_w
+/mnt/iusers01/mhs01/mbchpmo2/work/MPLF/anova.py:135: RuntimeWarning: invalid value encountered in double_scalars
+  f_b = ms_b/ms_w
+/mnt/iusers01/mhs01/mbchpmo2/work/MPLF/anova.py:136: RuntimeWarning: invalid value encountered in double_scalars
+  f_axb = ms_axb/ms_w
+/mnt/iusers01/mhs01/mbchpmo2/work/MPLF/anova.py:93: RuntimeWarning: invalid value encountered in double_scalars
+  t_value = M_diff/SE
+/mnt/iusers01/mhs01/mbchpmo2/.local/lib/python3.7/site-packages/statsmodels/stats/multitest.py:147: RuntimeWarning: invalid value encountered in less_equal
+  reject = pvals <= alphacBonf
+/mnt/iusers01/mhs01/mbchpmo2/.local/lib/python3.7/site-packages/statsmodels/stats/multitest.py:251: RuntimeWarning: invalid value encountered in greater
+  pvals_corrected[pvals_corrected>1] = 1
+/mnt/iusers01/mhs01/mbchpmo2/work/MPLF/anova.py:128: RuntimeWarning: invalid value encountered in double_scalars
+  ms_a = ssq_a / float(df1)
+/mnt/iusers01/mhs01/mbchpmo2/work/MPLF/anova.py:131: RuntimeWarning: invalid value encountered in double_scalars
+  ms_axb = ssq_axb/df_axb
+/mnt/iusers01/mhs01/mbchpmo2/work/MPLF/anova.py:134: RuntimeWarning: divide by zero encountered in double_scalars
+  f_a = ms_a/ms_w
+/mnt/iusers01/mhs01/mbchpmo2/.local/lib/python3.7/site-packages/pandas/core/generic.py:5209: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  self[name] = value
+/mnt/iusers01/mhs01/mbchpmo2/work/MPLF/Functions_Clean.py:216: FutureWarning: Sorting because non-concatenation axis is not aligned. A future version
+of pandas will change to not sort by default.
+
+To accept the future behavior, pass 'sort=False'.
+
+To retain the current behavior and silence the warning, pass 'sort=True'.
+
+  domains = pd.concat([domains, dom])
+/mnt/iusers01/mhs01/mbchpmo2/.local/lib/python3.7/site-packages/pandas/core/generic.py:5209: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  self[name] = value
+/mnt/iusers01/mhs01/mbchpmo2/work/MPLF/Functions_Clean.py:216: FutureWarning: Sorting because non-concatenation axis is not aligned. A future version
+of pandas will change to not sort by default.
+
+To accept the future behavior, pass 'sort=False'.
+
+To retain the current behavior and silence the warning, pass 'sort=True'.
+
+  domains = pd.concat([domains, dom])
+/mnt/iusers01/mhs01/mbchpmo2/work/MPLF/anova.py:134: RuntimeWarning: invalid value encountered in double_scalars
+  f_a = ms_a/ms_w
+/mnt/iusers01/mhs01/mbchpmo2/work/MPLF/anova.py:135: RuntimeWarning: invalid value encountered in double_scalars
+  f_b = ms_b/ms_w
+/mnt/iusers01/mhs01/mbchpmo2/work/MPLF/anova.py:136: RuntimeWarning: invalid value encountered in double_scalars
+  f_axb = ms_axb/ms_w
+/mnt/iusers01/mhs01/mbchpmo2/work/MPLF/anova.py:93: RuntimeWarning: invalid value encountered in double_scalars
+  t_value = M_diff/SE
+/mnt/iusers01/mhs01/mbchpmo2/.local/lib/python3.7/site-packages/statsmodels/stats/multitest.py:147: RuntimeWarning: invalid value encountered in less_equal
+  reject = pvals <= alphacBonf
+/mnt/iusers01/mhs01/mbchpmo2/.local/lib/python3.7/site-packages/statsmodels/stats/multitest.py:251: RuntimeWarning: invalid value encountered in greater
+  pvals_corrected[pvals_corrected>1] = 1
+/mnt/iusers01/mhs01/mbchpmo2/work/MPLF/anova.py:128: RuntimeWarning: invalid value encountered in double_scalars
+  ms_a = ssq_a / float(df1)
+/mnt/iusers01/mhs01/mbchpmo2/work/MPLF/anova.py:131: RuntimeWarning: invalid value encountered in double_scalars
+  ms_axb = ssq_axb/df_axb
+/mnt/iusers01/mhs01/mbchpmo2/work/MPLF/anova.py:131: RuntimeWarning: divide by zero encountered in double_scalars
+  ms_axb = ssq_axb/df_axb
