@@ -149,7 +149,9 @@ def run_full_analysis( Domain_types, Protein_peptides, experiment_feed, Owner_ID
             try:
                 Type=Prot1["Uniprot_Type"][0]
             except:
-                next
+                print(f'failed with {Protein} and hence continuing')
+                continue
+                # next
             try:
                 All_proteins[Gene][Type].append(Protein)
             except:
