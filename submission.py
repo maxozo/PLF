@@ -14,7 +14,7 @@ def start_tasks():
                                         password=PASSWORD,
                                         auth_plugin='mysql_native_password')
     cursor_query = connection.cursor()
-
+    cpus=4
     # here could select the jobs that are qued - do this every 6h and if a new job is qued then process on the HPC cloud
     sql="SELECT id,name FROM `Structural_userdata` WHERE name LIKE 'mouse aorta - 22 vs 72 w all'"
 
@@ -29,9 +29,9 @@ def start_tasks():
 
     count=0
     for id in Data_ids.id:
-        # os.system(f"qsub run_on_HPC.sh {id}")
+        os.system(f"qsub run_on_HPC.sh {id} {cpus}")
         print(id)
-        retrieve_mysql_data(id,cpus=8)
+        # retrieve_mysql_data(id,cpus=8)
         # if count>0:
         #     break
         count+=1

@@ -1,7 +1,7 @@
 #!/bin/bash --login
 #$ -cwd
 #$ -pe smp.pe 4       # Each task will use 4 cores in this example
-CPUS=4
+CPUS=$2
 
 # Task id 1 will read line 1 from my_file_list.txt
 # Task id 2 will read line 2 from my_file_list.txt
