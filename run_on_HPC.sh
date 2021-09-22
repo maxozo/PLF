@@ -1,8 +1,9 @@
 #!/bin/bash --login
 #$ -cwd
-#$ -pe smp.pe 4       # Each task will use 4 cores in this example
 CPUS=$2
-
+#$ -pe smp.pe $CPUS      # Each task will use 4 cores in this example
+#CPUS=$2
+echo $CPUS
 # Task id 1 will read line 1 from my_file_list.txt
 # Task id 2 will read line 2 from my_file_list.txt
 # and so on...
@@ -29,4 +30,4 @@ pip install --user -r requirements.txt
 
 # Run the app with the .dat filename specific to this task
 
-python MS_Total_Software.py $1 CPUS
+python MS_Total_Software.py $1 $CPUS
