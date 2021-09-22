@@ -16,7 +16,7 @@ def start_tasks():
     cursor_query = connection.cursor()
     cpus=5
     # here could select the jobs that are qued - do this every 6h and if a new job is qued then process on the HPC cloud
-    sql="SELECT id,name FROM `Structural_userdata` WHERE name LIKE 'mouse aorta - 22 vs 72 w all'"
+    sql="SELECT id,name FROM `Structural_userdata` WHERE `Progress` LIKE 'Que'"
 
     cursor = connection.cursor()
     cursor.execute(sql)
