@@ -1,9 +1,10 @@
 #!/bin/bash --login
 #$ -cwd
 CPUS=$2
-#$ -pe smp.pe $CPUS      # Each task will use 4 cores in this example
-#CPUS=$2
 echo $CPUS
+#$ -pe smp.pe 4      # Each task will use 4 cores in this example
+
+
 # Task id 1 will read line 1 from my_file_list.txt
 # Task id 2 will read line 2 from my_file_list.txt
 # and so on...
