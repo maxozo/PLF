@@ -277,8 +277,8 @@ def match_peptide_to_protein(Protein_peptides,Reference_Proteome,cpus=1):
             pool.apply_async(retrieve_all_proteins, args=([peptide,Reference_Proteome,Protein_peptides,count]),callback=append_results) #paralel runs - uses all the cores available
         except:
             print(f"skipped {peptide}")
-        if count>108:
-            break
+        # if count>108:
+        #     break
     pool.close()
     pool.join() 
 
