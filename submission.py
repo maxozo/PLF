@@ -29,8 +29,9 @@ def start_tasks():
 
     count=0
     for id in Data_ids.id:
+        print(f"{id} with cpus: {cpus}")
         os.system(f"qsub run_on_HPC.sh {id} {cpus}")
-        print(id)
+        
         # retrieve_mysql_data(id,cpus=8)
         # if count>0:
         #     break

@@ -419,6 +419,9 @@ if __name__ == '__main__':
     # export  LSB_DEFAULTGROUP=hgi
     id_to_process = sys.argv[1]
     cpus = sys.argv[2]
+    cpus=int(cpus)
+    print(f"using {cpus} cpus")
+
     # update_user_id()
     # retrieve_mysql_data_test()
     # retrieve_save_and_process()
