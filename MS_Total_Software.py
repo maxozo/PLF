@@ -11,7 +11,7 @@ Reference_Proteome=None
 Reference_Domains=None
 # Protein_peptides2=pd.DataFrame(columns=['Sample', 'Peptide', 'Protein', 'spectra'])
 # Protein_peptides2=pd.DataFrame(columns=['Sample', 'Peptide', 'Protein', 'spectra'])
-Protein_peptides2=[]
+Protein_peptides2={}
 # Reference_Proteome=[]
 # Reference_Domains=[]
 
@@ -69,7 +69,7 @@ def run_protein(Protein,Reference_Proteome,Reference_Domains,Domain_types,Protei
     
     Structural_Analysis_Results, Norm_Factors = Master_Run_Structural_Analysis(experiment_feed=experiment_feed,
                                                                             Results=Experiment_Coverages,
-                                                                            Protein=Protein, paired=paired)
+                                                                            Protein=Protein, paired=paired,cuttoff_p_val=2.05)
     print("Done Structural")
 
     if Structural_Analysis_Results.__len__()>0:
@@ -95,10 +95,9 @@ def run_protein(Protein,Reference_Proteome,Reference_Domains,Domain_types,Protei
         print("Next: no p values to record")
         next()
         
-def run_full_analysis( Domain_types, Protein_peptides, experiment_feed, Owner_ID, id, paired=False, Spiecies="HUMAN"):
+def run_full_analysis( Domain_types, Protein_peptides, experiment_feed, Owner_ID=1, id=1, cpus=1,paired=False, Spiecies="HUMAN"):
     # If we do decide to remove the protein entry then we have to look up each peptide in the library and find all the peptides for the protein thatr are provided.
-    #
-    
+
     Reference_Proteome = pd.read_csv(f"./outputs/Uniprot_{Spiecies}.tsv",sep="\t",index_col=0)
     Reference_Domains = pd.read_csv(f"./outputs/Domains_Uniprot_{Spiecies}.tsv",sep="\t",index_col=0)
     if not 'Protein' in list(Protein_peptides.columns):
@@ -106,7 +105,7 @@ def run_full_analysis( Domain_types, Protein_peptides, experiment_feed, Owner_ID
         try:
             Protein_peptides=pd.read_csv(f"./bin/Protein_peptides_{Spiecies}_{Owner_ID}_{id}.tsv",sep="\t",index_col=0)
         except:
-            Protein_peptides=match_peptide_to_protein(Protein_peptides,Reference_Proteome)
+            Protein_peptides=match_peptide_to_protein(Protein_peptides,Reference_Proteome,cpus=cpus)
             Protein_peptides.to_csv(f"./bin/Protein_peptides_{Spiecies}_{Owner_ID}_{id}.tsv", sep="\t")
    
     elif  Protein_peptides.Protein.unique()[0]=='undefined':
@@ -114,7 +113,7 @@ def run_full_analysis( Domain_types, Protein_peptides, experiment_feed, Owner_ID
         try:
             Protein_peptides=pd.read_csv(f"./bin/Protein_peptides_{Spiecies}_{Owner_ID}_{id}.tsv",sep="\t",index_col=0)
         except:
-            Protein_peptides=match_peptide_to_protein(Protein_peptides,Reference_Proteome)
+            Protein_peptides=match_peptide_to_protein(Protein_peptides,Reference_Proteome,cpus=cpus)
             Protein_peptides.to_csv(f"./bin/Protein_peptides_{Spiecies}_{Owner_ID}_{id}.tsv", sep="\t")
         
     else:
@@ -165,7 +164,7 @@ def run_full_analysis( Domain_types, Protein_peptides, experiment_feed, Owner_ID
         with open(f"./bin/All_proteins_{Spiecies}_{Owner_ID}_{id}.json", 'w') as json_file:
             json.dump(All_proteins, json_file)
     i=0
-    cpus=3 
+
     pool = mp.Pool(cpus)
     print(f"CPUS: {cpus}")
 
@@ -198,7 +197,11 @@ def run_full_analysis( Domain_types, Protein_peptides, experiment_feed, Owner_ID
 
     # here we wait for the process to finish and then HPC should send the data back.
 
+    # Structural_Json2=Structural_Json
+    # here have to add a visualisation module as per https://github.com/maxozo/ManchesterProteome/blob/e5fb1a1385b2bf11ddbc514d6ca3f0db6b2f272d/frontend/src/components/Structural/BarChart.js#L888-L890
     record_data(Structural_Json, Owner_ID,id,Domain_types)
+
+
     # # this is to record last entries that are not processed
     # if (Structural_Json.keys().__len__()>0):
     #     Structural_Json, Coverage_Json=record_data(Structural_Json, Coverage_Json, Owner_ID,id)
@@ -215,11 +218,10 @@ def retrieve_all_proteins(peptide,Reference_Proteome,Protein_peptides,i):
     # All_Prots = Protein_peptides[Protein_peptides.Peptide == peptide]
     # All_Prots["Protein"] = All_Proteins
 
-    return All_Proteins
+    return {'peptide':peptide,'All_Proteins':All_Proteins}
 
 def append_results(result):
-    for i,row in result.iterrows():
-        Protein_peptides2.append(row)
+    Protein_peptides2[result['peptide']]=result['All_Proteins']
 
 def replace_with_ids(Protein_peptides,Reference_Proteome):
     print("Using assigned UIDs")
@@ -252,8 +254,7 @@ def replace_with_ids(Protein_peptides,Reference_Proteome):
             print("not handled exceptation")
     return Protein_peptides
 
-
-def match_peptide_to_protein(Protein_peptides,Reference_Proteome):
+def match_peptide_to_protein(Protein_peptides,Reference_Proteome,cpus=1):
     # limit to the protein of interest.
     # Reference_Proteome = Reference_Proteome[Reference_Proteome.Uniprot_Type=="Uniprot"]
     print("Assigning protein IDs based on search")
@@ -262,8 +263,8 @@ def match_peptide_to_protein(Protein_peptides,Reference_Proteome):
     Protein_peptides.Peptide=Protein_peptides.Peptide.str.replace(".*\]\.",'')
     Protein_peptides.Peptide=Protein_peptides.Peptide.str.replace("\.\[.*","")
 
-    # import multiprocessing as mp
-    # pool = mp.Pool(mp.cpu_count()-1)
+    import multiprocessing as mp
+    pool = mp.Pool(cpus)
 
     count=0
     # from time import process_time
@@ -273,25 +274,17 @@ def match_peptide_to_protein(Protein_peptides,Reference_Proteome):
         count+=1
         try:
         # len(Protein_peptides.Peptide.unique())
-            All_Proteins = retrieve_all_proteins(peptide,Reference_Proteome,Protein_peptides,count)
-            Protein_peptides.loc[Protein_peptides.Peptide == peptide,"Protein"]=All_Proteins
+            pool.apply_async(retrieve_all_proteins, args=([peptide,Reference_Proteome,Protein_peptides,count]),callback=append_results) #paralel runs - uses all the cores available
         except:
             print(f"skipped {peptide}")
-        # pool.apply_async(retrieve_all_proteins, args=([peptide,Reference_Proteome,Protein_peptides,count]),callback=append_results) #paralel runs - uses all the cores available
-        # if count>100:
-        #      break
-    
-    
-    # pool.close()
-    # pool.join() 
+        if count>108:
+            break
+    pool.close()
+    pool.join() 
 
     # Protein_peptides=pd.DataFrame(Protein_peptides2)
-
-    # t1_stop = process_time() 
-    # print("Elapsed time:", t1_stop, t1_start)  
-   
-    # print("Elapsed time during the whole program in seconds:", 
-    #                                         t1_stop-t1_start)  
+    for key in Protein_peptides2.keys():
+        Protein_peptides.loc[Protein_peptides.Peptide == key,"Protein"]=Protein_peptides2[key]
 
     return Protein_peptides
 
@@ -345,8 +338,15 @@ def retrieve_mysql_data(id_to_process):
     Paired= Data.Paired[0]
     Spiecies=Data.Spiecies[0]
     print(f"Spiecies: {Spiecies}")
+    Domain_types = ['DOMAINS', 'REGIONS', 'TOPO_DOM', 'TRANSMEM', 'REPEAT', '50.0 AA STEP']
+    Protein_peptides=pd.read_csv('Sample_Data/Protein_peptides.tsv',sep='\t',index_col=[0])
+    # Protein_peptides.to_csv('Sample_Data/Protein_peptides.tsv',sep='\t')
+    
+    experiment_feed = pandas_to_experiment(pd.read_csv('Sample_Data/Experiment_feed.tsv',sep='\t',index_col=[0]))
+    # experiment_feed_pd = pd.DataFrame(experiment_feed)
+    # experiment_feed_pd.to_csv('Sample_Data/Experiment_feed.tsv',sep='\t')
 
-    run_full_analysis(Domain_types, Protein_peptides, experiment_feed,Owner_ID,id,paired=Paired, Spiecies=Spiecies)
+    run_full_analysis(Domain_types, Protein_peptides, experiment_feed,Owner_ID=Owner_ID,cpus=8,id=id,paired=Paired, Spiecies=Spiecies)
 
     # '''
     # with open(f"./bin/Structural_Json_{Spiecies}_{Owner_ID}_{id}.json", 'r') as myfile:
@@ -355,7 +355,11 @@ def retrieve_mysql_data(id_to_process):
     # record_data(Structural_Json, Owner_ID,id,Domain_types)
     # '''
 
-
+def pandas_to_experiment(df):
+    dict={}
+    dict[df.iloc[:,0].name]=list(df.iloc[:,0])
+    dict[df.iloc[:,1].name]=list(df.iloc[:,1])
+    return dict
 
 def retrieve_save_and_process():
     import mysql.connector
@@ -377,7 +381,6 @@ def retrieve_save_and_process():
         Data_ids.columns = field_names
     
     Data_ids.to_csv("tmp_ids.csv")
-
 
 def retrieve_mysql_data_test():
     import requests
@@ -411,21 +414,27 @@ def update_user_id():
     cursor.execute(sql)
     
 
-
 if __name__ == '__main__':
-    '''bsub -o exercise5.output -n10 -R"select[mem>2500] rusage[mem=2500]" -M2500 python MS_Total_Software.py '''
+    # '''bsub -o exercise5.output -n10 -R"select[mem>2500] rusage[mem=2500]" -M2500 python MS_Total_Software.py '''
     # export  LSB_DEFAULTGROUP=hgi
-    id_to_process = sys.argv[1]
+    # id_to_process = sys.argv[1]
     # update_user_id()
     # retrieve_mysql_data_test()
     # retrieve_save_and_process()
     # retrieve_save_and_process()
-    retrieve_mysql_data(id_to_process)
+    # retrieve_mysql_data(id_to_process)
     
+    Spiecies='MOUSE'
+    Paired=0
+    Domain_types = ['DOMAINS', 'REGIONS', 'TOPO_DOM', 'TRANSMEM', 'REPEAT', '50.0 AA STEP']
+    Protein_peptides=pd.read_csv('Sample_Data/Protein_peptides.tsv',sep='\t',index_col=[0])
+    # Protein_peptides.to_csv('Sample_Data/Protein_peptides.tsv',sep='\t')
+    
+    experiment_feed = pandas_to_experiment(pd.read_csv('Sample_Data/Experiment_feed.tsv',sep='\t',index_col=[0]))
+    # experiment_feed_pd = pd.DataFrame(experiment_feed)
+    # experiment_feed_pd.to_csv('Sample_Data/Experiment_feed.tsv',sep='\t')
 
-
-
-
+    run_full_analysis(Domain_types, Protein_peptides, experiment_feed,cpus=12,paired=Paired, Spiecies=Spiecies)
 
     # import json
     # paired=1

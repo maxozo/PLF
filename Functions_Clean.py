@@ -395,7 +395,7 @@ def keys_to_Pandas(experiment_feed):
     return Data
 
 
-def Master_Run_Structural_Analysis(experiment_feed=None, Results=None, Protein=None,paired=True):
+def Master_Run_Structural_Analysis(experiment_feed=None, Results=None, Protein=None,paired=True,cuttoff_p_val=0.05):
     Data2 = pd.DataFrame()
     Unique_Domains = Results['Domain Type'].unique()
     Datafile = Results
@@ -494,9 +494,10 @@ def Master_Run_Structural_Analysis(experiment_feed=None, Results=None, Protein=N
         # except:
         #     print(Data_Type)
         #     print("failed with domains!")
+    print('Done here')
     if DataVal.__len__()>0:
 
-        if (pd.DataFrame(DataVal) < 0.05).any()[0]:
+        if (pd.DataFrame(DataVal) < cuttoff_p_val).any()[0]:
             Data2['GeneAC'] = Protein
             # Data2 = pd.concat([Data2, Dataframes], axis=1, sort=False)
             Data3 = Data2.loc[:, ~Data2.columns.duplicated()]

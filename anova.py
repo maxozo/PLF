@@ -22,12 +22,14 @@ import pandas as pd
 from scipy import stats
 import numpy as np
 import math
+from statsmodels.sandbox.stats.multicomp import multipletests
+import string
 
 #https://www.marsja.se/three-ways-to-carry-out-2-way-anova-with-python/
 #http://jpktd.blogspot.com/2013/03/multiple-comparison-and-tukey-hsd-or_25.html
 
 def data_set_concerter(df):
-    import string
+
     
     names = list(string.ascii_lowercase)
     key = list(df.keys())
@@ -192,7 +194,7 @@ def Two_Way_mixed_Anova(df,paired=True):
     p_values = calculate_P_values(MS_Resid,DF_Resid,df)
     p_values_adjusted = p_values.copy()
    
-    from statsmodels.sandbox.stats.multicomp import multipletests
+    
  
     # Now feed the p-values in a bonferoni correction
     if(p_values.columns.__len__()>2):
