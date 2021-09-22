@@ -4,6 +4,7 @@ import mysql.connector
 from Functions_Clean import retrieve_reviewed, Master_Run_Counting_Algorythm_Clean, \
     Master_Run_Structural_Analysis, Master_Run_Score_Calculations
 import json
+from MS_Total_Software import retrieve_mysql_data
 
 def start_tasks():
     from secret import HOST, PORT, PASSWORD, DB, USER
@@ -15,7 +16,8 @@ def start_tasks():
     cursor_query = connection.cursor()
 
     # here could select the jobs that are qued - do this every 6h and if a new job is qued then process on the HPC cloud
-    sql="SELECT id,name FROM `Structural_userdata` WHERE Progress LIKE 'Que'"
+    sql="SELECT id,name FROM `Structural_userdata` WHERE name LIKE 'mouse aorta - 22 vs 72 w all'"
+
     cursor = connection.cursor()
     cursor.execute(sql)
     Data_ids = pd.DataFrame(cursor.fetchall())
@@ -27,8 +29,9 @@ def start_tasks():
 
     count=0
     for id in Data_ids.id:
-        os.system(f"qsub run_on_HPC.sh {id}")
+        # os.system(f"qsub run_on_HPC.sh {id}")
         print(id)
+        retrieve_mysql_data(id,cpus=8)
         # if count>0:
         #     break
         count+=1

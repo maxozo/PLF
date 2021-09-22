@@ -288,7 +288,7 @@ def match_peptide_to_protein(Protein_peptides,Reference_Proteome,cpus=1):
 
     return Protein_peptides
 
-def retrieve_mysql_data(id_to_process):
+def retrieve_mysql_data(id_to_process,cpus=1):
 
     # import requests
     # response = requests.get("http://www.manchesterproteome.manchester.ac.uk/run_api/MSP_api/?page=1&search=")
@@ -338,15 +338,15 @@ def retrieve_mysql_data(id_to_process):
     Paired= Data.Paired[0]
     Spiecies=Data.Spiecies[0]
     print(f"Spiecies: {Spiecies}")
-    Domain_types = ['DOMAINS', 'REGIONS', 'TOPO_DOM', 'TRANSMEM', 'REPEAT', '50.0 AA STEP']
-    Protein_peptides=pd.read_csv('Sample_Data/Protein_peptides.tsv',sep='\t',index_col=[0])
+    # Domain_types = ['DOMAINS', 'REGIONS', 'TOPO_DOM', 'TRANSMEM', 'REPEAT', '50.0 AA STEP']
+    # Protein_peptides=pd.read_csv('Sample_Data/Protein_peptides.tsv',sep='\t',index_col=[0])
     # Protein_peptides.to_csv('Sample_Data/Protein_peptides.tsv',sep='\t')
     
-    experiment_feed = pandas_to_experiment(pd.read_csv('Sample_Data/Experiment_feed.tsv',sep='\t',index_col=[0]))
+    # experiment_feed = pandas_to_experiment(pd.read_csv('Sample_Data/Experiment_feed.tsv',sep='\t',index_col=[0]))
     # experiment_feed_pd = pd.DataFrame(experiment_feed)
     # experiment_feed_pd.to_csv('Sample_Data/Experiment_feed.tsv',sep='\t')
 
-    run_full_analysis(Domain_types, Protein_peptides, experiment_feed,Owner_ID=Owner_ID,cpus=8,id=id,paired=Paired, Spiecies=Spiecies)
+    run_full_analysis(Domain_types, Protein_peptides, experiment_feed,Owner_ID=Owner_ID,cpus=cpus,id=id,paired=Paired, Spiecies=Spiecies)
 
     # '''
     # with open(f"./bin/Structural_Json_{Spiecies}_{Owner_ID}_{id}.json", 'r') as myfile:
@@ -417,24 +417,25 @@ def update_user_id():
 if __name__ == '__main__':
     # '''bsub -o exercise5.output -n10 -R"select[mem>2500] rusage[mem=2500]" -M2500 python MS_Total_Software.py '''
     # export  LSB_DEFAULTGROUP=hgi
-    # id_to_process = sys.argv[1]
+    id_to_process = sys.argv[1]
+    cpus = sys.argv[2]
     # update_user_id()
     # retrieve_mysql_data_test()
     # retrieve_save_and_process()
     # retrieve_save_and_process()
-    # retrieve_mysql_data(id_to_process)
+    retrieve_mysql_data(id_to_process,cpus=cpus)
     
-    Spiecies='MOUSE'
-    Paired=0
-    Domain_types = ['DOMAINS', 'REGIONS', 'TOPO_DOM', 'TRANSMEM', 'REPEAT', '50.0 AA STEP']
-    Protein_peptides=pd.read_csv('Sample_Data/Protein_peptides.tsv',sep='\t',index_col=[0])
-    # Protein_peptides.to_csv('Sample_Data/Protein_peptides.tsv',sep='\t')
+    # Spiecies='MOUSE'
+    # Paired=0
+    # Domain_types = ['DOMAINS', 'REGIONS', 'TOPO_DOM', 'TRANSMEM', 'REPEAT', '50.0 AA STEP']
+    # Protein_peptides=pd.read_csv('Sample_Data/Protein_peptides.tsv',sep='\t',index_col=[0])
+    # # Protein_peptides.to_csv('Sample_Data/Protein_peptides.tsv',sep='\t')
     
-    experiment_feed = pandas_to_experiment(pd.read_csv('Sample_Data/Experiment_feed.tsv',sep='\t',index_col=[0]))
-    # experiment_feed_pd = pd.DataFrame(experiment_feed)
-    # experiment_feed_pd.to_csv('Sample_Data/Experiment_feed.tsv',sep='\t')
+    # experiment_feed = pandas_to_experiment(pd.read_csv('Sample_Data/Experiment_feed.tsv',sep='\t',index_col=[0]))
+    # # experiment_feed_pd = pd.DataFrame(experiment_feed)
+    # # experiment_feed_pd.to_csv('Sample_Data/Experiment_feed.tsv',sep='\t')
 
-    run_full_analysis(Domain_types, Protein_peptides, experiment_feed,cpus=12,paired=Paired, Spiecies=Spiecies)
+    # run_full_analysis(Domain_types, Protein_peptides, experiment_feed,cpus=12,paired=Paired, Spiecies=Spiecies)
 
     # import json
     # paired=1
