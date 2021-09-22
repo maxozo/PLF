@@ -419,6 +419,7 @@ if __name__ == '__main__':
     # export  LSB_DEFAULTGROUP=hgi
     id_to_process = sys.argv[1]
     cpus = sys.argv[2]
+    print(cpus)
     cpus=int(cpus)
     print(f"using {cpus} cpus")
 
