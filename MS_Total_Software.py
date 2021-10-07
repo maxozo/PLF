@@ -69,7 +69,7 @@ def run_protein(Protein,Reference_Proteome,Reference_Domains,Domain_types,Protei
     
     Structural_Analysis_Results, Norm_Factors = Master_Run_Structural_Analysis(experiment_feed=experiment_feed,
                                                                             Results=Experiment_Coverages,
-                                                                            Protein=Protein, paired=paired,cuttoff_p_val=2.05)
+                                                                            Protein=Protein, paired=paired,cuttoff_p_val=0.05)
     print("Done Structural")
 
     if Structural_Analysis_Results.__len__()>0:
