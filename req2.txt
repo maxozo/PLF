@@ -2,6 +2,11 @@
 # $ conda create --name <env> --file <this file>
 # platform: linux-64
 _libgcc_mutex=0.1=conda_forge
+mysql-connector
+scipy
+pandas==0.25.0
+numpy
+statsmodels==0.9.0
 _openmp_mutex=4.5=1_llvm
 _tflow_select=2.3.0=mkl
 abseil-cpp=20210324.2=h9c3ff4c_0
@@ -78,8 +83,6 @@ multidict=5.1.0=py37h27cfd23_2
 nccl=2.11.4.1=h1a5f58c_0
 ncurses=6.2=he6710b0_1
 nextflow=21.04.0=h4a94de4_0
-numpy=1.19.5=py37h038b26d_2
-numpy-base=1.18.5=py37h2f8d375_0
 oauthlib=3.1.1=pyhd3eb1b0_0
 openjdk=8.0.152=h7b6447c_3
 openssl=1.1.1l=h7f98852_0
@@ -99,7 +102,6 @@ readline=8.1=h46c0cb4_0
 requests=2.26.0=pyhd3eb1b0_0
 requests-oauthlib=1.3.0=py_0
 rsa=4.7.2=pyhd3eb1b0_1
-scipy=1.5.2=py37hb14ef9d_0
 seaborn
 setuptools=52.0.0=py37h06a4308_0
 singularity=2.4.2=0
