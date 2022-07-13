@@ -2,7 +2,6 @@
 # $ conda create --name <env> --file <this file>
 # platform: linux-64
 _libgcc_mutex=0.1=conda_forge
-mysql-connector
 scipy
 pandas==0.25.0
 numpy
