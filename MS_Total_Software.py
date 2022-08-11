@@ -1,7 +1,7 @@
 import pandas as pd
 import sys
 import mysql.connector
-from Functions_Clean import retrieve_reviewed, Master_Run_Counting_Algorythm_Clean, \
+from .Functions_Clean import retrieve_reviewed, Master_Run_Counting_Algorythm_Clean, \
     Master_Run_Structural_Analysis, Master_Run_Score_Calculations
 import json
 Structural_Json = {}

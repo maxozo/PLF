@@ -4,10 +4,10 @@ USER = os.getenv('MYSQL_USER')
 HOST = os.getenv('MYSQL_HOST')
 import re
 import statistics
-from General_Functions import *
+from .General_Functions import *
 import pandas as pd
 
-from anova import Two_Way_mixed_Anova
+from .anova import Two_Way_mixed_Anova
 import itertools
 
 
