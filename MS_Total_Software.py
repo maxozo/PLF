@@ -144,11 +144,7 @@ def run_full_analysis( Domain_types, Protein_peptides, experiment_feed, Owner_ID
 
     pool.close()
     pool.join() 
-    # print(Coverage_Json)
 
-
-    # with open(f"bin/Coverage_Json_{Spiecies}_{Owner_ID}_{id}.json", 'w') as json_file:
-    #     json.dump(Coverage_Json, json_file)
     with open(f"bin/Structural_Json_{Spiecies}_{Owner_ID}_{id}.json", 'w') as json_file:
         json.dump(Structural_Json, json_file)
 
