@@ -29,18 +29,14 @@ import string
 #http://jpktd.blogspot.com/2013/03/multiple-comparison-and-tukey-hsd-or_25.html
 
 def data_set_concerter(df):
-
     
     names = list(string.ascii_lowercase)
     key = list(df.keys())
-    
     df_returned = pd.DataFrame()
-
     df_returned['Individual']=""
     df_returned['Treatment']=""
     df_returned['Domain_Name']=""
     df_returned['Yield']=""
-   
     for i in range(0,df.__len__()):
         Working_Experimental_Condition = df[key[i]]
         Treatment = key[i]
@@ -52,8 +48,6 @@ def data_set_concerter(df):
                 Yield = Data[Data_line_idx]
                 Individual=names[Data_line_idx]
                 df_returned=df_returned.append({'Individual':Individual,'Treatment':Treatment,"Domain_Name":Domain,'Yield':Yield},ignore_index=True)
-    print(df_returned)
-    print("Done with this")
     return df_returned
 
 
@@ -172,19 +166,6 @@ def Two_Way_mixed_Anova(df,paired=True):
         DF_Resid= df_w
 
     '''DF values'''
-    # DF_Row_Factor_x_Time
-    # DF_Row_Factor
-    # DF_Time
-    # DF_MS_Subj
-    # DF_MS_Resid
-    #
-    # '''MS values'''
-    # MS_Row_Factor_x_Time=ms_axb
-    # MS_Row_Factor=ms_a
-    # MS_Time=ms_b
-    # MS_MS_Subj=MS_Subj
-    # MS_MS_Resid=
-
     results = {'sum_sq': [ssq_a, ssq_b, ssq_axb, ssq_w,SS_Subj,SS_Resid],
                'DF': [df1, df_2, df_axb, df_w,DF_subjects,DF_Resid],
                 'MS': [ms_a, ms_b, ms_axb, ms_w,MS_Subj,MS_Resid],

@@ -10,7 +10,6 @@ from anova import Two_Way_mixed_Anova
 import itertools
 
 
-
 def retrieve_reviewed(Protein_list):
     ##In this function we should use MySQL
     mydb = mysql.connector.connect(
@@ -74,9 +73,11 @@ def analysed_domain_coverage(Domain_name, Domain_start, Domain_finish, Protein_e
     ##########
     ## This function determines the coverage of all the domain by peptides.
     ##########
+    import numpy as np
     susceptibility_of_domain = 0
     total_amino_acids = []
     peptides_found = []
+    domain_sequence=sequence[Domain_start:Domain_finish]
     for number3 in Protein_entries_experiment.iterrows():
         peptide_sequence = number3[1]['Peptide']
         peptide_abundance = number3[1]['spectra']
@@ -84,34 +85,55 @@ def analysed_domain_coverage(Domain_name, Domain_start, Domain_finish, Protein_e
         length_of_peptide = len(peptide_sequence)
         Sequence_Positions = [m.start() for m in re.finditer(peptide_sequence, sequence)]
         for start_position in Sequence_Positions:
-            # loops through each of the start positions, detewcted in the sequence
+            # loops through each of the start positions, detected in the sequence
             value1 = start_position
             value2 = value1 + length_of_peptide
-            susceptibility_of_domain_start = Within_limits(value1, Domain_start, Domain_finish)
-            susceptibility_of_domain1_end = Within_limits(value2, Domain_start, Domain_finish)
-            if susceptibility_of_domain1_end == 0 and susceptibility_of_domain_start == 0:
+            
+            # instead of doing this we just produce ranges of indexes
+            domain_start_within_limits = Within_limits(value1, Domain_start, Domain_finish)
+            domain_end_within_limits = Within_limits(value2, Domain_start, Domain_finish)
+            
+            if domain_end_within_limits == False and domain_start_within_limits == False:
+                # This peptide doesnt fall within the domain ranges.
                 pass
             else:
-                if susceptibility_of_domain_start == 1 and susceptibility_of_domain1_end == 0:
+                if domain_start_within_limits == True and domain_end_within_limits == False:
+                    # peptide start is in the domain, while the end expands beyond
+                    #                  PEPTIDE       
+                    #           DDDDDDDDDD
                     susceptibility_of_domain = susceptibility_of_domain + peptide_abundance
                     peptide_coverage = Domain_finish - value1
                     amino_acids_covered = list(range(value1, int(Domain_finish)))
                     total_amino_acids = total_amino_acids + amino_acids_covered
                     peptides_found.append(peptide_sequence)
-                elif susceptibility_of_domain_start == 0 and susceptibility_of_domain1_end == 1:
-
+                elif domain_start_within_limits == False and domain_end_within_limits == True:
+                    # peptide start is prior to the domain start and the peptide finishes within domain limits
+                    #       PEPTIDE       
+                    #           DDDDDDDDDD
                     susceptibility_of_domain = susceptibility_of_domain + peptide_abundance
                     peptide_coverage = (value2 - Domain_start)
                     amino_acids_covered = list(range(int(Domain_start), value2))
                     peptides_found.append(peptide_sequence)
                     if type(amino_acids_covered) != int:
                         total_amino_acids = total_amino_acids + amino_acids_covered
-                elif susceptibility_of_domain_start == 1 and susceptibility_of_domain1_end == 1:
+                elif domain_start_within_limits == True and domain_end_within_limits == True:
+                    # both start and finish is within limits.
+                    #          PEPTIDE       
+                    # DDDDDDDDDDDDDDDDDDDDDDDDDD
                     susceptibility_of_domain = susceptibility_of_domain + peptide_abundance
                     peptide_coverage = length_of_peptide
                     amino_acids_covered = list(range(value1, value2))
                     total_amino_acids = total_amino_acids + amino_acids_covered
                     peptides_found.append(peptide_sequence)
+                elif domain_sequence in peptide_sequence:
+                    # here the entire peptide has covered the domain - this was lacking in v1
+                    #          PEPTIDE       
+                    #           DDDDD
+                    susceptibility_of_domain = susceptibility_of_domain + peptide_abundance
+                    amino_acids_covered = list(range(Domain_start, Domain_finish))
+                    total_amino_acids = total_amino_acids + amino_acids_covered
+                    peptides_found.append(peptide_sequence)
+
     myset_of_covered_amino_acids = list(set(total_amino_acids))
     amino_acids_covered = len(myset_of_covered_amino_acids)
     percentage_covered = float(amino_acids_covered) / (float(Domain_finish) - float(Domain_start)) * 100
@@ -198,48 +220,54 @@ def Get_all_Experiment_Domains(Gene_Name_global, sample, Analysis_Type, Results)
     mydb.disconnect()
     mycursor.close()
 
-
-def MPLF_Domain_Quantifications(Protein=None, Domain_Types=None, Protein_peptides=None,Reference_Proteome=None,Reference_Domains=None):
+def produce_all_the_domains_for_protein(domains,Fasta,Domain_Types):
     
-    ###############
-    ## This function counts the spectra within each of the defined domains for each of the counts
-    ###############
-    
-    Fasta = Reference_Proteome[Reference_Proteome.Uniprot_ID==Protein]["FASTA"][0]
-    domains=Reference_Domains[Reference_Domains.Uniprot_ID == Protein]
-
+    # This function produces all the domains needed for analysis.
     if not domains.empty:
         domains.Name=domains.Name.str.replace("'", "")
-        
     domain_ranges = [float(s.replace(" AA STEP", "")) for s in Domain_Types if "AA STEP" in s]
     for range_elem in domain_ranges:
         dom= Fasta_Analysis_Arbitarely_Domains(sequence=Fasta,step_size=range_elem)
         dom.Name = str(int(range_elem)) + "Step_" + dom.Name
         domains = pd.concat([domains, dom])
-
     # Here filter out the data
     if Domain_Types != None:
         domains = domains[domains.Type.isin(Domain_Types)]
+    # Deal with repeated domain names
+    domains.loc[domains.Name.duplicated(), "Name"] = domains[domains.Name.duplicated()].Name + "_" + domains[domains.Name.duplicated()].start.astype(int).astype(str) + "_" + domains[domains.Name.duplicated()].finish.astype(int).astype(str)
+    
+    # Remove any domain types that has only 1 entry as stats can not be performed on these.
+    Domain_type_frequencies = domains['Type'].value_counts()
+    Domain_types_not_suitable_for_stats = list(Domain_type_frequencies[Domain_type_frequencies==1].keys())
+    domains = domains[~domains['Type'].isin(Domain_types_not_suitable_for_stats)]
+    
+    return domains
+    
 
-    domains.loc[domains.Name.duplicated(), "Name"] = domains[domains.Name.duplicated()].Name + "_" + domains[
-        domains.Name.duplicated()].start.astype(int).astype(str) + "_" + domains[
-                                                         domains.Name.duplicated()].finish.astype(int).astype(str)
-    Protein_Entries = Protein_peptides[
-        Protein_peptides['Protein'].str.contains(Protein, na=False)]
+def MPLF_Domain_Quantifications(Protein=None, Domain_Types=None, Protein_Entries=None,Reference_Proteome=None,Reference_Domains=None):
+    
+    ###############
+    ## This function counts the spectra within each of the defined domains for each of the counts
+    ###############
+
+    Fasta = Reference_Proteome[Reference_Proteome.Uniprot_ID==Protein]["FASTA"][0]
+    domains=Reference_Domains[Reference_Domains.Uniprot_ID == Protein]
+    All_Protein_Domains_suitable_for_stats = produce_all_the_domains_for_protein(domains,Fasta,Domain_Types)
+    
     experiment_names = Protein_Entries['Sample'].unique()
     Experiment_dict = {}
     Experiment_Coverages = pd.DataFrame()
     for experiment in experiment_names:
         Protein_entries_experiment = Protein_Entries[Protein_Entries['Sample'] == experiment]
         Exclusive_spectrum_count = Protein_entries_experiment['spectra'].sum()
-        for index, row in domains.iterrows():
+        for index, row in All_Protein_Domains_suitable_for_stats.iterrows():
             Domain_name = row.Name
             Domain_start = row.start
             Domain_finish = row.finish
             Domain_type = row.Type
 
             susceptibility_of_domain, Domain_name, percentage_covered, peptides_found = analysed_domain_coverage(
-                Domain_name, Domain_start, Domain_finish, Protein_entries_experiment, Fasta)
+                Domain_name, int(Domain_start), int(Domain_finish), Protein_entries_experiment, Fasta)
 
             Experiment_Coverages = Experiment_Coverages.append(
                 {'Domain_Name': Domain_name,  #
@@ -250,70 +278,58 @@ def MPLF_Domain_Quantifications(Protein=None, Domain_Types=None, Protein_peptide
                     'Percent_Covered': percentage_covered,  #
                     'Exclusive_spectrum_count': Exclusive_spectrum_count,  #
                     'experiment_name': experiment,  #
-                    # 'Experiment_Setup': domains , #????
                     'GeneAC': Protein,  #
                     'peptides_found': peptides_found  #
                     }, ignore_index=True)
+            
         Experiment_dict[experiment] = Experiment_Coverages
     return Experiment_Coverages
 
 
-def analyse_sample(key, value2, Results):
-    Spectral_total_counts = pd.DataFrame(index=value2)
-    experiment_setup_pandas = Results[
+def per_domain_quantification_matrix(key, value2, Results):
+    
+    ##############
+    ## This function emits 2 matrises - 
+    # 2) Matrix with the per sample counts 
+    # 3) Peptides identified for each of the domains in the experimental group
+    ##############
+    
+    experimental_group_counts = Results[
         ['Domain_Name', 'Domain_Start', 'Domain_Finish', 'Domain Type']].drop_duplicates()
-    experiment_setup_pandas = experiment_setup_pandas.set_index(experiment_setup_pandas.Domain_Name)
-    experiment_setup_pandas[
-        'Domain_Length'] = experiment_setup_pandas.Domain_Finish - experiment_setup_pandas.Domain_Start
-    Spectral_total_counts[key] = [0] * value2.__len__()
-    # experiment_setup_pandas_Peptide_Counts = experiment_setup_pandas.copy ( )
-
+    experimental_group_counts = experimental_group_counts.set_index(experimental_group_counts.Domain_Name)
+    experimental_group_counts[
+        'Domain_Length'] = experimental_group_counts.Domain_Finish - experimental_group_counts.Domain_Start
     col = 'Peptides ' + key
-    per_domain_peptides = pd.DataFrame([''] * experiment_setup_pandas.__len__(), columns=[col]).set_index(
-        experiment_setup_pandas.index)
+    per_domain_peptides = pd.DataFrame([''] * experimental_group_counts.__len__(), columns=[col]).set_index(
+        experimental_group_counts.index)
     i = -1
-
     for sample in value2:
         i = i + 1
         ##Get only this sample entries
-        experiment_setup_pandas[sample] = 0.0
-        # experiment_setup_pandas_Peptide_Counts [ sample ] = 0.0
+        experimental_group_counts[sample] = 0.0
+        # experimental_group_counts_Peptide_Counts [ sample ] = 0.0
         records = Results[Results.experiment_name == sample]
         records = records.set_index(records.Domain_Name)
         if not records.empty:
             Domain_Spectral_Count = records.NumberOfSpectra
-            Total_spectral_count = records.Exclusive_spectrum_count.reset_index().Exclusive_spectrum_count[0]
-            Spectral_total_counts[key][sample] = Total_spectral_count
-
-            for i, value in enumerate(records.peptides_found):
-                Domain = records.Domain_Name.iloc[i]
-                if value == '':
-                    number_of_peptides = 0
-                else:
-                    # number_of_peptides = value.split ( "," ).__len__ ( )
-                    value = value.replace(",", " ")
-                per_domain_peptides['Peptides ' + key][Domain] = per_domain_peptides['Peptides ' + key][
-                                                                     Domain] + ' ' + value
-                # experiment_setup_pandas_Peptide_Counts [ sample , Domain ] = number_of_peptides
-            experiment_setup_pandas[sample] = Domain_Spectral_Count
-    return Spectral_total_counts, experiment_setup_pandas, per_domain_peptides
+            per_domain_peptides['Peptides ' + key] = records.peptides_found.str.replace(",", " ")
+            experimental_group_counts[sample] = Domain_Spectral_Count
+    return experimental_group_counts, per_domain_peptides
 
 
 def normalise(Spectra_Matrix, Spectral_total_counts):
+    # This function scales the counts based on the normalisation factors.
     Spectra_Matrix_output = Spectra_Matrix.copy()
-
     Spectra_Values = Spectra_Matrix.iloc[:, 5:]
     for column in Spectra_Values:        # print(column)
         if column in Spectral_total_counts.index:
-            # print("yes")
+
             Factor = float(Spectral_total_counts.loc[column,"Factor"])
             value_for_Analysis = round(Spectra_Matrix[column] * Factor)
             Spectra_Matrix_output[column] = value_for_Analysis
         else:
-            # print("no")
             print("There is no sample present in the: "+column)
-
-
+            continue
     return Spectra_Matrix_output
 
 
@@ -336,30 +352,7 @@ def determine_differences(Norm_Stats_Spectra, Domain_lengths):
     return differences, averages
 
 
-def drop_repeats(domains, Results):
-    import collections
-    Combinations = list(itertools.combinations(domains.Domain_Name, 2))
-    to_drop = []
-    for combo in Combinations:
-        y = range(int(domains[domains.Domain_Name == combo[0]].Domain_Start),
-                  int(domains[domains.Domain_Name == combo[0]].Domain_Finish))
-        x = range(int(domains[domains.Domain_Name == combo[1]].Domain_Start),
-                  int(domains[domains.Domain_Name == combo[1]].Domain_Finish))
-        xs = set(x)
-        overlap = xs.intersection(y)
-        if len(overlap) > 0:
-            ##Here we pick only one of the 2 domains
-            if len(x) < len(y):
-                to_drop.append(combo[0])
-            else:
-                to_drop.append(combo[1])
-        else:
-            continue
-
-    ctr = collections.Counter(to_drop)
-    for elem in ctr.items():
-        if elem[1] > 1:
-            domains = domains[domains.Domain_Name != elem[0]]
+def drop_one_of_the_overlapping_domains(domains, Results):       
     Combinations = list(itertools.combinations(domains.Domain_Name, 2))
     to_drop = []
     for combo in Combinations:
@@ -393,15 +386,15 @@ def keys_to_Pandas(experiment_feed):
     Data = Data.loc[:, ~Data.columns.duplicated()]
     return Data
 
-
-def MPLF_Statistical_Analyisis(experiment_feed=None, Results=None, Protein=None,paired=True,cuttoff_p_val=0.05):
-    Data2 = pd.DataFrame()
-    Unique_Domains = Results['Domain Type'].unique()
-    Datafile = Results
-    DataVal = []
-    Spectral_total_counts = Results[["experiment_name", "Exclusive_spectrum_count"]].drop_duplicates()
+def Add_values_to_missing_experiments(Results,experiment_feed):
+    
+    ##################
+    # There may be samples determined in the experimental design but not quantified in the PLF
+    # For these we are adding 0 to the normalisation
+    ###################
     value=[]
-    # Adding 0 to the normalisation
+    Spectral_total_counts = Results[["experiment_name", "Exclusive_spectrum_count"]].drop_duplicates()
+
     for key,value2 in experiment_feed.items():
         value.extend(value2)
     for value1 in value:
@@ -416,71 +409,68 @@ def MPLF_Statistical_Analyisis(experiment_feed=None, Results=None, Protein=None,
     Spectral_total_counts = Spectral_total_counts.set_index("experiment_name")
     Median_Norm_Factor = statistics.median(
         [Spectral_total_counts["Exclusive_spectrum_count"].max(),
-         Spectral_total_counts["Exclusive_spectrum_count"].min()])
+        Spectral_total_counts["Exclusive_spectrum_count"].min()])
+    
     Spectral_total_counts["Median_Norm"] = Median_Norm_Factor
     Spectral_total_counts["Factor"] = Spectral_total_counts["Median_Norm"] / Spectral_total_counts[
         "Exclusive_spectrum_count"]
+    return Spectral_total_counts
+
+def MPLF_Statistical_Analyisis(experiment_feed=None, Results=None, Protein=None,paired=True,cuttoff_p_val=0.05):
+    Combined_Data_Frame_With_Statistics = pd.DataFrame()
+    Unique_Domains = Results['Domain Type'].unique()
+    Datafile = Results
+
+    
+    Spectral_total_counts = Add_values_to_missing_experiments(Results,experiment_feed)
+    p_val_name = None
     # Loop through each of the domain types
     for Data_Type in Unique_Domains:
         Results = Datafile[Datafile['Domain Type'] == Data_Type]
         domains = Results[["Domain_Name", "Domain_Finish", "Domain_Start"]]
         domains = domains.drop_duplicates()
+        # Here Check for the overlap of the domains and if present then just pick one that covers the largest area
+        Results = drop_one_of_the_overlapping_domains(domains, Results)
+        if not Results.empty:
+            experiments_all_Spectra = {}
 
-        # Here first check the number of domains and then
-        if domains.Domain_Name.__len__() > 1:
-            # Here Check for the overlap of the DataSets.
-            Results = drop_repeats(domains, Results)
-            if not Results.empty:
-                experiments_all_Spectra = {}
-                experiments_all_counts = {}
-                experiments_all_Peptides = {}
-                experiments_all_Spectra_For_Stats = {}
+            experiments_all_Peptides = {}
+            experiments_all_Spectra_For_Stats = {}
 
-                # Get the spectral total counts for different samples.
-                Dataframes =pd.DataFrame()
-                for key, value2 in experiment_feed.items():
-                    # Had to fix here, we have now used the toatal sample normalisation
-                    _, Spectra_Matrix, Peptides = analyse_sample(key, value2,
-                                                                 Results)
-                    Norm_Stats_Spectra = normalise(Spectra_Matrix,Spectral_total_counts)
-                    experiments_all_Spectra[key] = Norm_Stats_Spectra
-                    experiments_all_Spectra_For_Stats[key] = Norm_Stats_Spectra.drop(
-                        columns=["Domain_Start", "Domain_Finish", "Domain Type", "Domain_Length"])
-                    Original = Spectra_Matrix.iloc[:,5:].add_prefix("Original_")
-                    Dataframes=pd.concat([Dataframes,Original], axis=1, sort=False)
-                    experiments_all_Peptides[key] = Peptides
+            # Get the spectral total counts for different samples.
+            All_initial_peptide_quantifications =pd.DataFrame()
+            for key, value2 in experiment_feed.items():
 
-                Domain_lengths = Norm_Stats_Spectra.Domain_Length
-                Differences, Averages = determine_differences(experiments_all_Spectra, Domain_lengths)
-              
-                Peptides_PD = keys_to_Pandas(experiments_all_Peptides)
-                All_Spectra = keys_to_Pandas(experiments_all_Spectra).drop_duplicates()
-                Averages = pd.DataFrame(Averages)
-                
-                p_values_adjusted = Two_Way_mixed_Anova(experiments_all_Spectra_For_Stats,paired=paired)
-                p_values = p_values_adjusted.set_index(p_values_adjusted.Domain_Name)
-                p_values.fillna(value=1,inplace=True)
-                
-                Data_Values = p_values_adjusted.iloc[:, 1:]
-                DataVal.extend(Data_Values.values)
-                Data = pd.concat([All_Spectra, Differences, p_values, Averages, Peptides_PD,Dataframes], axis=1)
-                Data2 = Data2.append(Data)
-            else:
-                print("result empty")
+                Spectra_Matrix, Peptides = per_domain_quantification_matrix(key, value2,
+                                                                Results)
+                Norm_Stats_Spectra = normalise(Spectra_Matrix,Spectral_total_counts)
+                experiments_all_Spectra[key] = Norm_Stats_Spectra
+                experiments_all_Spectra_For_Stats[key] = Norm_Stats_Spectra.drop(
+                    columns=["Domain_Start", "Domain_Finish", "Domain Type", "Domain_Length"])
+                Original = Spectra_Matrix.iloc[:,5:].add_prefix("Original_")
+                All_initial_peptide_quantifications=pd.concat([All_initial_peptide_quantifications,Original], axis=1, sort=False)
+                experiments_all_Peptides[key] = Peptides
+
+            Domain_lengths = Norm_Stats_Spectra.Domain_Length
+            Differences, Averages = determine_differences(experiments_all_Spectra, Domain_lengths)
+            
+            Peptides_PD = keys_to_Pandas(experiments_all_Peptides)
+            All_Spectra = keys_to_Pandas(experiments_all_Spectra).drop_duplicates()
+            Averages = pd.DataFrame(Averages)
+            
+            p_values_adjusted = Two_Way_mixed_Anova(experiments_all_Spectra_For_Stats,paired=paired)
+            p_values_adjusted = p_values_adjusted.set_index('Domain_Name')
+            p_val_name = p_values_adjusted.columns.values[0]
+            Combined_Data_Frame_for_this_experiment = pd.concat([All_Spectra, Differences, p_values_adjusted, Averages, Peptides_PD,All_initial_peptide_quantifications], axis=1)
+            Combined_Data_Frame_With_Statistics = Combined_Data_Frame_With_Statistics.append(Combined_Data_Frame_for_this_experiment)
         else:
-            print("Only 1 domain avaliable. Cant do stats on 1 Domain")
-    print('Done here')
-    if DataVal.__len__()>0:
-        if (pd.DataFrame(DataVal) < cuttoff_p_val).any()[0]:
-            Data2['GeneAC'] = Protein
-            Data3 = Data2.loc[:, ~Data2.columns.duplicated()]
-            return Data3, Spectral_total_counts
-        else:
-            print("No p values with significance here!")
-            return [], []
-    else:
-        print("No p values with significance here!")
-        return [],[]
+            continue
+    
+    if Combined_Data_Frame_With_Statistics.__len__()>0:
+        if (Combined_Data_Frame_With_Statistics[p_val_name] <= cuttoff_p_val).any():
+            Combined_Data_Frame_With_Statistics['GeneAC'] = Protein
+            Combined_Data_Frame_With_Statistics = Combined_Data_Frame_With_Statistics.loc[:, ~Combined_Data_Frame_With_Statistics.columns.duplicated()]
+    return Combined_Data_Frame_With_Statistics, Spectral_total_counts
 
 
 def Master_Run_Score_Calculations(Structural_Analysis_Results, Protein):

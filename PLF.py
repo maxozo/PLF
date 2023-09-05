@@ -1,125 +1,182 @@
+#!/usr/bin/env python
+__date__ = '2023-09-13'
+__version__ = '0.0.1'
+
 import pandas as pd
-from Functions_Clean import MPLF_Domain_Quantifications, MPLF_Statistical_Analyisis
+
 import json
-Structural_Json = {}
-Coverage_Json = {}
+
 Experimental_coverages_all = {}
 Reference_Proteome=None
 Reference_Domains=None
 Protein_peptides2={}
 
-def collect_result(result):
-    print("collected")
-    Protein1=result[2]
-    Coverage_Json1=result[0]
-    Structural_Json1=result[1]
-    Coverage_Json[Protein1] = Coverage_Json1
-    Structural_Json[Protein1] = Structural_Json1
 
-def record_data(Structural_Json,Owner_ID,id,Domain_types):
-    import mysql.connector
-    from secret import HOST, PORT, PASSWORD, DB, USER
-    connection = mysql.connector.connect(host=HOST,
-                                        database=DB,
-                                        user=USER,port=PORT,
-                                        password=PASSWORD,
-                                        auth_plugin='mysql_native_password')
-    cursor_query = connection.cursor()
-    Significant_Protein_Count = Structural_Json.keys().__len__()
-    # experiment_coverages = json.dumps(Coverage_Json)
-    structural_analysis_results = json.dumps(Structural_Json)
-    Domain_types1=json.dumps(Domain_types)
-    # sql_query = f"UPDATE `Structural_userdata` SET Structural_Results=JSON_MERGE_PATCH(`Structural_Results`, '{structural_analysis_results}')," \
-    #             f" Experimental_Coverages=JSON_MERGE_PATCH(`Experimental_Coverages`,'{experiment_coverages}')," \
-    #             f" Progress='Analysing', Significant_Protein_Count=`Significant_Protein_Count`+{Significant_Protein_Count} " \
-    #             f"WHERE (`id` like {id} and `owner_id` LIKE {Owner_ID})"
+# def record_data(Structural_Json,Owner_ID,id,Domain_types):
+#     import mysql.connector
+#     from secret import HOST, PORT, PASSWORD, DB, USER
+#     connection = mysql.connector.connect(host=HOST,
+#                                         database=DB,
+#                                         user=USER,port=PORT,
+#                                         password=PASSWORD,
+#                                         auth_plugin='mysql_native_password')
+#     cursor_query = connection.cursor()
+#     Significant_Protein_Count = Structural_Json.keys().__len__()
+#     # experiment_coverages = json.dumps(Coverage_Json)
+#     structural_analysis_results = json.dumps(Structural_Json)
+#     Domain_types1=json.dumps(Domain_types)
+#     # sql_query = f"UPDATE `Structural_userdata` SET Structural_Results=JSON_MERGE_PATCH(`Structural_Results`, '{structural_analysis_results}')," \
+#     #             f" Experimental_Coverages=JSON_MERGE_PATCH(`Experimental_Coverages`,'{experiment_coverages}')," \
+#     #             f" Progress='Analysing', Significant_Protein_Count=`Significant_Protein_Count`+{Significant_Protein_Count} " \
+#     #             f"WHERE (`id` like {id} and `owner_id` LIKE {Owner_ID})"
 
-    sql_query = f"UPDATE `Structural_userdata` SET Structural_Results='{structural_analysis_results}'," \
-            f" Progress='Finished',Domain_types='{Domain_types1}', Significant_Protein_Count='{Significant_Protein_Count}' " \
-            f"WHERE (`id` like {id} and `owner_id` LIKE {Owner_ID})"
-    # sql_query = f"UPDATE `Structural_userdata` SET Structural_Results='{structural_analysis_results}'," \
-    #         f" Domain_types='{Domain_types1}', Significant_Protein_Count='{Significant_Protein_Count}' " \
-    #         f"WHERE (`id` like {id} and `owner_id` LIKE {Owner_ID})"
+#     sql_query = f"UPDATE `Structural_userdata` SET Structural_Results='{structural_analysis_results}'," \
+#             f" Progress='Finished',Domain_types='{Domain_types1}', Significant_Protein_Count='{Significant_Protein_Count}' " \
+#             f"WHERE (`id` like {id} and `owner_id` LIKE {Owner_ID})"
+#     # sql_query = f"UPDATE `Structural_userdata` SET Structural_Results='{structural_analysis_results}'," \
+#     #         f" Domain_types='{Domain_types1}', Significant_Protein_Count='{Significant_Protein_Count}' " \
+#     #         f"WHERE (`id` like {id} and `owner_id` LIKE {Owner_ID})"
 
-    cursor_query.execute(sql_query)
-    connection.commit()
-    connection.disconnect()
-    cursor_query.close()
-    # clear the memory
-    # Structural_Json = {}
-    # Coverage_Json = {}
-    print("successfuly recorded significant domain")
-    return Structural_Json, Coverage_Json
+#     cursor_query.execute(sql_query)
+#     connection.commit()
+#     connection.disconnect()
+#     cursor_query.close()
+#     # clear the memory
+#     # Structural_Json = {}
+#     # Coverage_Json = {}
+#     print("successfuly recorded significant domain")
+#     return Structural_Json, Coverage_Json
 
-def MPLF(Protein,Reference_Proteome,Reference_Domains,Domain_types,Protein_peptides,experiment_feed,paired):
-    ###########
-    ## First all the coverages are calculated for each of the experiments within domains
-    ## Then the statistical analysis is performed to determine significant hits
-    ###########
-    print(f"Analysing protein: : {Protein}")
-    Experiment_Coverages = MPLF_Domain_Quantifications(Protein=Protein,
-                                                                    Domain_Types=Domain_types,
-                                                                    Protein_peptides=Protein_peptides,Reference_Proteome=Reference_Proteome,
-                                                                    Reference_Domains=Reference_Domains)
+
+
+class PLF:
+    
+    ######################
+    # This is a main PLF analysis processing class.
+    ######################
+    
+    def __init__(self,Protein_peptides,experiment_feed,Spiecies='HUMAN',Domain_Types=['DOMAINS', 'REGIONS', 'TOPO_DOM', 'TRANSMEM', 'REPEAT', '50.0 AA STEP'],paired=False,cpus=1):
+        self.Spiecies = Spiecies
+        self.Domain_types = Domain_Types
+        self.Protein_peptides=Protein_peptides
+        self.Coverage_Json={}
+        self.experiment_feed=experiment_feed
+        self.Structural_Json = {}
+        self.cpus = cpus
+        self.paired=paired
         
-    Structural_Analysis_Results, Norm_Factors = MPLF_Statistical_Analyisis(experiment_feed=experiment_feed,
-                                                                            Results=Experiment_Coverages,
-                                                                            Protein=Protein, paired=paired,cuttoff_p_val=0.05)
 
-    Structural_Analysis_Results.drop("GeneAC", axis=1, inplace=True)
-    Experiment_Coverages.drop("GeneAC", axis=1, inplace=True)
-    # k_val = k_val + 1
-    Experiment_Coverages = Experiment_Coverages[
-        Experiment_Coverages["Domain Type"].isin(Structural_Analysis_Results["Domain Type"].unique())]
-    Experiment_Coverages.set_index("Domain_Name", drop=False, inplace=True)
+    def MPLF(self,Protein,Reference_Proteome,Reference_Domains,Protein_Entries):
 
-    Coverage = Experiment_Coverages.to_dict()
-    Structural_Json= {"Data": Structural_Analysis_Results.to_dict('index'),
-                                "Norm_Factors": Norm_Factors.to_dict()}
+        ###########
+        ## First all the coverages are calculated for each of the experiments within domains
+        ## Then the statistical analysis is performed to determine significant hits
+        ###########
+        
+        from Functions_Clean import MPLF_Domain_Quantifications, MPLF_Statistical_Analyisis
 
-    return (Coverage,Structural_Json,Protein)   
+        Domain_types = self.Domain_types
+        experiment_feed = self.experiment_feed
+        paired = self.paired
 
-def append_protein_to_dictionary(Protein_peptides):
-    
-    #######################
-    # This function determines how many isoforms of the same gene is analysed. 
-    # For the performence and downstream analyisis purpose the pipeline is run 
-    # with only one of the isoforms. If uniprot reviewed entry is availavle then 
-    # this will be utilised, otherwise a random splicing version will be analysed.
-    #######################
-    
-    All_proteins={}
-    for i, Protein in enumerate(Protein_peptides.Protein.str.split(";").explode().unique()):
-        # Here gather all the unique gene names - all the revirewed entries + each unique non uniprot entry
-        Prot1=Reference_Proteome[Reference_Proteome["Uniprot_ID"]==Protein]
-        try:
-            Gene=Prot1["Uniprot_Gene"].values[0].split(" {")[0]
-            Gene=Gene.split(' ORFN')[0]
-        except:
-            # Gene name is not listed in the reference proteome, hence proceeding with the ID represented in the peptide file
-            Gene=Protein
-            
-        try:
-            Type=Prot1["Uniprot_Type"][0]
-        except:
-            # If the type is not available w asume that this is an unreviewed entity.
-            Type='Trembl'    
-        try:
-            All_proteins[Gene][Type].append(Protein)
-        except:
+        print(f"Analysing protein: : {Protein}")
+        # Each of the domain coverages per experiment is calculated in the folowing code
+        Experiment_Coverages = MPLF_Domain_Quantifications(Protein=Protein,
+                                                                        Domain_Types=Domain_types,
+                                                                        Protein_Entries=Protein_Entries,Reference_Proteome=Reference_Proteome,
+                                                                        Reference_Domains=Reference_Domains)
+        # Once the quantification has been performed then we perform the statistical analysis based on experimental design provided.
+        Structural_Analysis_Results, Norm_Factors = MPLF_Statistical_Analyisis(experiment_feed=experiment_feed,
+                                                                                Results=Experiment_Coverages,
+                                                                                Protein=Protein, paired=paired,cuttoff_p_val=0.05)
+
+        Structural_Analysis_Results.drop("GeneAC", axis=1, inplace=True)
+        Experiment_Coverages.drop("GeneAC", axis=1, inplace=True)
+        Experiment_Coverages = Experiment_Coverages[
+            Experiment_Coverages["Domain Type"].isin(Structural_Analysis_Results["Domain Type"].unique())]
+        Experiment_Coverages.set_index("Domain_Name", drop=False, inplace=True)
+        Coverage = Experiment_Coverages.to_dict()
+        Structural_Json= {"Data": Structural_Analysis_Results.to_dict('index'),
+                                    "Norm_Factors": Norm_Factors.to_dict()}
+        return (Coverage,Structural_Json,Protein)
+
+    def append_protein_to_dictionary(self,Protein_peptides,Reference_Proteome):
+        
+        #######################
+        # This function determines how many isoforms of the same gene is analysed. 
+        # For the performence and downstream analyisis purpose the pipeline is run 
+        # with only one of the isoforms. If uniprot reviewed entry is availavle then 
+        # this will be utilised, otherwise a random splicing version will be analysed.
+        #######################
+        
+        All_proteins={}
+        for i, Protein in enumerate(Protein_peptides['Protein'].str.split(";").explode().unique()):
+            # Here gather all the unique gene names - all the revirewed entries + each unique non uniprot entry
+            Prot1=Reference_Proteome[Reference_Proteome["Uniprot_ID"]==Protein]
             try:
-                All_proteins[Gene][Type]=[]
+                Gene=Prot1["Uniprot_Gene"].values[0].split(" {")[0]
+                Gene=Gene.split(' ORFN')[0]
+            except:
+                # Gene name is not listed in the reference proteome, hence proceeding with the ID represented in the peptide file
+                Gene=Protein
+                
+            try:
+                Type=Prot1["Uniprot_Type"][0]
+            except:
+                # If the type is not available w asume that this is an unreviewed entity.
+                Type='Trembl'    
+            try:
                 All_proteins[Gene][Type].append(Protein)
             except:
-                All_proteins[Gene]={}
-                All_proteins[Gene][Type]=[]
-                All_proteins[Gene][Type].append(Protein) 
-    return All_proteins
+                try:
+                    All_proteins[Gene][Type]=[]
+                    All_proteins[Gene][Type].append(Protein)
+                except:
+                    All_proteins[Gene]={}
+                    All_proteins[Gene][Type]=[]
+                    All_proteins[Gene][Type].append(Protein) 
+        return All_proteins
+
         
-def run_full_analysis( Domain_types, Protein_peptides, experiment_feed, Owner_ID=1, id=1, cpus=1,paired=False, Spiecies="HUMAN"):
+    def collect_result(self,result):
+        Protein1=result[2]
+        Coverage_Json1=result[0]
+        Structural_Json1=result[1]
+        self.Coverage_Json[Protein1] = Coverage_Json1
+        self.Structural_Json[Protein1] = Structural_Json1  
+           
+    def PLF_Analysis(self):
+        i=0
+        import multiprocessing as mp
+        
+        Reference_Proteome = pd.read_csv(f"outputs/Uniprot_{self.Spiecies}.tsv",sep="\t",index_col=0)
+        Reference_Domains = pd.read_csv(f"outputs/Domains_Uniprot_{self.Spiecies}.tsv",sep="\t",index_col=0)
+
+        
+        Protein_isoform_grouping = self.append_protein_to_dictionary(self.Protein_peptides,Reference_Proteome)
+        pool = mp.Pool(self.cpus)
+        for key in Protein_isoform_grouping.keys():
+            try:
+                Protein= Protein_isoform_grouping[key]['Uniprot'][0]
+            except:
+                Protein= Protein_isoform_grouping[key]['Trembl'][0]
+                
+            Protein_Entries = self.Protein_peptides[self.Protein_peptides['Protein'].str.contains(Protein, na=False)]
+
+            if self.cpus>1:
+                pool.apply_async(self.MPLF, args=([Protein,Reference_Proteome,Reference_Domains,Protein_Entries]),callback=self.collect_result) #paralel runs - uses all the cores available
+            else:
+                result = self.MPLF(Protein,Reference_Proteome,Reference_Domains,Protein_Entries)
+                self.collect_result(result)
+            i+=1
+        pool.close()
+        pool.join()
+        return (self.Coverage_Json,self.Structural_Json)      
+
+   
+def run_full_analysis( Domain_types, Protein_peptides, experiment_feed, cpus=1,paired=False, Spiecies="HUMAN"):
     # If we do decide to remove the protein entry then we have to look up each peptide in the library and find all the peptides for the protein thatr are provided.
-    Reference_Proteome = pd.read_csv(f"outputs/Uniprot_{Spiecies}.tsv",sep="\t",index_col=0)
-    Reference_Domains = pd.read_csv(f"outputs/Domains_Uniprot_{Spiecies}.tsv",sep="\t",index_col=0)
+
     if not 'Protein' in list(Protein_peptides.columns):
         Protein_peptides=match_peptide_to_protein(Protein_peptides,Reference_Proteome,cpus=cpus)
     elif  Protein_peptides.Protein.unique()[0]=='undefined':
@@ -128,30 +185,15 @@ def run_full_analysis( Domain_types, Protein_peptides, experiment_feed, Owner_ID
     Protein_peptides=Protein_peptides.dropna(subset=['spectra']) # Drop the NaN vales on spectra. ie - peptides are not detected in that sample
     Protein_peptides.Protein = Protein_peptides.Protein.str.replace(',',';')
 
-    Protein_isoform_grouping = append_protein_to_dictionary(Protein_peptides)
+    ##################
+    # PLF processing of each of the proteins
+    ##################
+    Coverage_Json,Structural_Json = PLF(Protein_peptides,experiment_feed,Spiecies=Spiecies,paired=paired,Domain_Types=Domain_types,cpus=cpus).PLF_Analysis()
 
-    i=0
-    import multiprocessing as mp
-    pool = mp.Pool(cpus)
-    for key in Protein_isoform_grouping.keys():
-        try:
-            Protein= Protein_isoform_grouping[key]['Uniprot'][0]
-        except:
-            Protein= Protein_isoform_grouping[key]['Trembl'][0]
-        
-        if cpus>1:
-            pool.apply_async(MPLF, args=([Protein,Reference_Proteome,Reference_Domains,Domain_types,Protein_peptides,experiment_feed,paired]),callback=collect_result) #paralel runs - uses all the cores available
-        else:
-            result = MPLF(Protein,Reference_Proteome,Reference_Domains,Domain_types,Protein_peptides,experiment_feed,paired)
-            collect_result(result)
-        i+=1
-
-    pool.close()
-    pool.join() 
-    with open(f"bin/Structural_Json_{Spiecies}_{Owner_ID}_{id}.json", 'w') as json_file:
-        json.dump(Structural_Json, json_file)
-    # Here have to add a visualisation module as per https://github.com/maxozo/ManchesterProteome/blob/e5fb1a1385b2bf11ddbc514d6ca3f0db6b2f272d/frontend/src/components/Structural/BarChart.js#L888-L890
-    record_data(Structural_Json, Owner_ID,id,Domain_types)
+    # with open(f"bin/Structural_Json_{Spiecies}_{Owner_ID}_{id}.json", 'w') as json_file:
+    #     json.dump(Structural_Json, json_file)
+    # # Here have to add a visualisation module as per https://github.com/maxozo/ManchesterProteome/blob/e5fb1a1385b2bf11ddbc514d6ca3f0db6b2f272d/frontend/src/components/Structural/BarChart.js#L888-L890
+    # record_data(Structural_Json, Owner_ID,id,Domain_types)
     return "success"
     
 def retrieve_all_proteins(peptide,Reference_Proteome):
