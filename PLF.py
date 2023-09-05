@@ -1,6 +1,4 @@
 import pandas as pd
-import sys
-import mysql.connector
 from Functions_Clean import MPLF_Domain_Quantifications, MPLF_Statistical_Analyisis
 import json
 Structural_Json = {}
@@ -8,11 +6,7 @@ Coverage_Json = {}
 Experimental_coverages_all = {}
 Reference_Proteome=None
 Reference_Domains=None
-# Protein_peptides2=pd.DataFrame(columns=['Sample', 'Peptide', 'Protein', 'spectra'])
-# Protein_peptides2=pd.DataFrame(columns=['Sample', 'Peptide', 'Protein', 'spectra'])
 Protein_peptides2={}
-# Reference_Proteome=[]
-# Reference_Domains=[]
 
 def collect_result(result):
     print("collected")
@@ -85,34 +79,31 @@ def MPLF(Protein,Reference_Proteome,Reference_Domains,Domain_types,Protein_pepti
 
     return (Coverage,Structural_Json,Protein)   
 
-        
-def run_full_analysis( Domain_types, Protein_peptides, experiment_feed, Owner_ID=1, id=1, cpus=1,paired=False, Spiecies="HUMAN"):
-    # If we do decide to remove the protein entry then we have to look up each peptide in the library and find all the peptides for the protein thatr are provided.
-    import os
-    Reference_Proteome = pd.read_csv(f"outputs/Uniprot_{Spiecies}.tsv",sep="\t",index_col=0)
-    Reference_Domains = pd.read_csv(f"outputs/Domains_Uniprot_{Spiecies}.tsv",sep="\t",index_col=0)
-    if not 'Protein' in list(Protein_peptides.columns):
-        Protein_peptides=match_peptide_to_protein(Protein_peptides,Reference_Proteome,cpus=cpus)
-    elif  Protein_peptides.Protein.unique()[0]=='undefined':
-        Protein_peptides=match_peptide_to_protein(Protein_peptides,Reference_Proteome,cpus=cpus)
-
-    # Protein_peptides=replace_with_ids(Protein_peptides,Reference_Proteome)
-    Protein_peptides=Protein_peptides.dropna(subset=['spectra']) # Drop the NaN vales on spectra. ie - peptides are not detected in that sample
-    Protein_peptides.Protein = Protein_peptides.Protein.str.replace(',',';')
+def append_protein_to_dictionary(Protein_peptides):
+    
+    #######################
+    # This function determines how many isoforms of the same gene is analysed. 
+    # For the performence and downstream analyisis purpose the pipeline is run 
+    # with only one of the isoforms. If uniprot reviewed entry is availavle then 
+    # this will be utilised, otherwise a random splicing version will be analysed.
+    #######################
+    
     All_proteins={}
     for i, Protein in enumerate(Protein_peptides.Protein.str.split(";").explode().unique()):
         # Here gather all the unique gene names - all the revirewed entries + each unique non uniprot entry
         Prot1=Reference_Proteome[Reference_Proteome["Uniprot_ID"]==Protein]
         try:
-            Gene=Prot1["Uniprot_Gene"][0].split(" {")[0]
+            Gene=Prot1["Uniprot_Gene"].values[0].split(" {")[0]
+            Gene=Gene.split(' ORFN')[0]
         except:
+            # Gene name is not listed in the reference proteome, hence proceeding with the ID represented in the peptide file
             Gene=Protein
+            
         try:
             Type=Prot1["Uniprot_Type"][0]
         except:
-            print(f'failed with {Protein} and hence continuing')
-            continue
-            # next
+            # If the type is not available w asume that this is an unreviewed entity.
+            Type='Trembl'    
         try:
             All_proteins[Gene][Type].append(Protein)
         except:
@@ -122,18 +113,31 @@ def run_full_analysis( Domain_types, Protein_peptides, experiment_feed, Owner_ID
             except:
                 All_proteins[Gene]={}
                 All_proteins[Gene][Type]=[]
-                All_proteins[Gene][Type].append(Protein)
+                All_proteins[Gene][Type].append(Protein) 
+    return All_proteins
+        
+def run_full_analysis( Domain_types, Protein_peptides, experiment_feed, Owner_ID=1, id=1, cpus=1,paired=False, Spiecies="HUMAN"):
+    # If we do decide to remove the protein entry then we have to look up each peptide in the library and find all the peptides for the protein thatr are provided.
+    Reference_Proteome = pd.read_csv(f"outputs/Uniprot_{Spiecies}.tsv",sep="\t",index_col=0)
+    Reference_Domains = pd.read_csv(f"outputs/Domains_Uniprot_{Spiecies}.tsv",sep="\t",index_col=0)
+    if not 'Protein' in list(Protein_peptides.columns):
+        Protein_peptides=match_peptide_to_protein(Protein_peptides,Reference_Proteome,cpus=cpus)
+    elif  Protein_peptides.Protein.unique()[0]=='undefined':
+        Protein_peptides=match_peptide_to_protein(Protein_peptides,Reference_Proteome,cpus=cpus)
+
+    Protein_peptides=Protein_peptides.dropna(subset=['spectra']) # Drop the NaN vales on spectra. ie - peptides are not detected in that sample
+    Protein_peptides.Protein = Protein_peptides.Protein.str.replace(',',';')
+
+    Protein_isoform_grouping = append_protein_to_dictionary(Protein_peptides)
+
     i=0
-    
-    
     import multiprocessing as mp
     pool = mp.Pool(cpus)
-    print(f"CPUS: {cpus}")
-    for key in All_proteins.keys():
+    for key in Protein_isoform_grouping.keys():
         try:
-            Protein= All_proteins[key]['Uniprot'][0]
+            Protein= Protein_isoform_grouping[key]['Uniprot'][0]
         except:
-            Protein= All_proteins[key]['Trembl'][0]
+            Protein= Protein_isoform_grouping[key]['Trembl'][0]
         
         if cpus>1:
             pool.apply_async(MPLF, args=([Protein,Reference_Proteome,Reference_Domains,Domain_types,Protein_peptides,experiment_feed,paired]),callback=collect_result) #paralel runs - uses all the cores available
@@ -144,23 +148,10 @@ def run_full_analysis( Domain_types, Protein_peptides, experiment_feed, Owner_ID
 
     pool.close()
     pool.join() 
-
     with open(f"bin/Structural_Json_{Spiecies}_{Owner_ID}_{id}.json", 'w') as json_file:
         json.dump(Structural_Json, json_file)
-
-    # here we wait for the process to finish and then HPC should send the data back.
-
-    # Structural_Json2=Structural_Json
-    # here have to add a visualisation module as per https://github.com/maxozo/ManchesterProteome/blob/e5fb1a1385b2bf11ddbc514d6ca3f0db6b2f272d/frontend/src/components/Structural/BarChart.js#L888-L890
+    # Here have to add a visualisation module as per https://github.com/maxozo/ManchesterProteome/blob/e5fb1a1385b2bf11ddbc514d6ca3f0db6b2f272d/frontend/src/components/Structural/BarChart.js#L888-L890
     record_data(Structural_Json, Owner_ID,id,Domain_types)
-
-
-    # # this is to record last entries that are not processed
-    # if (Structural_Json.keys().__len__()>0):
-    #     Structural_Json, Coverage_Json=record_data(Structural_Json, Coverage_Json, Owner_ID,id)
-
-    # connection_db.disconnect()
-    # cursor_query.close()
     return "success"
     
 def retrieve_all_proteins(peptide,Reference_Proteome):
@@ -168,8 +159,6 @@ def retrieve_all_proteins(peptide,Reference_Proteome):
     All_Proteins = ";".join(Proteins_containing_peptide)
     return {'peptide':peptide,'All_Proteins':All_Proteins}
 
-def append_results(result):
-    Protein_peptides2[result['peptide']]=result['All_Proteins']
 
 def replace_with_ids(Protein_peptides,Reference_Proteome):
     for Prot_string in Protein_peptides.Protein.unique():
@@ -261,130 +250,12 @@ def match_peptide_to_protein(Protein_peptides,Reference_Proteome,cpus=1):
         Protein_peptides.loc[Protein_peptides.Peptide == key,"Protein"]=peptide_protein_identities[key]
     return Protein_peptides
 
-def retrieve_mysql_data(id_to_process,cpus=1):
-
-    # import requests
-    # response = requests.get("http://www.manchesterproteome.manchester.ac.uk/run_api/MSP_api/?page=1&search=")
-    # print(response.json())
-    # d=response.json()
-    # with open("test_output.json", 'w') as json_file:
-    #     json.dump(d, json_file)
-
-
-    
-    from secret import HOST, PORT, PASSWORD, DB, USER
-    connection = mysql.connector.connect(host=HOST,
-                                        database=DB,
-                                        user=USER,port=PORT,
-                                        password=PASSWORD,
-                                        auth_plugin='mysql_native_password')
-    cursor_query = connection.cursor()
-
-    # # here could select the jobs that are qued - do this every 6h and if a new job is qued then process on the HPC cloud
-    # sql="SELECT id,name FROM `Structural_userdata` WHERE Progress LIKE 'Que'"
-    # cursor = connection.cursor()
-    # cursor.execute(sql)
-    # Data_ids = pd.DataFrame(cursor.fetchall())
-    # if not Data_ids.empty:
-    #     field_names = [i[0] for i in cursor.description]
-    #     Data_ids.columns = field_names
-    # id_to_process="138"
-    sql=f"SELECT * FROM `Structural_userdata` WHERE `id` LIKE '{id_to_process}'"
-    cursor = connection.cursor()
-    cursor.execute(sql)
-    Data = pd.DataFrame(cursor.fetchall())
-    if not Data.empty:
-        field_names = [i[0] for i in cursor.description]
-        Data.columns = field_names
-    print(f"id = {id_to_process}")
-
-    Owner_ID = Data.owner_id[0]
-    
-    Domain_types=json.loads(Data.Domain_Types[0])
-    # Domain_types=['DOMAINS', 'REGIONS', 'TOPO_DOM', 'TRANSMEM', 'REPEAT', '50.0 AA STEP']
-    experiment_feed = json.loads(Data.experimental_design[0])
-    
-    id = Data.id[0]
-    Data_Val = Data.data[0]
-    Data_Val = json.loads(Data_Val)
-    Protein_peptides = pd.DataFrame(Data_Val)
-    Paired= Data.Paired[0]
-    Spiecies=Data.Spiecies[0]
-    print(f"Spiecies: {Spiecies}")
-    # Domain_types = ['DOMAINS', 'REGIONS', 'TOPO_DOM', 'TRANSMEM', 'REPEAT', '50.0 AA STEP']
-    # Protein_peptides=pd.read_csv('Sample_Data/Protein_peptides.tsv',sep='\t',index_col=[0])
-    # Protein_peptides.to_csv('Sample_Data/Protein_peptides.tsv',sep='\t')
-    
-    # experiment_feed = pandas_to_experiment(pd.read_csv('Sample_Data/Experiment_feed.tsv',sep='\t',index_col=[0]))
-    # experiment_feed_pd = pd.DataFrame(experiment_feed)
-    # experiment_feed_pd.to_csv('Sample_Data/Experiment_feed.tsv',sep='\t')
-
-    run_full_analysis(Domain_types, Protein_peptides, experiment_feed,Owner_ID=Owner_ID,cpus=cpus,id=id,paired=Paired, Spiecies=Spiecies)
-
-    # '''
-    # with open(f"bin/Structural_Json_{Spiecies}_{Owner_ID}_{id}.json", 'r') as myfile:
-    #     Structural_Json=myfile.read()
-    # Structural_Json=json.loads(Structural_Json)
-    # record_data(Structural_Json, Owner_ID,id,Domain_types)
-    # '''
 
 def pandas_to_experiment(df):
     dict={}
     dict[df.iloc[:,0].name]=list(df.iloc[:,0])
     dict[df.iloc[:,1].name]=list(df.iloc[:,1])
     return dict
-
-def retrieve_save_and_process():
-    import mysql.connector
-    from secret import HOST, PORT, PASSWORD, DB, USER
-    connection = mysql.connector.connect(host=HOST,
-                                        database=DB,
-                                        user=USER,port=PORT,
-                                        password=PASSWORD,
-                                        auth_plugin='mysql_native_password')
-    cursor_query = connection.cursor()
-
-    # here could select the jobs that are qued - do this every 6h and if a new job is qued then process on the HPC cloud
-    sql="SELECT id FROM `Structural_userdata` WHERE Progress LIKE 'Que'"
-    cursor = connection.cursor()
-    cursor.execute(sql)
-    Data_ids = pd.DataFrame(cursor.fetchall())
-    if not Data_ids.empty:
-        field_names = [i[0] for i in cursor.description]
-        Data_ids.columns = field_names
-    
-    Data_ids.to_csv("tmp_ids.csv")
-
-def retrieve_mysql_data_test():
-    import requests
-    response = requests.get('http://www.manchesterproteome.manchester.ac.uk/run_api/MSP_api/?page=1&search=')
-    d = response.json()
-    with open("test_output.json", 'w') as json_file:
-        json.dump(d, json_file)
-
-    print("Done")
-        
-def update_user_id():
-    from secret import HOST, PORT, PASSWORD, DB, USER
-    connection = mysql.connector.connect(host=HOST,
-                                        database=DB,
-                                        user=USER,port=PORT,
-                                        password=PASSWORD,
-                                        auth_plugin='mysql_native_password')
-    cursor_query = connection.cursor()
-    sql="SELECT id,owner_id,name FROM `Structural_userdata` WHERE 1"
-    
-    cursor = connection.cursor()
-    cursor.execute(sql)
-    Data_ids = pd.DataFrame(cursor.fetchall())
-    if not Data_ids.empty:
-        field_names = [i[0] for i in cursor.description]
-        Data_ids.columns = field_names
-    # print(Data_ids)
-    id=138
-    sql=f"UPDATE `Structural_userdata` SET `owner_id`=11 WHERE id LIKE {id}"
-    cursor = connection.cursor()
-    cursor.execute(sql)
     
 def local_run():
     import os
@@ -409,32 +280,5 @@ def local_run():
     run_full_analysis(Domain_types, Protein_peptides, experiment_feed,cpus=cpus,paired=Paired, Spiecies=Spiecies)
 
 if __name__ == '__main__':
-    # '''bsub -o exercise5.output -n10 -R"select[mem>2500] rusage[mem=2500]" -M2500 python MS_Total_Software.py '''
-    # export  LSB_DEFAULTGROUP=hgi
-    # id_to_process = sys.argv[1]
-    # cpus = sys.argv[2]
-    # print(cpus)
-    # cpus=int(cpus)
-    # print(f"using {cpus} cpus")
-
-    # # update_user_id()
-    # # retrieve_mysql_data_test()
-    # # retrieve_save_and_process()
-    # # retrieve_save_and_process()
-    # retrieve_mysql_data(id_to_process,cpus=cpus)
-    
+    # This is PLF code. 
     local_run()
-
-
-    # import json
-    # paired=1
-    # id='1'
-    # Owner_ID='1'
-    # with open("sample_input/experiment_feed.json", 'r') as myfile:
-    #     experiment_feed=myfile.read()
-    # experiment_feed=json.loads(experiment_feed)
-    # Protein_peptides=pd.read_csv("sample_input/Protein_peptides.tsv",sep="\t",index_col=0)
-    # Domain_types=pd.read_csv("sample_input/Domain_types.tsv",sep="\t",index_col=0,names=["Dom"],header=1)
-    # Domain_types=Domain_types.Dom.values.tolist()
-    # Protein_peptides=pd.read_csv("tmp_working_file.csv",sep="\t",index_col=0)
-    # run_full_analysis(Domain_types, Protein_peptides, experiment_feed,Owner_ID,id,paired=paired)
