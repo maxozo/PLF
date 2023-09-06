@@ -5,10 +5,10 @@
 
 ## Quick start
 1. Prepeare a file that lists **Protein** name (optional if source protein not determined), **Peptide** sequence (remove any special characters from these), **Sample** of protein belionging and **spectra** (can be multiple columns as per: **spectra_1**,**spectra_2**, etc. -- these will be added up): as per [this file](https://github.com/maxozo/MPLF/blob/mplf_package/Sample_Data/sample_inputs_small/Sample_Data_For_Analysis.csv).
-|Protein|	Sample|	Peptide|	Exclusive spectrum count|	spectra|	spectra_2|	spectra_3|	spectra_4|
+| Protein |	Sample|	Peptide |	Exclusive spectrum count |	spectra |	spectra_2 |	spectra_3 |	spectra_4 |
 |-------- |	-------- |	-------- |	-------- |	-------- |	-------- |	-------- |	-------- |
-|FBLN1_HUMAN|	20180601_SherrattM_MO_15.raw (Full_Skin_15)|	CLAFECPENYR|	12|	0|	1|	0|	0|
-|FBLN1_HUMAN|	20180601_SherrattM_MO_15.raw (Full_Skin_15)|	CVDVDECAPPAEPCGK|	12|	0|	1|	0|	0|
+| FBLN1_HUMAN |	20180601_SherrattM_MO_15.raw (Full_Skin_15) |	CLAFECPENYR |	12 |	0 |	1 |	0 |	0 |
+| FBLN1_HUMAN |	20180601_SherrattM_MO_15.raw (Full_Skin_15) |	CVDVDECAPPAEPCGK |	12 |	0 |	1 |	0 |	0 |
 1. Prepeare a tsv file that lists the experimental design - as per [this file](https://github.com/maxozo/MPLF/blob/mplf_package/Sample_Data/sample_inputs_small/Experiment_feed.tsv). If paired make sure that the rows list matching pairs, otherwise any order is ok.
 2. Run the MPLF pipeline:
     `python PLF.py --experimental_design Experiment_feed.tsv --peptides Sample_Data_For_Analysis.csv --spiecies HUMAN`
