@@ -64,6 +64,7 @@ class PLF:
         self.Structural_Json = {}
         self.cpus = cpus
         self.paired=paired
+        self.Full_MPLF_Results = pd.DataFrame()
         
 
     def MPLF(self,Protein,Reference_Proteome,Reference_Domains,Protein_Entries):
@@ -89,7 +90,7 @@ class PLF:
         Structural_Analysis_Results, Norm_Factors = MPLF_Statistical_Analyisis(experiment_feed=experiment_feed,
                                                                                 Results=Experiment_Coverages,
                                                                                 Protein=Protein, paired=paired,cuttoff_p_val=0.05)
-
+        Structural_Analysis_Results2 = Structural_Analysis_Results.copy()
         Structural_Analysis_Results.drop("GeneAC", axis=1, inplace=True)
         Experiment_Coverages.drop("GeneAC", axis=1, inplace=True)
         Experiment_Coverages = Experiment_Coverages[
@@ -98,7 +99,7 @@ class PLF:
         Coverage = Experiment_Coverages.to_dict()
         Structural_Json= {"Data": Structural_Analysis_Results.to_dict('index'),
                                     "Norm_Factors": Norm_Factors.to_dict()}
-        return (Coverage,Structural_Json,Protein)
+        return (Coverage,Structural_Json,Protein,Structural_Analysis_Results2)
 
     def append_protein_to_dictionary(self,Protein_peptides,Reference_Proteome):
         
@@ -143,7 +144,8 @@ class PLF:
         Coverage_Json1=result[0]
         Structural_Json1=result[1]
         self.Coverage_Json[Protein1] = Coverage_Json1
-        self.Structural_Json[Protein1] = Structural_Json1  
+        self.Structural_Json[Protein1] = Structural_Json1
+        self.Full_MPLF_Results = pd.concat([self.Full_MPLF_Results,result[3]])
            
     def PLF_Analysis(self):
         i=0
@@ -171,7 +173,7 @@ class PLF:
             i+=1
         pool.close()
         pool.join()
-        return (self.Coverage_Json,self.Structural_Json)      
+        return (self.Coverage_Json,self.Structural_Json,self.Full_MPLF_Results)      
 
    
 def run_full_analysis( Domain_types, Protein_peptides, experiment_feed, cpus=1,paired=False, Spiecies="HUMAN"):
@@ -188,8 +190,8 @@ def run_full_analysis( Domain_types, Protein_peptides, experiment_feed, cpus=1,p
     ##################
     # PLF processing of each of the proteins
     ##################
-    Coverage_Json,Structural_Json = PLF(Protein_peptides,experiment_feed,Spiecies=Spiecies,paired=paired,Domain_Types=Domain_types,cpus=cpus).PLF_Analysis()
-
+    Coverage_Json,Structural_Json,Full_Results_TSV = PLF(Protein_peptides,experiment_feed,Spiecies=Spiecies,paired=paired,Domain_Types=Domain_types,cpus=cpus).PLF_Analysis()
+    Full_Results_TSV.to_csv('MPLF_Results.tsv',sep='\t',index=False)
     # with open(f"bin/Structural_Json_{Spiecies}_{Owner_ID}_{id}.json", 'w') as json_file:
     #     json.dump(Structural_Json, json_file)
     # # Here have to add a visualisation module as per https://github.com/maxozo/ManchesterProteome/blob/e5fb1a1385b2bf11ddbc514d6ca3f0db6b2f272d/frontend/src/components/Structural/BarChart.js#L888-L890

@@ -467,6 +467,8 @@ def MPLF_Statistical_Analyisis(experiment_feed=None, Results=None, Protein=None,
             continue
     
     if Combined_Data_Frame_With_Statistics.__len__()>0:
+        col = Combined_Data_Frame_With_Statistics.pop(p_val_name)
+        Combined_Data_Frame_With_Statistics.insert(3, col.name, col)
         if (Combined_Data_Frame_With_Statistics[p_val_name] <= cuttoff_p_val).any():
             Combined_Data_Frame_With_Statistics['GeneAC'] = Protein
             Combined_Data_Frame_With_Statistics = Combined_Data_Frame_With_Statistics.loc[:, ~Combined_Data_Frame_With_Statistics.columns.duplicated()]
