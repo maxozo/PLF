@@ -8,7 +8,7 @@
 
 ### Test data
 
-To just try to run the analysis on test data please run (thats also available for download on our (MPLF website)[https://www.manchesterproteome.manchester.ac.uk/#/MPLF]):
+To just try to run the analysis on test data please run (thats also available for download on our [MPLF website](https://www.manchesterproteome.manchester.ac.uk/#/MPLF) ):
 
 `python PLF.py --test --outname My_Test_Run`
 
