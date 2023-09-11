@@ -70,28 +70,6 @@ def Get_Domains(data=None):
     return df_with_doamin_info
 
 
-def ID_to_Gene_Name(ID):
-
-
-    url = 'https://www.uniprot.org/uploadlists/'
-
-    params = {
-        'from': 'ACC+ID',
-        'to': 'GENENAME',
-        'format': 'tab',
-        'query': ID
-    }
-
-    data = urllib.urlencode(params)
-    request = urllib2.Request(url, data)
-    contact = "matiss.ozols@manchester.ac.uk"  # Please set a contact email address here to help us debug in case of problems (see https://www.uniprot.org/help/privacy).
-    request.add_header('User-Agent', 'Python %s' % contact)
-    response = urllib2.urlopen(request)
-    page = response.read(200000)
-    gene_name = ((page.split("\n"))[1]).split("\t")[1]
-
-    return gene_name
-
 def record_Results_MS(susceptibilities_of_domains_for_UVA, MAX, MIN, Full_susceptibility=None, process=None, Result_Basket=None,experiment_name='',mapping=None):
     # this part records information that will be displayed on the html file in a Text file.
 

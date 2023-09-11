@@ -1,0 +1,5 @@
+PASSWORD = "Jaem3xo!"
+USER = "monthy"
+HOST = "130.88.96.141"
+DB = "MSP"
+PORT = "3307"
