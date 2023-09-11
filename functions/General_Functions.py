@@ -69,55 +69,6 @@ def Get_Domains(data=None):
                 ignore_index=True)
     return df_with_doamin_info
 
-
-def record_Results_MS(susceptibilities_of_domains_for_UVA, MAX, MIN, Full_susceptibility=None, process=None, Result_Basket=None,experiment_name='',mapping=None):
-    # this part records information that will be displayed on the html file in a Text file.
-
-    file_object = open('/home/mbchpmo2/Write/'+experiment_name+'MS_FASTA.seq', 'w+') #database neme
-    sequence = Result_Basket.sequence.iloc[0]
-    file_object.write(str(Full_susceptibility['NumberOfSpectra'][0])) #'this probably should be coverage'
-    file_object.write("\n")
-    file_object.write(sequence)
-    file_object.write("\n")
-    file_object.write(str(MAX))
-    file_object.write("\n")
-    file_object.write(str(MIN))
-    file_object.close()
-    cols = ['Domain Name', 'Domain Start', 'Domain Finish', 'NumberOfSpectra','Colours']
-    susceptibilities_of_domains_for_UVA=susceptibilities_of_domains_for_UVA[cols]
-    susceptibilities_of_domains_for_UVA.to_csv("/home/mbchpmo2/Write/"+experiment_name+"MS_Output.csv")
-
-    cols = ['Domain Name', 'Domain Start', 'Domain Finish', 'NumberOfSpectra']
-    Downoladable = susceptibilities_of_domains_for_UVA[cols]
-    Downoladable.to_csv("/home/mbchpmo2/Write/"+experiment_name+"MS_Domains.csv",index=False)
-    os.chmod("/home/mbchpmo2/Write/"+experiment_name+"MS_FASTA.seq", 0o777)
-    os.chmod("/home/mbchpmo2/Write/"+experiment_name+"MS_Output.csv", 0o777)
-    os.chmod("/home/mbchpmo2/Write/"+experiment_name+"MS_Domains.csv", 0o777)
-
-def record_Results(susceptibilities_of_domains_for_UVA, MAX, MIN, Full_susceptibility=None, process=None, Result_Basket=None):
-    # this part records information that will be displayed on the html file.
-
-    file_object = open('/home/mbchpmo2/Write/FASTA.seq', 'w+')
-    sequence = Result_Basket.sequence.iloc[0]
-    file_object.write(str(Full_susceptibility[process]))
-    file_object.write("\n")
-    file_object.write(sequence)
-    file_object.write("\n")
-    file_object.write(str(MAX))
-    file_object.write("\n")
-    file_object.write(str(MIN))
-    file_object.close()
-    cols = ['Domain Name', 'Domain Start', 'Domain Finish', 'Susceptibility','Colours']
-    susceptibilities_of_domains_for_UVA=susceptibilities_of_domains_for_UVA[cols]
-    susceptibilities_of_domains_for_UVA.to_csv("/home/mbchpmo2/Write/Output.csv")
-
-    cols = ['Domain Name', 'Domain Start', 'Domain Finish', 'Susceptibility']
-    Downoladable = susceptibilities_of_domains_for_UVA[cols]
-    Downoladable.to_csv("/home/mbchpmo2/Write/Domains.csv",index=False)
-    os.chmod("/home/mbchpmo2/Write/FASTA.seq", 0o777)
-    os.chmod("/home/mbchpmo2/Write/Output.csv", 0o777)
-    os.chmod("/home/mbchpmo2/Write/Domains.csv", 0o777)
-
 def grep_regex(x,y):
     import re
     count = 0

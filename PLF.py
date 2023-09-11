@@ -6,7 +6,7 @@ import pandas as pd
 import json
 import argparse
 import os
-
+import sys
 Experimental_coverages_all = {}
 Reference_Proteome=None
 Reference_Domains=None
@@ -139,7 +139,7 @@ class PLF:
         return (self.Coverage_Json,self.Structural_Json,self.Full_MPLF_Results)      
 
    
-def run_full_analysis( Domain_types, Protein_peptides, experiment_feed, cpus=1,paired=False, Spiecies="HUMAN"):
+def run_full_analysis( Domain_types, Protein_peptides, experiment_feed, cpus=1,paired=False, Spiecies="HUMAN",outname='Default_MPLF'):
     # If we do decide to remove the protein entry then we have to look up each peptide in the library and find all the peptides for the protein thatr are provided.
 
     if not 'Protein' in list(Protein_peptides.columns):
@@ -154,7 +154,7 @@ def run_full_analysis( Domain_types, Protein_peptides, experiment_feed, cpus=1,p
     # PLF processing of each of the proteins
     ##################
     Coverage_Json,Structural_Json,Full_Results_TSV = PLF(Protein_peptides,experiment_feed,Spiecies=Spiecies,paired=paired,Domain_Types=Domain_types,cpus=cpus).PLF_Analysis()
-    Full_Results_TSV.to_csv('MPLF_Results.tsv',sep='\t',index=False)
+    Full_Results_TSV.to_csv(f'{outname}.tsv',sep='\t',index=False)
 
     mplf_export_data={}
     mplf_export_data['Structural_Results']=Structural_Json
@@ -163,7 +163,7 @@ def run_full_analysis( Domain_types, Protein_peptides, experiment_feed, cpus=1,p
     mplf_export_data['Significant_Protein_Count']=len(Structural_Json.keys())
     mplf_export_data['Paired']=paired
     mplf_export_data['Spiecies']=Spiecies
-    with open('MPLF_Results_json.mplf', 'w') as f:
+    with open(f'{outname}.mplf', 'w') as f:
         json.dump(mplf_export_data, f)
     return "success"
     
@@ -276,15 +276,26 @@ def PLF_run(options):
      
 def test_run(options):
     print('Test Run.......')
-    Spiecies='HUMAN'
-    Paired=1
-    Domain_types = ['DOMAINS', 'REGIONS', 'TOPO_DOM', 'TRANSMEM', 'REPEAT', '50.0 AA STEP']
-    cpus = os.cpu_count()
-    cpus = 1
+    dir1= os.path.dirname(os.path.abspath(sys.argv[0]))
+    Spiecies=options.spiecies
+    Paired=bool(options.paired)
+    Domain_types_pre = set(options.domain_types.split(','))
+    Domain_types=[]
+    for s in Domain_types_pre:
+        if "AA" in s:
+            s=s.replace('AA','.0 AA STEP')
+        Domain_types.append(s)
+    cpus = options.cpus
+    outname=options.outname
+    if cpus=='max':
+        cpus=os.cpu_count()
+    else:
+        cpus=int(cpus)
     try:
-        Protein_peptides=pd.read_csv('sample_data/sample_inputs_small/sample_data_For_Analysis.csv',index_col=False)
+        Protein_peptides=pd.read_csv(f'{dir1}/sample_data/sample_inputs_small/Sample_Data_For_Analysis.csv',index_col=False)
     except:
-        Protein_peptides=pd.read_csv('sample_data/sample_inputs_small/sample_data_For_Analysis.csv',sep='\t',index_col=False)
+        Protein_peptides=pd.read_csv(f'{dir1}/sample_data/sample_inputs_small/Sample_Data_For_Analysis.csv',sep='\t',index_col=False)
+    
     #  If more then 1 spectra columns, then add them up.
     matching = [s for s in Protein_peptides.columns if "spectra" in s]
     if len(matching)>1:
@@ -293,8 +304,8 @@ def test_run(options):
         Protein_peptides['spectra']=summed_spectra
         del summed_spectra
     
-    experiment_feed = pandas_to_experiment(pd.read_csv('sample_data/sample_inputs_small/Experiment_feed.tsv',sep='\t',index_col=False))
-    run_full_analysis(Domain_types, Protein_peptides, experiment_feed,cpus=cpus,paired=Paired, Spiecies=Spiecies)
+    experiment_feed = pandas_to_experiment(pd.read_csv(f'{dir1}/sample_data/sample_inputs_small/Experiment_feed.tsv',sep='\t',index_col=False))
+    run_full_analysis(Domain_types, Protein_peptides, experiment_feed,cpus=cpus,paired=Paired, Spiecies=Spiecies,outname=outname)
 
 def cli():
     parser = argparse.ArgumentParser(
@@ -352,11 +363,17 @@ def cli():
     
     parser.add_argument(
         '--test',
-        action='store',
+        action='store_true',
         dest='test',
-        required=False,
-        default=True,
         help='test run')
+
+    parser.add_argument(
+        '--outname',
+        action='store',
+        dest='outname',
+        required=False,
+        default='MPLF_Results',
+        help='outname')
 
     options = parser.parse_args()
     return options

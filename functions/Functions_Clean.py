@@ -1,9 +1,9 @@
 import os
 import re
 import statistics
-from General_Functions import *
+from functions.General_Functions import *
 import pandas as pd
-from anova import Two_Way_mixed_Anova
+from functions.anova import Two_Way_mixed_Anova
 import itertools
 
 def Within_limits(point_to_analyse, z, q):
