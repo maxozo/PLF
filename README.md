@@ -32,13 +32,24 @@ To just try to run the analysis on test data please run (thats also available fo
 
 3. Run the MPLF pipeline:
 
-           `python PLF.py --experimental_design Experiment_feed.tsv --peptides Sample_Data_For_Analysis.csv --spiecies HUMAN --domain_types DOMAINS,REGIONS,TOPO_DOM,TRANSMEM,REPEAT,50AA,75AA,100AA --paired True --cpus max --test --outname MPLF_RUN`
+  `python PLF.py --experimental_design Experiment_feed.tsv --peptides Sample_Data_For_Analysis.csv --spiecies HUMAN --domain_types DOMAINS,REGIONS,TOPO_DOM,TRANSMEM,REPEAT,50AA,75AA,100AA --paired True --cpus max --outname MPLF_RUN`
 
-           
+          Required:
+          
+          --experimental_design  This allows to provide the experimental defign file file
 
-          test view
+          --peptides   This allows to provide your peptides file
 
-          test view
+          --spiecies   The spiecies of the peptides
+
+          --paired    Is the samples specified in experimental_design paired or unpaired
+
+          --outname  The name of the output files
+
+          Optional:
+
+          --cpus     How many cpus to use for analysis (by default all available cpus will be used)
+
     
 
 ## Methods
