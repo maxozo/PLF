@@ -1,5 +1,3 @@
-# This repository contains PLF code
-
 <p align="center">
   <img src="assets/images/PLF.png" width="68%"/>
 </p>
