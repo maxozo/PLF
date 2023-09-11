@@ -35,7 +35,7 @@ class PLF:
         ## Then the statistical analysis is performed to determine significant hits
         ###########
         
-        from Functions_Clean import MPLF_Domain_Quantifications, MPLF_Statistical_Analyisis
+        from functions.Functions_Clean import MPLF_Domain_Quantifications, MPLF_Statistical_Analyisis
 
         Domain_types = self.Domain_types
         experiment_feed = self.experiment_feed
@@ -276,9 +276,9 @@ def local_run():
     cpus = os.cpu_count()
     cpus = 1
     try:
-        Protein_peptides=pd.read_csv('Sample_Data/sample_inputs_small/Sample_Data_For_Analysis.csv',index_col=False)
+        Protein_peptides=pd.read_csv('sample_data/sample_inputs_small/sample_data_For_Analysis.csv',index_col=False)
     except:
-        Protein_peptides=pd.read_csv('Sample_Data/sample_inputs_small/Sample_Data_For_Analysis.csv',sep='\t',index_col=False)
+        Protein_peptides=pd.read_csv('sample_data/sample_inputs_small/sample_data_For_Analysis.csv',sep='\t',index_col=False)
     #  If more then 1 spectra columns, then add them up.
     matching = [s for s in Protein_peptides.columns if "spectra" in s]
     if len(matching)>1:
@@ -287,7 +287,7 @@ def local_run():
         Protein_peptides['spectra']=summed_spectra
         del summed_spectra
     
-    experiment_feed = pandas_to_experiment(pd.read_csv('Sample_Data/sample_inputs_small/Experiment_feed.tsv',sep='\t',index_col=False))
+    experiment_feed = pandas_to_experiment(pd.read_csv('sample_data/sample_inputs_small/Experiment_feed.tsv',sep='\t',index_col=False))
     run_full_analysis(Domain_types, Protein_peptides, experiment_feed,cpus=cpus,paired=Paired, Spiecies=Spiecies)
 
 if __name__ == '__main__':
