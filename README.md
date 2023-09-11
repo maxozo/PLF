@@ -30,6 +30,7 @@
 <p align="center">
   <img src="assets/images/ACEL.jpg" width="55%"/>
 </p>
+
 [For details please read our publication](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8135079/figure/acel13355-fig-0001/)
 
 ## References (please cite)
