@@ -7,13 +7,16 @@
 ## Quick start
 
 ### Instalation
-python 3.8> is required
+python version >=3.8 is required
 
 Create a new virtual python enviroment
-           python -m venv mplf_venv
+
+         python -m venv mplf_venv
 Activate the enviroment:
+
            source mplf_venv/bin/activate
-Install requirements:  
+Install requirements:
+
            pip install -r requirements.txt          
 
 
