@@ -5,6 +5,8 @@ from functions.General_Functions import *
 import pandas as pd
 from functions.anova import Two_Way_mixed_Anova
 import itertools
+import numpy as np
+from itertools import combinations
 
 def Within_limits(point_to_analyse, z, q):
     if point_to_analyse > int(z) and point_to_analyse < int(q):
@@ -17,7 +19,7 @@ def analysed_domain_coverage(Domain_name, Domain_start, Domain_finish, Protein_e
     ##########
     ## This function determines the coverage of all the domain by peptides.
     ##########
-    import numpy as np
+
     susceptibility_of_domain = 0
     total_amino_acids = []
     peptides_found = []
@@ -229,7 +231,6 @@ def normalise(Spectra_Matrix, Spectral_total_counts):
 
 
 def determine_differences(Norm_Stats_Spectra, Domain_lengths):
-    from itertools import combinations
     df = Norm_Stats_Spectra
     uniques = [*df.keys()]
     # todo have to change the sorting function. curently we pick the column names randomly which may cause issues.
@@ -371,8 +372,6 @@ def MPLF_Statistical_Analyisis(experiment_feed=None, Results=None, Protein=None,
 
 
 def Master_Run_Score_Calculations(Structural_Analysis_Results, Protein):
-    # import math
-
     Scores = {}
     Results_Step = Structural_Analysis_Results[Structural_Analysis_Results['Domain Type'].str.contains('STEP')]
     each_p_val = [x for x in Structural_Analysis_Results.keys().values if x.startswith('p:')]

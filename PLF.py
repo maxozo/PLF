@@ -7,6 +7,8 @@ import json
 import argparse
 import os
 import sys
+import warnings
+warnings.filterwarnings("ignore")
 Experimental_coverages_all = {}
 Reference_Proteome=None
 Reference_Domains=None
@@ -166,6 +168,8 @@ def run_full_analysis( Domain_types, Protein_peptides, experiment_feed, cpus=1,p
     mplf_export_data['Spiecies']=Spiecies
     with open(f'{outname}.mplf', 'w') as f:
         json.dump(mplf_export_data, f)
+    print('Analysis completed ... ')
+    print(f'Check your results at {outname}.tsv')
     return "success"
     
 def retrieve_all_proteins(peptide,Reference_Proteome):

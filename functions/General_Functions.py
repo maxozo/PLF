@@ -1,9 +1,8 @@
 import pandas as pd
-import os
-import urllib
-import urllib.request  as urllib2
-
-
+import re
+import sys
+import json
+    
 def find_str(s, char):
     # from http://stackoverflow.com/questions/21842885/python-find-a-substring-in-a-string-and-returning-the-index-of-the-substring
     index = 0
@@ -21,7 +20,7 @@ def find_str(s, char):
 
 def grep_if_is_in(x, y):
     # print 'grep_if_is_in'
-    import re
+    
     count = 0
     array = list()
 
@@ -38,7 +37,6 @@ def grep_if_is_in(x, y):
 
 
 def Get_Domains(data=None):
-    import re
     Domain_bound_index1 = grep_if_is_in(data, "FT   DOMAIN   ")
     Repeat_bound_index = grep_if_is_in(data, "FT   REPEAT ")
     Repeat_bound_index2 = grep_if_is_in(data, "FT   TOPO_DOM ")
@@ -70,7 +68,6 @@ def Get_Domains(data=None):
     return df_with_doamin_info
 
 def grep_regex(x,y):
-    import re
     count = 0
     array = list()
     pattern = re.compile(y)
@@ -173,8 +170,7 @@ def Fasta_Analysis_Arbitarely_Domains(sequence=None, step_size=None):
     return df_with_doamin_info
 
 def process_php_domain_inputs(domains=None,sequence=None):
-    import sys
-    import json
+
     df_with_doamin_info = pd.DataFrame()
 
 
