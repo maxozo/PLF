@@ -53,7 +53,7 @@ To just try to run the analysis on test data please run (thats also available fo
           --p_threshold    Only return proteins that has at least one domain with a significance threshold lover or equal to specified
 
 
-4. Results will produce two files .tsv and .mplf file. TSV file will list all the domains, their p values, quantified data, normalised data etc. MPLF file can be uploaded to (Manchester Proteome Location Fingerprinter (MPLF))[https://www.manchesterproteome.manchester.ac.uk/#/MPLF] to perform visualisations of the data. 
+4. Results will produce two files .tsv and .mplf file. TSV file will list all the domains, their p values, quantified data, normalised data etc. MPLF file can be uploaded to [Manchester Proteome Location Fingerprinter (MPLF)](https://www.manchesterproteome.manchester.ac.uk/#/MPLF) to perform visualisations of the data. 
 
 
 ## Methods
