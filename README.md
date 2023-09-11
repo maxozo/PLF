@@ -31,7 +31,10 @@ To just try to run the analysis on test data please run (thats also available fo
 | sample6 |	sample7 |
 
 3. Run the MPLF pipeline:
-    `python PLF.py --experimental_design Experiment_feed.tsv --peptides Sample_Data_For_Analysis.csv --spiecies HUMAN --domain_types DOMAINS,REGIONS,TOPO_DOM,TRANSMEM,REPEAT,50AA,75AA,100AA --paired True --cpus max --test --outname MPLF_RUN`
+
+           `python PLF.py --experimental_design Experiment_feed.tsv --peptides Sample_Data_For_Analysis.csv --spiecies HUMAN --domain_types DOMAINS,REGIONS,TOPO_DOM,TRANSMEM,REPEAT,50AA,75AA,100AA --paired True --cpus max --test --outname MPLF_RUN`
+
+           
 
           test view
 
