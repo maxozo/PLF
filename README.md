@@ -48,12 +48,12 @@ To just try to run the analysis on test data please run (thats also available fo
 
           Optional:
 
-          --cpus     How many cpus to use for analysis (by default all available cpus will be used)
+          --cpus     (default=max available) How many cpus to use for analysis.
 
-          --p_threshold    Only return proteins that has at least one domain with a significance threshold lover or equal to specified
+          --p_threshold    (dafault=0.05) Only return proteins that has at least one domain with a significance threshold lover or equal to specified
 
 
-4. Results will produce two files .tsv and .mplf file. TSV file will list all the domains, their p values, quantified data, normalised data etc. MPLF file can be uploaded to [Manchester Proteome Location Fingerprinter (MPLF)](https://www.manchesterproteome.manchester.ac.uk/#/MPLF) to perform visualisations of the data. 
+4. Results will produce two files {outname specified}.tsv and {outname specified}.mplf file. TSV file will list all the domains, their p values, quantified data, normalised data etc. MPLF file can be uploaded to [Manchester Proteome Location Fingerprinter (MPLF)](https://www.manchesterproteome.manchester.ac.uk/#/MPLF) to perform visualisations of the data. 
 
 
 ## Methods
