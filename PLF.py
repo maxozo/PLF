@@ -3,7 +3,7 @@ __date__ = '2023-09-13'
 __version__ = '0.0.1'
 
 import pandas as pd
-
+import pickle
 import json
 
 Experimental_coverages_all = {}
@@ -192,10 +192,16 @@ def run_full_analysis( Domain_types, Protein_peptides, experiment_feed, cpus=1,p
     ##################
     Coverage_Json,Structural_Json,Full_Results_TSV = PLF(Protein_peptides,experiment_feed,Spiecies=Spiecies,paired=paired,Domain_Types=Domain_types,cpus=cpus).PLF_Analysis()
     Full_Results_TSV.to_csv('MPLF_Results.tsv',sep='\t',index=False)
-    # with open(f"bin/Structural_Json_{Spiecies}_{Owner_ID}_{id}.json", 'w') as json_file:
-    #     json.dump(Structural_Json, json_file)
-    # # Here have to add a visualisation module as per https://github.com/maxozo/ManchesterProteome/blob/e5fb1a1385b2bf11ddbc514d6ca3f0db6b2f272d/frontend/src/components/Structural/BarChart.js#L888-L890
-    # record_data(Structural_Json, Owner_ID,id,Domain_types)
+
+    mplf_export_data={}
+    mplf_export_data['Structural_Results']=Structural_Json
+    mplf_export_data['experiment_feed']=experiment_feed
+    mplf_export_data['Domain_types']=Domain_types
+    mplf_export_data['Significant_Protein_Count']=len(Structural_Json.keys())
+    mplf_export_data['Paired']=paired
+    mplf_export_data['Spiecies']=Spiecies
+    with open('MPLF_Results_json.mplf', 'w') as f:
+        json.dump(mplf_export_data, f)
     return "success"
     
 def retrieve_all_proteins(peptide,Reference_Proteome):
