@@ -4,6 +4,8 @@ __version__ = '0.0.1'
 
 import pandas as pd
 import json
+import argparse
+import os
 
 Experimental_coverages_all = {}
 Reference_Proteome=None
@@ -267,9 +269,13 @@ def pandas_to_experiment(df):
     dict[df.iloc[:,0].name]=list(df.iloc[:,0])
     dict[df.iloc[:,1].name]=list(df.iloc[:,1])
     return dict
-    
-def local_run():
-    import os
+
+def PLF_run(options):
+     print('Actual Run.......')
+     
+     
+def test_run(options):
+    print('Test Run.......')
     Spiecies='HUMAN'
     Paired=1
     Domain_types = ['DOMAINS', 'REGIONS', 'TOPO_DOM', 'TRANSMEM', 'REPEAT', '50.0 AA STEP']
@@ -290,6 +296,77 @@ def local_run():
     experiment_feed = pandas_to_experiment(pd.read_csv('sample_data/sample_inputs_small/Experiment_feed.tsv',sep='\t',index_col=False))
     run_full_analysis(Domain_types, Protein_peptides, experiment_feed,cpus=cpus,paired=Paired, Spiecies=Spiecies)
 
+def cli():
+    parser = argparse.ArgumentParser(
+        description="""
+            Combines all the Raw cellranger metadata to be passed in the h5ad
+            """
+    )  
+    parser.add_argument(
+        '--experimental_design',
+        action='store',
+        dest='experimental_design',
+        required=False,
+        default=None,
+        help='Path')
+    
+    parser.add_argument(
+        '--peptides',
+        action='store',
+        dest='peptides',
+        required=False,
+        default=None,
+        help='Path')
+    
+    parser.add_argument(
+        '--spiecies',
+        action='store',
+        dest='spiecies',
+        required=False,
+        default='HUMAN',
+        help='spiecies')
+    
+    parser.add_argument(
+        '--domain_types',
+        action='store',
+        dest='domain_types',
+        required=False,
+        default='DOMAINS,REGIONS,TOPO_DOM,TRANSMEM,REPEAT,50AA,100AA',
+        help='domain_types')
+    
+    parser.add_argument(
+        '--paired',
+        action='store',
+        dest='paired',
+        required=False,
+        default=False,
+        help='paired')
+    
+    parser.add_argument(
+        '--cpus',
+        action='store',
+        dest='cpus',
+        required=False,
+        default='max',
+        help='cpus')
+    
+    parser.add_argument(
+        '--test',
+        action='store',
+        dest='test',
+        required=False,
+        default=True,
+        help='test run')
+
+    options = parser.parse_args()
+    return options
+
+
 if __name__ == '__main__':
-    # This is PLF code. 
-    local_run()
+    # PLF main processing 
+
+    options=cli()
+    if options.test:
+        test_run(options)
+    else:
+        PLF_run(options)
