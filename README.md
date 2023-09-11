@@ -6,13 +6,24 @@
 
 ## Quick start
 
+### Instalation
+python 3.8> is required
+
+Create a new virtual python enviroment
+           python -m venv mplf_venv
+Activate the enviroment:
+           source mplf_venv/bin/activate
+Install requirements:  
+           pip install -r requirements.txt          
+
+
 ### Test data
 
 To just try to run the analysis on test data please run (thats also available for download on our [MPLF website](https://www.manchesterproteome.manchester.ac.uk/#/MPLF) ):
 
 `python PLF.py --test --outname My_Test_Run`
 
-## Your own data
+### Your own data
 
 1. Prepeare a file that lists **Protein** name (optional if source protein not determined), **Peptide** sequence (remove any special characters from these), **Sample** of protein belionging and **spectra** (can be multiple columns as per: **spectra_1**,**spectra_2**, etc. -- these will be added up): as per [this file](https://github.com/maxozo/MPLF/blob/mplf_package/Sample_Data/sample_inputs_small/Sample_Data_For_Analysis.csv).
 
