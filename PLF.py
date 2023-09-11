@@ -3,51 +3,12 @@ __date__ = '2023-09-13'
 __version__ = '0.0.1'
 
 import pandas as pd
-import pickle
 import json
 
 Experimental_coverages_all = {}
 Reference_Proteome=None
 Reference_Domains=None
 Protein_peptides2={}
-
-
-# def record_data(Structural_Json,Owner_ID,id,Domain_types):
-#     import mysql.connector
-#     from secret import HOST, PORT, PASSWORD, DB, USER
-#     connection = mysql.connector.connect(host=HOST,
-#                                         database=DB,
-#                                         user=USER,port=PORT,
-#                                         password=PASSWORD,
-#                                         auth_plugin='mysql_native_password')
-#     cursor_query = connection.cursor()
-#     Significant_Protein_Count = Structural_Json.keys().__len__()
-#     # experiment_coverages = json.dumps(Coverage_Json)
-#     structural_analysis_results = json.dumps(Structural_Json)
-#     Domain_types1=json.dumps(Domain_types)
-#     # sql_query = f"UPDATE `Structural_userdata` SET Structural_Results=JSON_MERGE_PATCH(`Structural_Results`, '{structural_analysis_results}')," \
-#     #             f" Experimental_Coverages=JSON_MERGE_PATCH(`Experimental_Coverages`,'{experiment_coverages}')," \
-#     #             f" Progress='Analysing', Significant_Protein_Count=`Significant_Protein_Count`+{Significant_Protein_Count} " \
-#     #             f"WHERE (`id` like {id} and `owner_id` LIKE {Owner_ID})"
-
-#     sql_query = f"UPDATE `Structural_userdata` SET Structural_Results='{structural_analysis_results}'," \
-#             f" Progress='Finished',Domain_types='{Domain_types1}', Significant_Protein_Count='{Significant_Protein_Count}' " \
-#             f"WHERE (`id` like {id} and `owner_id` LIKE {Owner_ID})"
-#     # sql_query = f"UPDATE `Structural_userdata` SET Structural_Results='{structural_analysis_results}'," \
-#     #         f" Domain_types='{Domain_types1}', Significant_Protein_Count='{Significant_Protein_Count}' " \
-#     #         f"WHERE (`id` like {id} and `owner_id` LIKE {Owner_ID})"
-
-#     cursor_query.execute(sql_query)
-#     connection.commit()
-#     connection.disconnect()
-#     cursor_query.close()
-#     # clear the memory
-#     # Structural_Json = {}
-#     # Coverage_Json = {}
-#     print("successfuly recorded significant domain")
-#     return Structural_Json, Coverage_Json
-
-
 
 class PLF:
     
