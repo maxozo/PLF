@@ -38,5 +38,3 @@
 * [Eckersley, A. et al. Peptide Location Fingerprinting Reveals Tissue Region-specific Differences in Protein Structures in an Ageing Human Organ. Int. J. Mol. Sci. 22, 10408 (2021).](https://pubmed.ncbi.nlm.nih.gov/34638745/)
 * [Eckersley, A., Morais, M. R. P. T., Ozols, M. & Lennon, R. Peptide location fingerprinting identifies structural alterations within basement membrane components in ageing kidney. Matrix Biol. 121, 167–178 (2023).](https://pubmed.ncbi.nlm.nih.gov/37437747/)
 * [Eckersley, A. et al. Peptide location fingerprinting identifies species- and tissue-conserved structural remodelling of proteins as a consequence of ageing and disease. Matrix Biol. 114, 108–137 (2022).](https://www.sciencedirect.com/science/article/pii/S0945053X22000737)
-
-## References
