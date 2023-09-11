@@ -6,6 +6,12 @@
 
 ## Quick start
 
+### Test data
+To just try to run the analysis on test data please run (thats also available for download on our (MPLF website)[https://www.manchesterproteome.manchester.ac.uk/#/MPLF]):
+`python PLF.py --test --outname My_Test_Run`
+
+## Your own data
+
 1. Prepeare a file that lists **Protein** name (optional if source protein not determined), **Peptide** sequence (remove any special characters from these), **Sample** of protein belionging and **spectra** (can be multiple columns as per: **spectra_1**,**spectra_2**, etc. -- these will be added up): as per [this file](https://github.com/maxozo/MPLF/blob/mplf_package/Sample_Data/sample_inputs_small/Sample_Data_For_Analysis.csv).
 
 
@@ -22,8 +28,14 @@
 | sample3 |	sample4 |
 | sample6 |	sample7 |
 
-1. Run the MPLF pipeline:
+3. Run the MPLF pipeline:
     `python PLF.py --experimental_design Experiment_feed.tsv --peptides Sample_Data_For_Analysis.csv --spiecies HUMAN --domain_types DOMAINS,REGIONS,TOPO_DOM,TRANSMEM,REPEAT,50AA,75AA,100AA --paired True --cpus max --test --outname MPLF_RUN`
+
+    `
+    test view
+    test view
+    
+    `
 
 ## Methods
 [For details please read our publication](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8135079/figure/acel13355-fig-0001/)
