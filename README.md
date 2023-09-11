@@ -35,7 +35,7 @@ To just try to run the analysis on test data please run (thats also available fo
   `python PLF.py --experimental_design Experiment_feed.tsv --peptides Sample_Data_For_Analysis.csv --spiecies HUMAN --domain_types DOMAINS,REGIONS,TOPO_DOM,TRANSMEM,REPEAT,50AA,75AA,100AA --paired True --cpus max --outname MPLF_RUN`
 
           Required:
-          
+
           --experimental_design  This allows to provide the experimental defign file file
 
           --peptides   This allows to provide your peptides file
@@ -50,7 +50,11 @@ To just try to run the analysis on test data please run (thats also available fo
 
           --cpus     How many cpus to use for analysis (by default all available cpus will be used)
 
-    
+          --p_threshold    Only return proteins that has at least one domain with a significance threshold lover or equal to specified
+
+
+4. Results will produce two files .tsv and .mplf file. TSV file will list all the domains, their p values, quantified data, normalised data etc. MPLF file can be uploaded to (Manchester Proteome Location Fingerprinter (MPLF))[https://www.manchesterproteome.manchester.ac.uk/#/MPLF] to perform visualisations of the data. 
+
 
 ## Methods
 [For details please read our publication](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8135079/figure/acel13355-fig-0001/)
