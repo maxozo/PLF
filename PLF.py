@@ -82,10 +82,19 @@ class PLF:
         All_proteins={}
         for i, Protein in enumerate(Protein_peptides['Protein'].str.split(";").explode().unique()):
             # Here gather all the unique gene names - all the revirewed entries + each unique non uniprot entry
+            
             Prot1=Reference_Proteome[Reference_Proteome["Uniprot_ID"]==Protein]
+            if len(Prot1)==0:
+                Prot1=Reference_Proteome[Reference_Proteome["Uniprot_AC"].str.contains(f"^{Protein}|\\n{Protein}",regex=True)]
+                if len(Prot1)>1:
+                    Prot1=Prot1[Prot1["Uniprot_Type"]=='Uniprot']
+                    if len(Prot1)==0:
+                        Prot1=Prot1.iloc[0]
+            
             try:
                 Gene=Prot1["Uniprot_Gene"].values[0].split(" {")[0]
                 Gene=Gene.split(' ORFN')[0]
+                Protein_AC = Prot1["Uniprot_ID"].values[0]
             except:
                 # Gene name is not listed in the reference proteome, hence proceeding with the ID represented in the peptide file
                 Gene=Protein
@@ -96,15 +105,15 @@ class PLF:
                 # If the type is not available w asume that this is an unreviewed entity.
                 Type='Trembl'    
             try:
-                All_proteins[Gene][Type].append(Protein)
+                All_proteins[Gene][Type].append(Protein_AC)
             except:
                 try:
                     All_proteins[Gene][Type]=[]
-                    All_proteins[Gene][Type].append(Protein)
+                    All_proteins[Gene][Type].append(Protein_AC)
                 except:
                     All_proteins[Gene]={}
                     All_proteins[Gene][Type]=[]
-                    All_proteins[Gene][Type].append(Protein) 
+                    All_proteins[Gene][Type].append(Protein_AC) 
         return All_proteins
 
         
@@ -123,8 +132,10 @@ class PLF:
         Reference_Proteome = pd.read_csv(f"{dir_path}/outputs/Uniprot_{self.Spiecies}.tsv",sep="\t",index_col=0)
         Reference_Domains = pd.read_csv(f"{dir_path}/outputs/Domains_Uniprot_{self.Spiecies}.tsv",sep="\t",index_col=0)
 
-        
+        print('Prepearing file for analysis >>>')
         Protein_isoform_grouping = self.append_protein_to_dictionary(self.Protein_peptides,Reference_Proteome)
+        Nr_proteins = len(Protein_isoform_grouping.keys())
+        print(f"Analysing {Nr_proteins} proteins >>>")
         pool = mp.Pool(self.cpus)
         for key in Protein_isoform_grouping.keys():
             try:
@@ -133,7 +144,11 @@ class PLF:
                 Protein= Protein_isoform_grouping[key]['Trembl'][0]
                 
             Protein_Entries = self.Protein_peptides[self.Protein_peptides['Protein'].str.contains(Protein, na=False)]
-
+            try:
+                Fasta = Reference_Proteome[Reference_Proteome.Uniprot_ID==Protein]["FASTA"][0]
+            except:
+                print(f"Protein {Protein}, doesnt have a fasta reference in Uniprot version utilised.")
+                continue
             if self.cpus>1:
                 pool.apply_async(self.MPLF, args=([Protein,Reference_Proteome,Reference_Domains,Protein_Entries]),callback=self.collect_result) #paralel runs - uses all the cores available
             else:
@@ -155,7 +170,8 @@ def run_full_analysis( Domain_types, Protein_peptides, experiment_feed, cpus=1,p
 
     Protein_peptides=Protein_peptides.dropna(subset=['spectra']) # Drop the NaN vales on spectra. ie - peptides are not detected in that sample
     Protein_peptides.Protein = Protein_peptides.Protein.str.replace(',',';')
-
+    print(f'For analysis we are using: {cpus} cpus')
+    print(f'Spiecies has been set to: {Spiecies}')
     ##################
     # PLF processing of each of the proteins
     ##################
@@ -430,6 +446,7 @@ if __name__ == '__main__':
     # PLF main processing 
 
     options=cli()
+    
     print(options.test)
     if options.test:
         test_run(options)
