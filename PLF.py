@@ -9,6 +9,9 @@ import os
 import sys
 import warnings
 warnings.filterwarnings("ignore")
+import os 
+dir_path = os.path.dirname(os.path.realpath(__file__))
+
 Experimental_coverages_all = {}
 Reference_Proteome=None
 Reference_Domains=None
@@ -117,8 +120,8 @@ class PLF:
         i=0
         import multiprocessing as mp
         
-        Reference_Proteome = pd.read_csv(f"outputs/Uniprot_{self.Spiecies}.tsv",sep="\t",index_col=0)
-        Reference_Domains = pd.read_csv(f"outputs/Domains_Uniprot_{self.Spiecies}.tsv",sep="\t",index_col=0)
+        Reference_Proteome = pd.read_csv(f"{dir_path}/outputs/Uniprot_{self.Spiecies}.tsv",sep="\t",index_col=0)
+        Reference_Domains = pd.read_csv(f"{dir_path}/outputs/Domains_Uniprot_{self.Spiecies}.tsv",sep="\t",index_col=0)
 
         
         Protein_isoform_grouping = self.append_protein_to_dictionary(self.Protein_peptides,Reference_Proteome)
@@ -276,7 +279,7 @@ def pandas_to_experiment(df):
     return dict
 
 def PLF_run(options):
-    print('Test Run.......')
+    print(f'Analysing file {options.peptides} with experimental design file {options.experimental_design}.......')
     Spiecies=options.spiecies
     Paired=bool(options.paired)
     p_threshold=options.p_threshold
@@ -427,6 +430,7 @@ if __name__ == '__main__':
     # PLF main processing 
 
     options=cli()
+    print(options.test)
     if options.test:
         test_run(options)
     else:
