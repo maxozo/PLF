@@ -305,7 +305,7 @@ def PLF_run(options):
         Protein_peptides['spectra']=summed_spectra
         del summed_spectra
     
-    experiment_feed = pandas_to_experiment(pd.read_csv(options.experiment_feed,sep='\t',index_col=False))
+    experiment_feed = pandas_to_experiment(pd.read_csv(options.experimental_design,sep='\t',index_col=False))
     run_full_analysis(Domain_types, Protein_peptides, experiment_feed,cpus=cpus,paired=Paired, Spiecies=Spiecies,outname=outname,p_threshold=p_threshold)
 
      
