@@ -167,7 +167,6 @@ class PLF:
                     Fasta = Reference_Proteome[Reference_Proteome.Uniprot_AC.str.contains(f"^{Protein}|\\n{Protein}",regex=True)]["FASTA"]
                 Fasta = Fasta.values[0]
             except:
-                Prot1=Reference_Proteome[Reference_Proteome["Uniprot_AC"].str.contains(f"^{Protein}|\\n{Protein}",regex=True)]
                 print(f"Protein {Protein}, doesnt have a fasta reference in Uniprot version utilised")
                 print(f"Skipping {Protein} analysis.")
                 continue
