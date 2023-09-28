@@ -146,9 +146,21 @@ def MPLF_Domain_Quantifications(Protein=None, Domain_Types=None, Protein_Entries
     ###############
     ## This function counts the spectra within each of the defined domains for each of the counts
     ###############
+    Fasta = Reference_Proteome[Reference_Proteome.Uniprot_ID==Protein]["FASTA"]
+    if len(Fasta)==0:
+        Fasta = Reference_Proteome[Reference_Proteome.Uniprot_AC.str.contains(f"^{Protein}|\\n{Protein}",regex=True)]["FASTA"]
+    Fasta = Fasta.values[0]
 
-    Fasta = Reference_Proteome[Reference_Proteome.Uniprot_ID==Protein]["FASTA"][0]
-    domains=Reference_Domains[Reference_Domains.Uniprot_ID == Protein]
+    domains = Reference_Domains[Reference_Domains.Uniprot_ID==Protein]
+    if len(domains)==0:
+        domains = Reference_Domains[Reference_Domains.Uniprot_AC==Protein]
+    # if len(domains)==0:
+    #     domains = Reference_Domains[Reference_Domains.Uniprot_AC.str.contains(f"^{Protein}|\\n{Protein}",regex=True)]["FASTA"]
+    # domains = Fasta.values[0]
+    
+    # domains=Reference_Domains[Reference_Domains.Uniprot_ID == Protein]
+    # Prot1=Reference_Proteome[Reference_Proteome["Uniprot_AC"].str.contains(f"^{Protein}|\\n{Protein}",regex=True)]
+    
     All_Protein_Domains_suitable_for_stats = produce_all_the_domains_for_protein(domains,Fasta,Domain_Types)
     
     experiment_names = Protein_Entries['Sample'].unique()

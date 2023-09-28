@@ -36,7 +36,7 @@ class PLF:
         self.p_threshold = p_threshold
         
 
-    def MPLF(self,Protein,Reference_Proteome,Reference_Domains,Protein_Entries):
+    def MPLF(self,Protein,Reference_Proteome,Reference_Domains,Protein_Entries,count,total_count):
 
         ###########
         ## First all the coverages are calculated for each of the experiments within domains
@@ -49,7 +49,7 @@ class PLF:
         experiment_feed = self.experiment_feed
         paired = self.paired
 
-        print(f"Analysing protein: : {Protein}")
+        print(f"Analysing protein: : {Protein} | {count}/{total_count}")
         # Each of the domain coverages per experiment is calculated in the folowing code
         Experiment_Coverages = MPLF_Domain_Quantifications(Protein=Protein,
                                                                         Domain_Types=Domain_types,
@@ -80,6 +80,7 @@ class PLF:
         #######################
         
         All_proteins={}
+        # Protein_peptides[Protein_peptides['Protein'].str.contains(";", na=False)]
         for i, Protein in enumerate(Protein_peptides['Protein'].str.split(";").explode().unique()):
             # Here gather all the unique gene names - all the revirewed entries + each unique non uniprot entry
             
@@ -94,7 +95,6 @@ class PLF:
             try:
                 Gene=Prot1["Uniprot_Gene"].values[0].split(" {")[0]
                 Gene=Gene.split(' ORFN')[0]
-                Protein_AC = Prot1["Uniprot_ID"].values[0]
             except:
                 # Gene name is not listed in the reference proteome, hence proceeding with the ID represented in the peptide file
                 Gene=Protein
@@ -105,15 +105,17 @@ class PLF:
                 # If the type is not available w asume that this is an unreviewed entity.
                 Type='Trembl'    
             try:
-                All_proteins[Gene][Type].append(Protein_AC)
+                All_proteins[Gene][Type].append(Protein)
             except:
                 try:
                     All_proteins[Gene][Type]=[]
-                    All_proteins[Gene][Type].append(Protein_AC)
+                    All_proteins[Gene][Type].append(Protein)
                 except:
                     All_proteins[Gene]={}
                     All_proteins[Gene][Type]=[]
-                    All_proteins[Gene][Type].append(Protein_AC) 
+                    All_proteins[Gene][Type].append(Protein) 
+            if Gene=='Q80X73':
+                print('here')
         return All_proteins
 
         
@@ -128,35 +130,57 @@ class PLF:
     def PLF_Analysis(self):
         i=0
         import multiprocessing as mp
-        
+        import time
         Reference_Proteome = pd.read_csv(f"{dir_path}/outputs/Uniprot_{self.Spiecies}.tsv",sep="\t",index_col=0)
         Reference_Domains = pd.read_csv(f"{dir_path}/outputs/Domains_Uniprot_{self.Spiecies}.tsv",sep="\t",index_col=0)
 
         print('Prepearing file for analysis >>>')
+        t = time.time()
         Protein_isoform_grouping = self.append_protein_to_dictionary(self.Protein_peptides,Reference_Proteome)
         Nr_proteins = len(Protein_isoform_grouping.keys())
         print(f"Analysing {Nr_proteins} proteins >>>")
         pool = mp.Pool(self.cpus)
-        for key in Protein_isoform_grouping.keys():
+        proteins = set(Protein_isoform_grouping.keys())
+        try:
+            import numpy as np
+            proteins.remove(np.nan)
+        except:
+            _='no nan'
+        count=0
+        total_count=len(proteins)
+        for key in proteins:
+            
+            count+=1
+            
+            if key=='Q80X73':
+                print('here')
             try:
                 Protein= Protein_isoform_grouping[key]['Uniprot'][0]
             except:
                 Protein= Protein_isoform_grouping[key]['Trembl'][0]
                 
             Protein_Entries = self.Protein_peptides[self.Protein_peptides['Protein'].str.contains(Protein, na=False)]
+            
             try:
-                Fasta = Reference_Proteome[Reference_Proteome.Uniprot_ID==Protein]["FASTA"][0]
+                Fasta = Reference_Proteome[Reference_Proteome.Uniprot_ID==Protein]["FASTA"]
+                if len(Fasta)==0:
+                    Fasta = Reference_Proteome[Reference_Proteome.Uniprot_AC.str.contains(f"^{Protein}|\\n{Protein}",regex=True)]["FASTA"]
+                Fasta = Fasta.values[0]
             except:
-                print(f"Protein {Protein}, doesnt have a fasta reference in Uniprot version utilised.")
+                Prot1=Reference_Proteome[Reference_Proteome["Uniprot_AC"].str.contains(f"^{Protein}|\\n{Protein}",regex=True)]
+                print(f"Protein {Protein}, doesnt have a fasta reference in Uniprot version utilised")
+                print(f"Skipping {Protein} analysis.")
                 continue
             if self.cpus>1:
-                pool.apply_async(self.MPLF, args=([Protein,Reference_Proteome,Reference_Domains,Protein_Entries]),callback=self.collect_result) #paralel runs - uses all the cores available
+                pool.apply_async(self.MPLF, args=([Protein,Reference_Proteome,Reference_Domains,Protein_Entries,count,total_count]),callback=self.collect_result) #paralel runs - uses all the cores available
             else:
-                result = self.MPLF(Protein,Reference_Proteome,Reference_Domains,Protein_Entries)
+                result = self.MPLF(Protein,Reference_Proteome,Reference_Domains,Protein_Entries,count,total_count)
                 self.collect_result(result)
             i+=1
         pool.close()
         pool.join()
+        elapsed = time.time() - t
+        print(f'execution took {elapsed} seconds')
         return (self.Coverage_Json,self.Structural_Json,self.Full_MPLF_Results)      
 
    
