@@ -23,7 +23,7 @@ class PLF:
     # This is a main PLF analysis processing class.
     ######################
     
-    def __init__(self,Protein_peptides,experiment_feed,Spiecies='HUMAN',Domain_Types=['DOMAINS', 'REGIONS', 'TOPO_DOM', 'TRANSMEM', 'REPEAT', '50.0 AA STEP'],paired=False,cpus=1,p_threshold=0.05):
+    def __init__(self,Protein_peptides,experiment_feed,Spiecies='HUMAN',Domain_Types=['DOMAINS', 'REGIONS', 'TOPO_DOM', 'TRANSMEM', 'REPEAT', '50.0 AA STEP'],paired=False,cpus=1,p_threshold=0.05,protein_list=None):
         self.Spiecies = Spiecies
         self.Domain_types = Domain_Types
         self.Protein_peptides=Protein_peptides
@@ -34,6 +34,7 @@ class PLF:
         self.paired=paired
         self.Full_MPLF_Results = pd.DataFrame()
         self.p_threshold = p_threshold
+        self.protein_list = protein_list
         
 
     def MPLF(self,Protein,Reference_Proteome,Reference_Domains,Protein_Entries,count,total_count):
@@ -49,6 +50,12 @@ class PLF:
         experiment_feed = self.experiment_feed
         paired = self.paired
 
+        Data_entries = Reference_Proteome[Reference_Proteome.Uniprot_ID==Protein]
+        if len(Data_entries)==0:
+            Data_entries = Reference_Proteome[Reference_Proteome.Uniprot_AC.str.contains(f"^{Protein}|\\n{Protein}",regex=True)]
+        Uniprot_ID = Data_entries.Uniprot_ID.values[0]
+        Uniprot_AC = Data_entries.Uniprot_AC.values[0]
+
         print(f"Analysing protein: : {Protein} | {count}/{total_count}")
         # Each of the domain coverages per experiment is calculated in the folowing code
         Experiment_Coverages = MPLF_Domain_Quantifications(Protein=Protein,
@@ -60,6 +67,8 @@ class PLF:
                                                                                 Results=Experiment_Coverages,
                                                                                 Protein=Protein, paired=paired,cuttoff_p_val=self.p_threshold)
         Structural_Analysis_Results2 = Structural_Analysis_Results.copy()
+        Structural_Analysis_Results2['Uniprot_ID']=Uniprot_ID
+        Structural_Analysis_Results2['Uniprot_ACs']=Uniprot_AC
         Structural_Analysis_Results.drop("GeneAC", axis=1, inplace=True)
         Experiment_Coverages.drop("GeneAC", axis=1, inplace=True)
         Experiment_Coverages = Experiment_Coverages[
@@ -68,6 +77,7 @@ class PLF:
         Coverage = Experiment_Coverages.to_dict()
         Structural_Json= {"Data": Structural_Analysis_Results.to_dict('index'),
                                     "Norm_Factors": Norm_Factors.to_dict()}
+        
         return (Coverage,Structural_Json,Protein,Structural_Analysis_Results2)
 
     def append_protein_to_dictionary(self,Protein_peptides,Reference_Proteome):
@@ -83,7 +93,11 @@ class PLF:
         # Protein_peptides[Protein_peptides['Protein'].str.contains(";", na=False)]
         for i, Protein in enumerate(Protein_peptides['Protein'].str.split(";").explode().unique()):
             # Here gather all the unique gene names - all the revirewed entries + each unique non uniprot entry
-            
+            if Protein!=Protein:
+                continue
+            if self.protein_list:
+                if Protein not in self.protein_list:
+                    continue
             Prot1=Reference_Proteome[Reference_Proteome["Uniprot_ID"]==Protein]
             if len(Prot1)==0:
                 Prot1=Reference_Proteome[Reference_Proteome["Uniprot_AC"].str.contains(f"^{Protein}|\\n{Protein}",regex=True)]
@@ -114,8 +128,6 @@ class PLF:
                     All_proteins[Gene]={}
                     All_proteins[Gene][Type]=[]
                     All_proteins[Gene][Type].append(Protein) 
-            if Gene=='Q80X73':
-                print('here')
         return All_proteins
 
         
@@ -151,9 +163,7 @@ class PLF:
         for key in proteins:
             
             count+=1
-            
-            if key=='Q80X73':
-                print('here')
+
             try:
                 Protein= Protein_isoform_grouping[key]['Uniprot'][0]
             except:
@@ -164,7 +174,7 @@ class PLF:
             try:
                 Fasta = Reference_Proteome[Reference_Proteome.Uniprot_ID==Protein]["FASTA"]
                 if len(Fasta)==0:
-                    Fasta = Reference_Proteome[Reference_Proteome.Uniprot_AC.str.contains(f"^{Protein}|\\n{Protein}",regex=True)]["FASTA"]
+                    Fasta = Reference_Proteome[Reference_Proteome.Uniprot_AC.str.contains(f"^{Protein}|\\n{Protein}|{Protein}.*",regex=True)]["FASTA"]
                 Fasta = Fasta.values[0]
             except:
                 print(f"Protein {Protein}, doesnt have a fasta reference in Uniprot version utilised")
@@ -183,7 +193,7 @@ class PLF:
         return (self.Coverage_Json,self.Structural_Json,self.Full_MPLF_Results)      
 
    
-def run_full_analysis( Domain_types, Protein_peptides, experiment_feed, cpus=1,paired=False, Spiecies="HUMAN",outname='Default_MPLF',p_threshold=0.05):
+def run_full_analysis( Domain_types, Protein_peptides, experiment_feed, cpus=1,paired=False, Spiecies="HUMAN",outname='Default_MPLF',p_threshold=0.05,protein_list=None):
     # If we do decide to remove the protein entry then we have to look up each peptide in the library and find all the peptides for the protein thatr are provided.
 
     if not 'Protein' in list(Protein_peptides.columns):
@@ -192,13 +202,13 @@ def run_full_analysis( Domain_types, Protein_peptides, experiment_feed, cpus=1,p
         Protein_peptides=match_peptide_to_protein(Protein_peptides,Reference_Proteome,cpus=cpus)
 
     Protein_peptides=Protein_peptides.dropna(subset=['spectra']) # Drop the NaN vales on spectra. ie - peptides are not detected in that sample
-    Protein_peptides.Protein = Protein_peptides.Protein.str.replace(',',';')
+    Protein_peptides.Protein = Protein_peptides.Protein.str.replace(',',';').str.replace(' ',';')
     print(f'For analysis we are using: {cpus} cpus')
     print(f'Spiecies has been set to: {Spiecies}')
     ##################
     # PLF processing of each of the proteins
     ##################
-    Coverage_Json,Structural_Json,Full_Results_TSV = PLF(Protein_peptides,experiment_feed,Spiecies=Spiecies,paired=paired,Domain_Types=Domain_types,cpus=cpus,p_threshold=p_threshold).PLF_Analysis()
+    Coverage_Json,Structural_Json,Full_Results_TSV = PLF(Protein_peptides,experiment_feed,Spiecies=Spiecies,paired=paired,Domain_Types=Domain_types,cpus=cpus,p_threshold=p_threshold,protein_list=protein_list).PLF_Analysis()
     Full_Results_TSV.to_csv(f'{outname}.tsv',sep='\t',index=False)
 
     mplf_export_data={}
@@ -320,7 +330,7 @@ def pandas_to_experiment(df):
 def PLF_run(options):
     print(f'Analysing file {options.peptides} with experimental design file {options.experimental_design}.......')
     Spiecies=options.spiecies
-    Paired=bool(options.paired)
+    Paired= not options.paired.lower()=='false'
     p_threshold=options.p_threshold
     Domain_types_pre = set(options.domain_types.split(','))
     Domain_types=[]
@@ -347,15 +357,16 @@ def PLF_run(options):
         Protein_peptides['spectra']=summed_spectra
         del summed_spectra
     
+
     experiment_feed = pandas_to_experiment(pd.read_csv(options.experimental_design,sep='\t',index_col=False))
-    run_full_analysis(Domain_types, Protein_peptides, experiment_feed,cpus=cpus,paired=Paired, Spiecies=Spiecies,outname=outname,p_threshold=p_threshold)
+    run_full_analysis(Domain_types, Protein_peptides, experiment_feed,cpus=cpus,paired=Paired, Spiecies=Spiecies,outname=outname,p_threshold=p_threshold,protein_list=options.protein_list)
 
      
 def test_run(options):
     print('Test Run.......')
     dir1= os.path.dirname(os.path.abspath(sys.argv[0]))
     Spiecies=options.spiecies
-    Paired=bool(options.paired)
+    Paired=not options.paired.lower()=='false'
     p_threshold=options.p_threshold
     Domain_types_pre = set(options.domain_types.split(','))
     Domain_types=[]
@@ -460,6 +471,14 @@ def cli():
         required=False,
         default=0.05,
         help='p_threshold')
+    
+    parser.add_argument(
+        '--protein_list',
+        action='store',
+        dest='protein_list',
+        required=False,
+        default=None,
+        help='protein_list')
 
     options = parser.parse_args()
     return options
