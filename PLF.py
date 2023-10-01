@@ -53,8 +53,8 @@ class PLF:
         Data_entries = Reference_Proteome[Reference_Proteome.Uniprot_ID==Protein]
         if len(Data_entries)==0:
             Data_entries = Reference_Proteome[Reference_Proteome.Uniprot_AC.str.contains(f"^{Protein}|\\n{Protein}",regex=True)]
-        Uniprot_ID = Data_entries.Uniprot_ID.values[0]
-        Uniprot_AC = Data_entries.Uniprot_AC.values[0]
+        Uniprot_ID = Data_entries.Uniprot_ID.values[0].replace('\n','')
+        Uniprot_AC = Data_entries.Uniprot_AC.values[0].replace('\n','')
 
         print(f"Analysing protein: : {Protein} | {count}/{total_count}")
         # Each of the domain coverages per experiment is calculated in the folowing code
