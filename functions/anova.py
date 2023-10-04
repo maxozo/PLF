@@ -161,7 +161,6 @@ def Two_Way_mixed_Anova(df,paired=True):
 
 
     if not paired:
-        print("not paired")
         MS_Resid = ssq_w / df_w
         DF_Resid= df_w
 

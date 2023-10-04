@@ -439,7 +439,7 @@ def cli():
         action='store',
         dest='paired',
         required=False,
-        default=False,
+        default='False',
         help='paired')
     
     parser.add_argument(
