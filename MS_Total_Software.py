@@ -24,8 +24,8 @@ cursor_query = connection_db.cursor()
 
 def record_data(Structural_Json,Coverage_Json,Owner_ID,id):
     Significant_Protein_Count = Structural_Json.keys().__len__()
-    experiment_coverages = json.dumps(Coverage_Json)
-    structural_analysis_results = json.dumps(Structural_Json)
+    experiment_coverages = json.dumps(Coverage_Json, allow_nan=False)
+    structural_analysis_results = json.dumps(Structural_Json, allow_nan=False)
     sql_query = f"UPDATE `Structural_userdata` SET Structural_Results=JSON_MERGE_PATCH(`Structural_Results`, '{structural_analysis_results}')," \
                 f" Experimental_Coverages=JSON_MERGE_PATCH(`Experimental_Coverages`,'{experiment_coverages}')," \
                 f" Progress='Analysing', Significant_Protein_Count=`Significant_Protein_Count`+{Significant_Protein_Count} " \
