@@ -219,8 +219,8 @@ def run_full_analysis( Domain_types, Protein_peptides, experiment_feed, cpus=1,p
     mplf_export_data['Paired']=paired
     mplf_export_data['Spiecies']=Spiecies
     with open(f'{outname}.mplf', 'w') as f:
-        json.dump(mplf_export_data, f)
-    print('Analysis completed ... ')
+        json.dump(mplf_export_data, f,allow_nan=False,)
+    print('Analysis completed ... ') 
     print(f'Check your results at {outname}.tsv')
     return "success"
     
@@ -331,7 +331,7 @@ def PLF_run(options):
     print(f'Analysing file {options.peptides} with experimental design file {options.experimental_design}.......')
     Spiecies=options.spiecies
     Paired= not options.paired.lower()=='false'
-    p_threshold=options.p_threshold
+    p_threshold=float(options.p_threshold)
     Domain_types_pre = set(options.domain_types.split(','))
     Domain_types=[]
     for s in Domain_types_pre:
