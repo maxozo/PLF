@@ -7,7 +7,7 @@
 ## Quick start
 
 ### Instalation
-python version >=3.8 is required
+python version 3.9 is required
 
 Create a new virtual python enviroment
 
