@@ -163,7 +163,8 @@ class PLF:
         for key in proteins:
             
             count+=1
-
+            # if count>40:
+            #     break
             try:
                 Protein= Protein_isoform_grouping[key]['Uniprot'][0]
             except:
@@ -325,6 +326,8 @@ def pandas_to_experiment(df):
     dict={}
     dict[df.iloc[:,0].name]=list(df.iloc[:,0])
     dict[df.iloc[:,1].name]=list(df.iloc[:,1])
+    for k1 in dict.keys():
+        dict[k1] = [x for x in dict[k1] if str(x) != 'nan']
     return dict
 
 def PLF_run(options):
