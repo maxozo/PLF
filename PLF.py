@@ -43,7 +43,7 @@ class PLF:
         ## First all the coverages are calculated for each of the experiments within domains
         ## Then the statistical analysis is performed to determine significant hits
         ###########
-        
+
         from functions.Functions_Clean import MPLF_Domain_Quantifications, MPLF_Statistical_Analyisis
 
         Domain_types = self.Domain_types
@@ -169,7 +169,8 @@ class PLF:
                 Protein= Protein_isoform_grouping[key]['Uniprot'][0]
             except:
                 Protein= Protein_isoform_grouping[key]['Trembl'][0]
-                
+            # if (Protein!='FBLN1_HUMAN'):
+            #     continue              
             Protein_Entries = self.Protein_peptides[self.Protein_peptides['Protein'].str.contains(Protein, na=False)]
             
             try:
@@ -184,6 +185,7 @@ class PLF:
             if self.cpus>1:
                 pool.apply_async(self.MPLF, args=([Protein,Reference_Proteome,Reference_Domains,Protein_Entries,count,total_count]),callback=self.collect_result) #paralel runs - uses all the cores available
             else:
+
                 result = self.MPLF(Protein,Reference_Proteome,Reference_Domains,Protein_Entries,count,total_count)
                 self.collect_result(result)
             i+=1
