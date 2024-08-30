@@ -233,10 +233,11 @@ def per_domain_quantification_matrix(key, value2, Results):
                 # total+=len(l1)
                 # print(total)
                 # print(l1)
-                s1 = set(per_domain_peptides.loc[id1,'Peptides ' + key].split(' ')).union(set(records.peptides_found[id1].split(',')))
+                s1 =set(records.peptides_found[id1].split(','))
                 s1.discard('')
                 # per_domain_peptides.loc[id1,'Peptides c1' + key] = per_domain_peptides.loc[id1,'Peptides c1' + key] +len(l1)
-                per_domain_peptides.loc[id1,'Peptides ' + key] = ' '.join(s1)
+                if len(s1)>0:
+                    per_domain_peptides.loc[id1,'Peptides ' + key] = per_domain_peptides.loc[id1,'Peptides ' + key]+' '+' '.join(s1)
             experimental_group_counts[sample] = Domain_Spectral_Count
     return experimental_group_counts, per_domain_peptides
 
