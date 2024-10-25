@@ -212,6 +212,9 @@ def per_domain_quantification_matrix(key, value2, Results):
     per_domain_peptides = pd.DataFrame([''] * experimental_group_counts.__len__(), columns=[col]).set_index(
         experimental_group_counts.index)
     i = -1
+    per_domain_peptides['Peptides ' + key] = ''
+    # per_domain_peptides['Peptides c1' + key] = 0
+   
     for sample in value2:
         i = i + 1
         ##Get only this sample entries
@@ -221,7 +224,20 @@ def per_domain_quantification_matrix(key, value2, Results):
         records = records.set_index(records.Domain_Name)
         if not records.empty:
             Domain_Spectral_Count = records.NumberOfSpectra
-            per_domain_peptides['Peptides ' + key] = records.peptides_found.str.replace(",", " ")
+            # total = 0
+            for id1 in records.peptides_found.index:
+                # print(id1)
+                l1 = records.peptides_found[id1].split(',')
+                l1 = [element for element in l1 if element != '']
+                
+                # total+=len(l1)
+                # print(total)
+                # print(l1)
+                s1 =set(records.peptides_found[id1].split(','))
+                s1.discard('')
+                # per_domain_peptides.loc[id1,'Peptides c1' + key] = per_domain_peptides.loc[id1,'Peptides c1' + key] +len(l1)
+                if len(s1)>0:
+                    per_domain_peptides.loc[id1,'Peptides ' + key] = per_domain_peptides.loc[id1,'Peptides ' + key]+' '+' '.join(s1)
             experimental_group_counts[sample] = Domain_Spectral_Count
     return experimental_group_counts, per_domain_peptides
 
