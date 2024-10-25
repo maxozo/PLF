@@ -43,7 +43,7 @@ class PLF:
         ## First all the coverages are calculated for each of the experiments within domains
         ## Then the statistical analysis is performed to determine significant hits
         ###########
-        
+
         from functions.Functions_Clean import MPLF_Domain_Quantifications, MPLF_Statistical_Analyisis
 
         Domain_types = self.Domain_types
@@ -163,12 +163,14 @@ class PLF:
         for key in proteins:
             
             count+=1
-
+            # if count>40:
+            #     break
             try:
                 Protein= Protein_isoform_grouping[key]['Uniprot'][0]
             except:
                 Protein= Protein_isoform_grouping[key]['Trembl'][0]
-                
+            # if (Protein!='FBLN1_HUMAN'):
+            #     continue              
             Protein_Entries = self.Protein_peptides[self.Protein_peptides['Protein'].str.contains(Protein, na=False)]
             
             try:
@@ -183,6 +185,7 @@ class PLF:
             if self.cpus>1:
                 pool.apply_async(self.MPLF, args=([Protein,Reference_Proteome,Reference_Domains,Protein_Entries,count,total_count]),callback=self.collect_result) #paralel runs - uses all the cores available
             else:
+
                 result = self.MPLF(Protein,Reference_Proteome,Reference_Domains,Protein_Entries,count,total_count)
                 self.collect_result(result)
             i+=1
@@ -219,8 +222,8 @@ def run_full_analysis( Domain_types, Protein_peptides, experiment_feed, cpus=1,p
     mplf_export_data['Paired']=paired
     mplf_export_data['Spiecies']=Spiecies
     with open(f'{outname}.mplf', 'w') as f:
-        json.dump(mplf_export_data, f)
-    print('Analysis completed ... ')
+        json.dump(mplf_export_data, f,allow_nan=False,)
+    print('Analysis completed ... ') 
     print(f'Check your results at {outname}.tsv')
     return "success"
     
@@ -325,13 +328,15 @@ def pandas_to_experiment(df):
     dict={}
     dict[df.iloc[:,0].name]=list(df.iloc[:,0])
     dict[df.iloc[:,1].name]=list(df.iloc[:,1])
+    for k1 in dict.keys():
+        dict[k1] = [x for x in dict[k1] if str(x) != 'nan']
     return dict
 
 def PLF_run(options):
     print(f'Analysing file {options.peptides} with experimental design file {options.experimental_design}.......')
     Spiecies=options.spiecies
     Paired= not options.paired.lower()=='false'
-    p_threshold=options.p_threshold
+    p_threshold=float(options.p_threshold)
     Domain_types_pre = set(options.domain_types.split(','))
     Domain_types=[]
     for s in Domain_types_pre:

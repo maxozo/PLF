@@ -127,9 +127,14 @@ def Two_Way_mixed_Anova(df,paired=True):
     ms_axb = ssq_axb/df_axb
     ms_w = ssq_w/df_w
 
-    f_a = ms_a/ms_w
-    f_b = ms_b/ms_w
-    f_axb = ms_axb/ms_w
+    try:
+        f_a = ms_a/ms_w
+        f_b = ms_b/ms_w
+        f_axb = ms_axb/ms_w
+    except:
+        f_a = ms_a/(ms_w+0.0000000000000000001)
+        f_b = ms_b/(ms_w+0.0000000000000000001)
+        f_axb = ms_axb/(ms_w+0.0000000000000000001)
 
     p_a = stats.f.sf(f_a, df1, df_w)
     p_b = stats.f.sf(f_b, df_2, df_w)
@@ -187,7 +192,7 @@ def Two_Way_mixed_Anova(df,paired=True):
         a = np.array(d, dtype=float)
         p_values_adjusted.iloc[:, 1]=a
 
-    return p_values_adjusted
+    return p_values_adjusted.fillna(1)
 
 
 
