@@ -1,4 +1,17 @@
 
+
+def match_peptide_to_protein(Protein_peptides,Reference_Proteome,cpus=1):
+    # Here we determine all the protrein identities if not already provided in file.
+    print("Assigning protein IDs based on search")
+    Protein_peptides["Protein"]=""
+    # sometimes data outputs contain a peptide sequence in brackets - the folowing will remove this
+    Protein_peptides.Peptide=Protein_peptides.Peptide.str.replace(".*\]\.",'')
+    Protein_peptides.Peptide=Protein_peptides.Peptide.str.replace("\.\[.*","")
+    peptide_protein_identities = Determine_Peptide_Protein_Identities(Protein_peptides.Peptide.unique(),Reference_Proteome,cpus=cpus).determine_all_proteins()
+    for key in peptide_protein_identities.keys():
+        Protein_peptides.loc[Protein_peptides.Peptide == key,"Protein"]=peptide_protein_identities[key]
+    return Protein_peptides
+
 class Determine_Peptide_Protein_Identities:
     # This class takes in the peptide sequences
     # and determines the protein it may belong to

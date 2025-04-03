@@ -9,7 +9,7 @@ import os
 import sys
 import warnings
 from functions.PLF import PLF
-from functions.Determine_Peptide_Protein_Identities import Determine_Peptide_Protein_Identities
+from functions.Determine_Peptide_Protein_Identities import match_peptide_to_protein
 warnings.filterwarnings("ignore")
 
 import os 
@@ -21,7 +21,6 @@ Protein_peptides2={}
 
 def run_full_analysis( Domain_types, Protein_peptides, experiment_feed, cpus=1,paired=False, Spiecies="HUMAN",outname='Default_MPLF',p_threshold=0.05,protein_list=None):
     # If we do decide to remove the protein entry then we have to look up each peptide in the library and find all the peptides for the protein thatr are provided.
-
     if not 'Protein' in list(Protein_peptides.columns):
         Protein_peptides=match_peptide_to_protein(Protein_peptides,Reference_Proteome,cpus=cpus)
     elif  Protein_peptides.Protein.unique()[0]=='undefined':
