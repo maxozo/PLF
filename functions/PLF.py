@@ -56,6 +56,8 @@ class PLF:
         Structural_Analysis_Results, Norm_Factors = MPLF_Statistical_Analyisis(experiment_feed=experiment_feed,
                                                                                 Results=Experiment_Coverages,
                                                                                 Protein=Protein, paired=paired,cuttoff_p_val=self.p_threshold)
+        if Structural_Analysis_Results is None:
+            return None
         Structural_Analysis_Results2 = Structural_Analysis_Results.copy()
         Structural_Analysis_Results2['Uniprot_ID']=Uniprot_ID
         Structural_Analysis_Results2['Uniprot_ACs']=Uniprot_AC
@@ -125,12 +127,14 @@ class PLF:
 
         
     def collect_result(self,result):
-        Protein1=result[2]
-        Coverage_Json1=result[0]
-        Structural_Json1=result[1]
-        self.Coverage_Json[Protein1] = Coverage_Json1
-        self.Structural_Json[Protein1] = Structural_Json1
-        self.Full_MPLF_Results = pd.concat([self.Full_MPLF_Results,result[3]])
+        if result is not None:
+        
+            Protein1=result[2]
+            Coverage_Json1=result[0]
+            Structural_Json1=result[1]
+            self.Coverage_Json[Protein1] = Coverage_Json1
+            self.Structural_Json[Protein1] = Structural_Json1
+            self.Full_MPLF_Results = pd.concat([self.Full_MPLF_Results,result[3]])
            
     def PLF_Analysis(self):
         i=0
