@@ -34,7 +34,7 @@ class PLF:
         ## Then the statistical analysis is performed to determine significant hits
         ###########
 
-        from functions.Functions_Clean import MPLF_Domain_Quantifications, MPLF_Statistical_Analyisis
+        from .Functions_Clean import MPLF_Domain_Quantifications, MPLF_Statistical_Analyisis
 
         Domain_types = self.Domain_types
         experiment_feed = self.experiment_feed
