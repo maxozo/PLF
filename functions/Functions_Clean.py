@@ -82,7 +82,10 @@ def analysed_domain_coverage(Domain_name, Domain_start, Domain_finish, Protein_e
 
     myset_of_covered_amino_acids = list(set(total_amino_acids))
     amino_acids_covered = len(myset_of_covered_amino_acids)
-    percentage_covered = float(amino_acids_covered) / (float(Domain_finish) - float(Domain_start)) * 100
+    try:
+        percentage_covered = float(amino_acids_covered) / (float(Domain_finish) - float(Domain_start)) * 100
+    except:
+        percentage_covered = float(0)
     percentage_covered = round(percentage_covered, 2)
     peptides_found = ','.join(peptides_found)
     return susceptibility_of_domain, Domain_name, percentage_covered, peptides_found
@@ -396,6 +399,8 @@ def MPLF_Statistical_Analyisis(experiment_feed=None, Results=None, Protein=None,
         if (Combined_Data_Frame_With_Statistics[p_val_name] <= cuttoff_p_val).any():
             Combined_Data_Frame_With_Statistics['GeneAC'] = Protein
             Combined_Data_Frame_With_Statistics = Combined_Data_Frame_With_Statistics.loc[:, ~Combined_Data_Frame_With_Statistics.columns.duplicated()]
+        else:
+            return None, None
     return Combined_Data_Frame_With_Statistics, Spectral_total_counts
 
 
