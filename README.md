@@ -7,8 +7,11 @@
 ## Quick start
 
 ### Instalation
-python version 3.9 is required
+!python version 3.9 is required
+If you have a different default version and you got miniconda/miniforge/anaconda installed you can create a python3.9 env with:
 
+         conda create -n py39env python=3.9
+         conda activate py39env
 Create a new virtual python enviroment
 
          python -m venv mplf_venv
