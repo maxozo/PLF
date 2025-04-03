@@ -59,7 +59,10 @@ class PLF:
         Structural_Analysis_Results2 = Structural_Analysis_Results.copy()
         Structural_Analysis_Results2['Uniprot_ID']=Uniprot_ID
         Structural_Analysis_Results2['Uniprot_ACs']=Uniprot_AC
-        Structural_Analysis_Results.drop("GeneAC", axis=1, inplace=True)
+        try:
+            Structural_Analysis_Results.drop("GeneAC", axis=1, inplace=True)
+        except:
+            print('no gene ac')
         Experiment_Coverages.drop("GeneAC", axis=1, inplace=True)
         Experiment_Coverages = Experiment_Coverages[
             Experiment_Coverages["Domain Type"].isin(Structural_Analysis_Results["Domain Type"].unique())]
