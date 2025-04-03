@@ -140,7 +140,7 @@ def produce_all_the_domains_for_protein(domains,Fasta,Domain_Types):
     Domain_type_frequencies = domains['Type'].value_counts()
     Domain_types_not_suitable_for_stats = list(Domain_type_frequencies[Domain_type_frequencies==1].keys())
     domains = domains[~domains['Type'].isin(Domain_types_not_suitable_for_stats)]
-    
+    domains=domains[domains['start'] != domains['finish']]
     return domains
     
 
