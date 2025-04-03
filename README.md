@@ -12,7 +12,7 @@ If you have a different default version and you got miniconda/miniforge/anaconda
 
          conda create -n py39env python=3.9
          conda activate py39env
-Create a new virtual python enviroment
+Then when you have checked that your python is 3.9 you can create a new virtual python enviroment
 
          python -m venv mplf_venv
 Activate the enviroment (Linux and Mac):
