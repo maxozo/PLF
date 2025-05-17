@@ -8,139 +8,131 @@ import itertools
 import numpy as np
 from itertools import combinations
 
-def Within_limits(point_to_analyse, z, q):
-    if point_to_analyse > int(z) and point_to_analyse < int(q):
-        return 1
-    else:
-        return 0
+
+
+def peptide_start_within_domain(pep_start, domain_start, domain_end):
+    return domain_start <= pep_start < domain_end       # checks if the pep start pos is within domain limits, including domain start pos, excluding domain end pos. Will return T if within limits
+
+def peptide_end_within_domain(pep_end, domain_start, domain_end):
+    return domain_start < pep_end <= domain_end     # checks if the pep end pos is within domain limits, excluding domain start pos, including domain end pos. Will return T if within limits
+
+##### these, plus some changes to the func below, ensure that:
+        # Peptides starting exactly at the domain start are included.
+        # Peptides ending exactly at the domain start are excluded.             (these cases were not considered in og PLF)
+        # Peptides ending exactly at the domain end are included.
+        # Peptides starting exactly at the domain end are excluded.
+        # Peptides which both start and end exactly at domain limits are included (i.e. peptides which are the exact span of the domain)
+    # and all rules from before:
+        # Peptides completely outside of the domain (no overlap) are excluded.
+        # Peptides partially in the domain are included
+        # Peptides completely within the domain are included
+        # Peptides spanning across both sides of the domain are included. (this was attempted but not functional in og PLF)
+
 
 
 def analysed_domain_coverage(Domain_name, Domain_start, Domain_finish, Protein_entries_experiment, sequence):
-    ##########
-    ## This function determines the coverage of all the domain by peptides.
-    ##########
 
-    susceptibility_of_domain = 0
-    total_amino_acids = []
+    susceptibility_of_domain = 0.0
+    total_amino_acids = set()           # making it a set to start off with, saves converting twice at the end
     peptides_found = []
-    domain_sequence=sequence[Domain_start:Domain_finish]
-    for number3 in Protein_entries_experiment.iterrows():
-        peptide_sequence = number3[1]['Peptide']
-        peptide_abundance = number3[1]['spectra']
 
-        length_of_peptide = len(peptide_sequence)
-        Sequence_Positions = [m.start() for m in re.finditer(peptide_sequence, sequence)]
-        for start_position in Sequence_Positions:
-            # loops through each of the start positions, detected in the sequence
-            value1 = start_position
-            value2 = value1 + length_of_peptide
-            
-            # instead of doing this we just produce ranges of indexes
-            domain_start_within_limits = Within_limits(value1, Domain_start, Domain_finish)
-            domain_end_within_limits = Within_limits(value2, Domain_start, Domain_finish)
-            
-            if domain_end_within_limits == False and domain_start_within_limits == False:
-                # This peptide doesnt fall within the domain ranges.
-                pass
-            else:
-                if domain_start_within_limits == True and domain_end_within_limits == False:
-                    # peptide start is in the domain, while the end expands beyond
-                    #                  PEPTIDE       
-                    #           DDDDDDDDDD
-                    susceptibility_of_domain = susceptibility_of_domain + peptide_abundance
-                    peptide_coverage = Domain_finish - value1
-                    amino_acids_covered = list(range(value1, int(Domain_finish)))
-                    total_amino_acids = total_amino_acids + amino_acids_covered
+    for row in Protein_entries_experiment.itertuples(index=False):      # itertuples is faster than iterrows
+        peptide_sequence = row.Peptide
+        peptide_abundance = row.spectra
+        peptide_length = len(peptide_sequence)
+
+        sequence_positions = [m.start() for m in re.finditer(re.escape(peptide_sequence), sequence)]     # adding the re.escape() ensures that any special regex characters in the peptide sequence are escaped and treated as characters (recommended for AA sequence data)
+
+        for start_pos in sequence_positions:        # save a step
+            end_pos = start_pos + peptide_length
+
+            start_within = peptide_start_within_domain(start_pos, Domain_start, Domain_finish)
+            end_within = peptide_end_within_domain(end_pos, Domain_start, Domain_finish)
+
+            if not (start_within or end_within):       # shorter way of saying if both F
+                if start_pos <= Domain_start and end_pos >= Domain_finish:                # if peptide starts before or at domain start, and ends after or at domain end (better than above trying to match strings, and avoids slight mismatches in pep sequence hindering matching)
+                    susceptibility_of_domain += peptide_abundance
+                    total_amino_acids.update(range(Domain_start, Domain_finish))          # bc its a set, just using .update() and adding right away
                     peptides_found.append(peptide_sequence)
-                elif domain_start_within_limits == False and domain_end_within_limits == True:
-                    # peptide start is prior to the domain start and the peptide finishes within domain limits
-                    #       PEPTIDE       
-                    #           DDDDDDDDDD
-                    susceptibility_of_domain = susceptibility_of_domain + peptide_abundance
-                    peptide_coverage = (value2 - Domain_start)
-                    amino_acids_covered = list(range(int(Domain_start), value2))
-                    peptides_found.append(peptide_sequence)
-                    if type(amino_acids_covered) != int:
-                        total_amino_acids = total_amino_acids + amino_acids_covered
-                elif domain_start_within_limits == True and domain_end_within_limits == True:
-                    # both start and finish is within limits.
-                    #          PEPTIDE       
-                    # DDDDDDDDDDDDDDDDDDDDDDDDDD
-                    susceptibility_of_domain = susceptibility_of_domain + peptide_abundance
-                    peptide_coverage = length_of_peptide
-                    amino_acids_covered = list(range(value1, value2))
-                    total_amino_acids = total_amino_acids + amino_acids_covered
-                    peptides_found.append(peptide_sequence)
-                elif domain_sequence in peptide_sequence:
-                    # here the entire peptide has covered the domain - this was lacking in v1
-                    #          PEPTIDE       
-                    #           DDDDD
-                    susceptibility_of_domain = susceptibility_of_domain + peptide_abundance
-                    amino_acids_covered = list(range(Domain_start, Domain_finish))
-                    total_amino_acids = total_amino_acids + amino_acids_covered
-                    peptides_found.append(peptide_sequence)
+                continue
 
-    myset_of_covered_amino_acids = list(set(total_amino_acids))
-    amino_acids_covered = len(myset_of_covered_amino_acids)
-    try:
-        percentage_covered = float(amino_acids_covered) / (float(Domain_finish) - float(Domain_start)) * 100
-    except:
-        percentage_covered = float(0)
-    percentage_covered = round(percentage_covered, 2)
-    peptides_found = ','.join(peptides_found)
-    return susceptibility_of_domain, Domain_name, percentage_covered, peptides_found
+            if start_within and not end_within:  # Peptide starts in domain, ends outside
+                susceptibility_of_domain += peptide_abundance
+                total_amino_acids.update(range(start_pos, Domain_finish))
+                peptides_found.append(peptide_sequence)
 
+            elif not start_within and end_within:  # Peptide starts before domain, ends in domain
+                susceptibility_of_domain += peptide_abundance
+                total_amino_acids.update(range(Domain_start, end_pos))
+                peptides_found.append(peptide_sequence)
 
-def Fasta_Analysis_Arbitarely_Domains(sequence=None, step_size=None):
-    step_size = float(step_size)
-    length_of_sequence = float(len(sequence))
-    number_of_for_loops = int(length_of_sequence / step_size)
+            elif start_within and end_within:  # Entirely within domain
+                susceptibility_of_domain += peptide_abundance
+                total_amino_acids.update(range(start_pos, end_pos))
+                peptides_found.append(peptide_sequence)
 
-    df_with_doamin_info = pd.DataFrame()
-    arbitary_domain_start = 0
-    arbitary_domain_end = int(step_size)
+    amino_acids_covered = len(total_amino_acids)
+    domain_length = Domain_finish - Domain_start
+    percentage_covered = round((amino_acids_covered / domain_length) * 100, 2)
+    peptides_found_str = ','.join(peptides_found)
 
-    for process_number in range(0, number_of_for_loops + 1):
-
-        if process_number == 0:
-            arbitary_domain_start = arbitary_domain_start
-            arbitary_domain_end = arbitary_domain_end
-        else:
-            arbitary_domain_start = arbitary_domain_start + step_size
-            arbitary_domain_end = arbitary_domain_end + step_size
-        if arbitary_domain_end > length_of_sequence:
-            arbitary_domain_end = length_of_sequence
-        Domain_start = arbitary_domain_start
-        Domain_finish = arbitary_domain_end
-        domain_name = 'Domain_p' + str(Domain_start) + '_to_' + str(Domain_finish)
-        df_with_doamin_info = df_with_doamin_info.append(
-            {'Name': domain_name, 'start': Domain_start, 'finish': Domain_finish}, ignore_index=True)
-    df_with_doamin_info['Type'] = str(step_size) + ' AA STEP'
-    return df_with_doamin_info
+    return susceptibility_of_domain, Domain_name, percentage_covered, peptides_found_str
 
 
 
-def produce_all_the_domains_for_protein(domains,Fasta,Domain_Types):
-    
-    # This function produces all the domains needed for analysis.
+def Fasta_Analysis_Arbitrarily_Domains(sequence, step_size):
+
+    step_size = int(step_size)
+    length = len(sequence)
+
+    domain_info_list = [        # list comprehension
+        {
+            'Name': f'Domain_p{start}_to_{min(start + step_size, length)}',     # dynamic domain name - get start pos (from the for loop, below), then calculate end pos by adding step size to the start (e.g. 100 + 50AA step = 150),
+                                                                                         # but wrapping min(.... ,length) ensures that if the calculated end pos is >length, it will put end pos as the length value
+            'start': start,
+            'finish': min(start + step_size, length)    # end pos calculated as above
+        }
+        for start in range(0, length, step_size)        # for every step_size increment along the full length of the protein, starting at 0
+    ]
+
+    df = pd.DataFrame(domain_info_list)
+    df['Type'] = f'{step_size} AA STEP'
+    return df
+
+
+
+def produce_all_the_domains_for_protein(domains, fasta, domain_types):
     if not domains.empty:
-        domains.Name=domains.Name.str.replace("'", "")
-    domain_ranges = [float(s.replace(" AA STEP", "")) for s in Domain_Types if "AA STEP" in s]
-    for range_elem in domain_ranges:
-        dom= Fasta_Analysis_Arbitarely_Domains(sequence=Fasta,step_size=range_elem)
-        dom.Name = str(int(range_elem)) + "Step_" + dom.Name
-        domains = pd.concat([domains, dom])
-    # Here filter out the data
-    if Domain_Types != None:
-        domains = domains[domains.Type.isin(Domain_Types)]
-    # Deal with repeated domain names
-    domains.loc[domains.Name.duplicated(), "Name"] = domains[domains.Name.duplicated()].Name + "_" + domains[domains.Name.duplicated()].start.astype(int).astype(str) + "_" + domains[domains.Name.duplicated()].finish.astype(int).astype(str)
-    
-    # Remove any domain types that has only 1 entry as stats can not be performed on these.
-    Domain_type_frequencies = domains['Type'].value_counts()
-    Domain_types_not_suitable_for_stats = list(Domain_type_frequencies[Domain_type_frequencies==1].keys())
-    domains = domains[~domains['Type'].isin(Domain_types_not_suitable_for_stats)]
-    domains=domains[domains['start'] != domains['finish']]
+        domains['Name'] = domains['Name'].str.replace("'", "", regex=False)
+
+    domain_ranges = [
+        float(s.removesuffix(" AA STEP")) 
+        for s in domain_types or []         # (added empty list here to loop through if domain_types is empty - avoids errors)
+        if "AA STEP" in s
+    ]
+
+    if domain_ranges:       # if there are numbers in this ^ list:
+        new_domains = []
+        for range_elem in domain_ranges:
+            dom = Fasta_Analysis_Arbitrarily_Domains(sequence=fasta, step_size=range_elem)  
+            dom['Name'] = f"{int(range_elem)}Step_" + dom['Name'].astype(str)
+            new_domains.append(dom)     # add to list (more efficient than adding to pd df)
+        if new_domains:     # if something was added
+            domains = pd.concat([domains, *new_domains], ignore_index=True)     # add them to the biological domains df (input) (using * on new_domains list makes it into individual dfs to concat)
+
+    if domain_types:
+        domains = domains[domains['Type'].isin(domain_types)].copy()
+
+    duplicated = domains['Name'].duplicated(keep=False)
+    if duplicated.any():
+        domains.loc[duplicated, 'Name'] += (
+            "_" + domains.loc[duplicated, 'start'].astype(int).astype(str)
+            + "_" + domains.loc[duplicated, 'finish'].astype(int).astype(str)
+        )
+
+    counts = domains['Type'].value_counts()
+    unsuitable = counts[counts == 1].index
+    domains = domains[~domains['Type'].isin(unsuitable)].copy()
     return domains
     
 
