@@ -51,37 +51,51 @@ def data_set_concerter(df):
     return df_returned
 
 
-def calculate_P_values(MS_Resid, DF_Resid, df):
-    condition_names = list(df.keys())
-    num_conditions = len(condition_names)
-    num_domains = len(df[condition_names[0]])   # added this for number of domains (both conditions should be same), so can use in loop (below)
-    results = []                                # more efficient to start with a list, and just convert to pd at the end
-    
-    for i in range(num_domains):        # loop through each domain
-        # Extract domain name from the first condition
-        domain_name = df[condition_names[0]].iloc[i]["Domain_Name"]     # get current domain name
-        row_data = {"Domain_Name": domain_name}                         # row_data is a dict - put in the current domain name
+def calculate_P_values(MS_Resid,DF_Resid, df):
 
-        domain_values = {       # a dictionary comprehension that gets all sample values for this domain, for each condition
-            cond: df[cond].iloc[i].drop("Domain_Name").to_numpy()       # get df for a condition (df[cond]), values for a domain (.iloc[i]), without domain_name, all converted to a numpy array (.to_numpy())
-            for cond in condition_names     # for each condition
-        }
+    '''This has to be adjusted according to the 3 or more values to be compared with'''
 
-        for i1 in range(num_conditions):                  # loop through each pair of conditions
-            for i2 in range(i1 + 1, num_conditions):
-                group1 = domain_values[condition_names[i1]]         # get values from the domain_values dict ^, for each condition being compared in this pair
-                group2 = domain_values[condition_names[i2]]
+    '''
+    Now we loop through each of the domain pairs and calculate the p -values using ms_w
+    SE = sqrt(ms_w*(1/Na)+(1/Nb))
+    t = mean diff / SE
+    then we use the degrees of freedom residual to calculate the p value
+    Multiple comparisons tab here now
 
-                mean_diff = np.mean(group1) - np.mean(group2)       # difference between mean of each condition's data
-                SE = math.sqrt(MS_Resid * (1.0 / len(group1) + 1.0 / len(group2)))    # standard error calculated using MS_resid (mean square within groups, input to function) and sample size)
-                t_value = mean_diff / SE                                              # t value calc
-                pval = stats.t.sf(abs(t_value), DF_Resid) * 2                         # using stats package to calculate two-tailed p-value from the t-val and residual degrees of freedom (input to function)
+    '''
+    list_p_values = pd.DataFrame();
+    list_p_values["Domain_Name"]=""
 
-                colname = f'p: {condition_names[i2]} vs {condition_names[i1]}'     # dynamic col name for p-vals condition1 vs condition2
-                row_data[colname] = round(pval, 4)                                 # add to the row_data dict - colname as above, and value being p-val rounded to 4dp
+    for i in range (0,df[list(df.keys())[0]].__len__()): #for each domain
+        Domain = df[list(df.keys())[0]].iloc[i]["Domain_Name"]
+        list_p_values = list_p_values.append({'Domain_Name': Domain}, ignore_index=True)
+        for i1 in range(0, list(df.keys()).__len__()): #for each experimental condition
+            for i2 in range(i1+1,list(df.keys()).__len__()):
+                if(i2<list(df.keys()).__len__()): #for each next experimental condition
 
-        results.append(row_data)        # add the data for this domain to the empty results list made at start
-    return pd.DataFrame(results)        # once all domains done (in all condition combos), convert to pd df
+                    colname = 'p: ' + list(df.keys())[i2]+' vs '+list(df.keys())[i1]
+                    if(i==0):#first time going through; make a new columns for each experimental condition
+                        list_p_values[colname] = ''
+                    Df_Data = {list(df.keys())[i1]: df[list(df.keys())[i1]].iloc[i].drop("Domain_Name").tolist(),
+                                            list(df.keys())[i2]:df[list(df.keys())[i2]].iloc[i].drop("Domain_Name").tolist()}
+                    
+
+                    # D1 = Df_Data[list(df.keys())[i1]]
+                    # D2 = Df_Data[list(df.keys())[i2]]
+                    M1=np.mean(Df_Data[list(df.keys())[i1]])
+                    M2=np.mean(Df_Data[list(df.keys())[i2]])
+                    M_diff=M1-M2
+                    SE = math.sqrt(MS_Resid*(1.0/Df_Data[list(df.keys())[i1]].__len__()+1.0/Df_Data[list(df.keys())[i2]].__len__()))
+                    t_value = M_diff/SE
+                    Degrees_of_Freedom = DF_Resid
+                    pval = stats.t.sf(np.abs(t_value), Degrees_of_Freedom)*2
+
+                    list_p_values[colname][i] = round(pval,4)
+                else:
+                    continue
+                    #list_p_values=list_p_values.append({'Domain':Domain,colname:pval},ignore_index=True)
+                    #now test if this puts everything in the right places.
+    return list_p_values
 
 def Two_Way_mixed_Anova(df,paired=True):
 
