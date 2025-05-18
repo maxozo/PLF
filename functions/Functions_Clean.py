@@ -80,6 +80,66 @@ def analysed_domain_coverage(Domain_name, Domain_start, Domain_finish, Protein_e
 
 
 
+# as above, but with weighting based on peptide proportions - whatever proportion of the peptide is within the domain, get this proportion of the peptide abundance value and add that to 
+#       the domain total (rather than 100% of the peptide abundance value counted in every domain it is present in)
+# So if peptide is 20AA long with intensity 100, and 15AAs are in one domain, 5AAs in the neighbouring domain – the domains get 75 and 25 abundance value respectively. 
+#       If peptide is 100AAs long with intensity 100, and is split 30:50:20 AAs between 3 domains – the domains get 30 50 20 abundance value respectively
+def analysed_domain_coverage_with_weighting(Domain_name, Domain_start, Domain_finish, Protein_entries_experiment, sequence):
+    susceptibility_of_domain = 0.0
+    total_amino_acids = set()
+    peptides_found = []
+
+    for row in Protein_entries_experiment.itertuples(index=False):
+        peptide_sequence = row.Peptide
+        peptide_abundance = row.spectra
+        peptide_length = len(peptide_sequence)
+
+        sequence_positions = [m.start() for m in re.finditer(re.escape(peptide_sequence), sequence)]
+
+        for start_pos in sequence_positions:
+            end_pos = start_pos + peptide_length
+
+            start_within = peptide_start_within_domain(start_pos, Domain_start, Domain_finish)
+            end_within = peptide_end_within_domain(end_pos, Domain_start, Domain_finish)
+
+            if not (start_within or end_within):
+                if start_pos <= Domain_start and end_pos >= Domain_finish:
+                    len_inside_domain = Domain_finish - Domain_start                                                # new: length of peptide within domain limits. For this case, where pep spans entire domain, it is just the domain size
+                    peptide_proportional_abundance = peptide_abundance * (len_inside_domain / peptide_length)      # new: proportion of entire peptide which is inside the domain, multiplied by peptide abundance value, to get proportional abundance within domain
+                    susceptibility_of_domain += peptide_proportional_abundance                                      # adds the proportional value to the domain total
+                    total_amino_acids.update(range(Domain_start, Domain_finish))
+                    peptides_found.append(peptide_sequence)
+                continue
+
+            if start_within and not end_within:
+                len_inside_domain = Domain_finish - start_pos               # peptide starts inside the domain and extends beyond the end, so length inside the domain is pep_start to domain_end
+                peptide_proportional_abundance = peptide_abundance * (len_inside_domain / peptide_length)
+                susceptibility_of_domain += peptide_proportional_abundance
+                total_amino_acids.update(range(start_pos, Domain_finish))
+                peptides_found.append(peptide_sequence)
+
+            elif not start_within and end_within:
+                len_inside_domain = end_pos - Domain_start               # peptide starts before the domain and ends within, so length inside the domain is domain_start to pep_end
+                peptide_proportional_abundance = peptide_abundance * (len_inside_domain / peptide_length)
+                susceptibility_of_domain += peptide_proportional_abundance
+                total_amino_acids.update(range(Domain_start, end_pos))
+                peptides_found.append(peptide_sequence)
+
+            elif start_within and end_within:                            # entire peptide is within domain, so use the full abundance value
+                susceptibility_of_domain += peptide_abundance
+                total_amino_acids.update(range(start_pos, end_pos))
+                peptides_found.append(peptide_sequence)
+
+    amino_acids_covered = len(total_amino_acids)
+    domain_length = Domain_finish - Domain_start
+    percentage_covered = round((amino_acids_covered / domain_length) * 100, 2)
+    peptides_found_str = ','.join(peptides_found)
+
+    return susceptibility_of_domain, Domain_name, percentage_covered, peptides_found_str
+
+
+
+
 def Fasta_Analysis_Arbitrarily_Domains(sequence, step_size):
 
     step_size = int(step_size)
