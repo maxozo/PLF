@@ -90,6 +90,7 @@ Params:
 
 
 ## References (please cite)
+* [Ozols, M., Le Blanc, A., & Eckersley, A. (2025). *PLF: Peptide Location Fingerprinting (Version v1.1.0)* [Computer software].](https://doi.org/10.5281/zenodo.15601409)
 * [Eckersley, A. et al. Proteomic fingerprints of damage in extracellular matrix assemblies. Matrix Biol. Plus 5, 100027 (2020).](https://pubmed.ncbi.nlm.nih.gov/33543016/)
 * [Ozols, M. et al. Peptide location fingerprinting reveals modification-associated biomarker candidates of ageing in human tissue proteomes. Aging Cell 20, e13355 (2021).](https://pubmed.ncbi.nlm.nih.gov/33830638/)
 * [Eckersley, A. et al. Peptide Location Fingerprinting Reveals Tissue Region-specific Differences in Protein Structures in an Ageing Human Organ. Int. J. Mol. Sci. 22, 10408 (2021).](https://pubmed.ncbi.nlm.nih.gov/34638745/)
