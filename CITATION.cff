@@ -1,0 +1,39 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "PLF: Peptide Location Fingerprinting"
+version: "v1.1.0"
+date-released: 2025-06-05
+repository-code: https://github.com/maxozo/PLF
+url: https://github.com/maxozo/PLF
+license: GPL-3.0
+type: software
+doi: 10.5281/zenodo.15601409 
+authors:
+  - family-names: Ozols
+    given-names: Matiss
+    orcid: https://orcid.org/0000-0001-5663-1053
+  - family-names: Le Blanc
+    given-names: Anja
+  - family-names: Eckersley
+    given-names: Alice
+abstract: >
+  Peptide Location Fingerprinting (PLF) is a technique for identifying structure-associated differences 
+  in protein digestibility across biological states using LC-MS/MS. PLF identifies statistically enriched 
+  peptides within specific domains and regions of proteins, allowing insights into ageing, disease, and 
+  tissue-specific structural modifications. This tool provides command-line support for paired and unpaired 
+  designs, multi-domain comparisons, and export for visualization using the MPLF web platform.
+
+references:
+  - type: article
+    authors:
+      - family-names: Ozols
+        given-names: Matiss
+      - family-names: Eckersley
+        given-names: Alice
+    title: "Peptide Location Fingerprinting Reveals Modification-associated Biomarker Candidates of Ageing in Human Tissue Proteomes"
+    year: 2021
+    journal: "Aging Cell"
+    volume: "20"
+    issue: "4"
+    pages: "e13355"
+    doi: 10.1111/acel.13355
