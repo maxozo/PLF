@@ -2,3 +2,13 @@ scipy==1.15.1
 numpy==2.2.1
 statsmodels==0.14.4
 pandas==2.2.3
+
+
+# ( ^ outside of standard python packages)
+# current versions as of Feb 2025
+
+
+
+# beep.py is one long script containing everything from all scripts in the original PLF code, updated to python v3.13 and optimised, and with my notes
+# testing .py files are to test the output of each updated function, ensuring output is same as Matiss' old versions
+# original code folder contains all original scripts (run in v3.9), with tests added in using sample data to check the above ^, and also my notes to understand the old version
