@@ -1,0 +1,45 @@
+PLF code to input in command prompt:
+-------------------------------------
+
+cd to folder containing the mplf_venv folder
+
+.\mplf_venv\Scripts\activate.bat
+
+(or cd mplf_venv, then scripts\activate)
+
+cd PLF
+
+# to test the program:
+python PLF.py --test --outname My_Test_Run
+
+# run your own data: (need to choose one domain type, change input file names, p-val threshold, etc)
+python PLF.py --experimental_design aim3_experiment_feed.tsv --peptides aim3_N=3_DIANN_PLF_input_allprots.csv --spiecies HUMAN --domain_types DOMAINS,REGIONS,TOPO_DOM,TRANSMEM,REPEAT,50AA,75AA,100AA --paired True --outname MPLF_RUN --p_threshold 0.05
+
+# run segment coverage caluclator: (input file is the PLF results tsv file) (conditions as they are in your experiment design / data)
+python plf_coverage_calc.py --input_file Aim2_EDTA_PLF_BMprots_PLFresults.tsv --condition1 Epidermis+ --condition2 Epidermis-
+
+
+
+# tess' test
+python PLF.py --experimental_design tess_test_feed.tsv --peptides tess_test_input.csv --spiecies HUMAN --domain_types 50AA --paired True --outname tess_test_output --p_threshold 0.05
+
+
+
+
+
+
+
+python PLF.py --experimental_design aim3_experiment_feed.tsv --peptides aim3_N=3_FRAGPIPE_PLF_input_allprots.csv --spiecies HUMAN --domain_types 50AA --paired True --outname aim3_N=3_FRAGPIPE_allprots_plfResults --p_threshold 0.05
+
+
+
+
+
+
+
+
+
+
+
+
+

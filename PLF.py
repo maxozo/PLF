@@ -66,7 +66,6 @@ class PLF:
         Structural_Analysis_Results, Norm_Factors = MPLF_Statistical_Analyisis(experiment_feed=experiment_feed,
                                                                                 Results=Experiment_Coverages,
                                                                                 Protein=Protein, paired=paired,cuttoff_p_val=self.p_threshold)
-        print("stat analysis done")
         Structural_Analysis_Results2 = Structural_Analysis_Results.copy()
         Structural_Analysis_Results2['Uniprot_ID']=Uniprot_ID
         Structural_Analysis_Results2['Uniprot_ACs']=Uniprot_AC
@@ -183,12 +182,15 @@ class PLF:
                 print(f"Protein {Protein}, doesnt have a fasta reference in Uniprot version utilised")
                 print(f"Skipping {Protein} analysis.")
                 continue
+
+
             if self.cpus>1:
                 pool.apply_async(self.MPLF, args=([Protein,Reference_Proteome,Reference_Domains,Protein_Entries,count,total_count]),callback=self.collect_result) #paralel runs - uses all the cores available
             else:
 
                 result = self.MPLF(Protein,Reference_Proteome,Reference_Domains,Protein_Entries,count,total_count)
                 self.collect_result(result)
+
             i+=1
         pool.close()
         pool.join()
@@ -208,7 +210,7 @@ def run_full_analysis( Domain_types, Protein_peptides, experiment_feed, cpus=1,p
     Protein_peptides=Protein_peptides.dropna(subset=['spectra']) # Drop the NaN vales on spectra. ie - peptides are not detected in that sample
     Protein_peptides.Protein = Protein_peptides.Protein.str.replace(',',';').str.replace(' ',';')
     print(f'For analysis we are using: {cpus} cpus')
-    print(f'Spiecies has been set to: {Spiecies}')
+    print(f'Species has been set to: {Spiecies}')
     ##################
     # PLF processing of each of the proteins
     ##################
@@ -334,7 +336,10 @@ def pandas_to_experiment(df):
     return dict
 
 def PLF_run(options):
-    print(f'Analysing file {options.peptides} with experimental design file {options.experimental_design}.......')
+    print(f'Analysing file {options.peptides} with experimental design file {options.experimental_design}')
+    print(f"Loaded {len(options.peptides)} peptides")
+    print(f"Using domain types: {options.domain_types}")
+    print(f"P-value threshold set to: {options.p_threshold}")
     Spiecies=options.spiecies
     Paired= not options.paired.lower()=='false'
     p_threshold=float(options.p_threshold)
