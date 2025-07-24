@@ -327,13 +327,26 @@ def match_peptide_to_protein(Protein_peptides,Reference_Proteome,cpus=1):
     return Protein_peptides
 
 
+
 def pandas_to_experiment(df):
-    dict={}
-    dict[df.iloc[:,0].name]=list(df.iloc[:,0])
-    dict[df.iloc[:,1].name]=list(df.iloc[:,1])
-    for k1 in dict.keys():
-        dict[k1] = [x for x in dict[k1] if str(x) != 'nan']
-    return dict
+    
+    if len(df.columns) < 2 or any(
+        (isinstance(col, int) or str(col).strip() == "" or df[col].isnull().all())
+        for col in df.columns[:2]
+    ):
+        print("Experiment feed error. Please ensure experiment feed file contains two columns, each with experimental group header and sample names below.")
+        sys.exit(1)
+    
+    group_dict={}
+    group_dict[df.iloc[:,0].name]=list(df.iloc[:,0])
+    group_dict[df.iloc[:,1].name]=list(df.iloc[:,1])
+    for k1 in group_dict.keys():
+        group_dict[k1] = [x for x in group_dict[k1] if str(x) != 'nan']
+
+    print(f"Comparing these groups: {' & '.join(group_dict.keys())}")
+    return group_dict
+
+
 
 def PLF_run(options):
     print(f'Analysing file {options.peptides} with experimental design file {options.experimental_design}')

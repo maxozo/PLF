@@ -23,6 +23,8 @@ python plf_coverage_calc.py --input_file Aim2_EDTA_PLF_BMprots_PLFresults.tsv --
 # tess' test
 python PLF.py --experimental_design tess_test_feed.tsv --peptides tess_test_input.csv --spiecies HUMAN --domain_types 50AA --paired True --outname tess_test_output --p_threshold 0.05
 
+python plf_coverage_calc.py --input_file tess_test_output.tsv --condition1 Epi+ --condition2 Epi-
+
 
 
 
