@@ -3,13 +3,15 @@ PLF code to input in command prompt:
 
 cd PLF
 
+plf_venv\scripts\activate
+
 # to test the program:
 python PLF.py --test --outname My_Test_Run
 
 # run your own data: (need to choose one domain type, change input file names, p-val threshold, etc)
 python PLF.py --experimental_design aim3_experiment_feed.tsv --peptides aim3_N=3_DIANN_PLF_input_allprots.csv --spiecies HUMAN --domain_types DOMAINS,REGIONS,TOPO_DOM,TRANSMEM,REPEAT,50AA,75AA,100AA --paired True --outname MPLF_RUN --p_threshold 0.05
 
-# run segment coverage caluclator: (input file is the PLF results tsv file) (conditions as they are in your experiment design / data)
+# run segment coverage caluclator: (input file is the PLF results tsv file) (conditions as they are in your experiment feed / data)
 python plf_coverage_calc.py --input_file Aim2_EDTA_PLF_BMprots_PLFresults.tsv --condition1 Epidermis+ --condition2 Epidermis-
 
 
