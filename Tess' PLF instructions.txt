@@ -1,12 +1,6 @@
 PLF code to input in command prompt:
 -------------------------------------
 
-cd to folder containing the mplf_venv folder
-
-.\mplf_venv\Scripts\activate.bat
-
-(or cd mplf_venv, then scripts\activate)
-
 cd PLF
 
 # to test the program:

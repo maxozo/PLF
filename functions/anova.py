@@ -10,31 +10,21 @@ from statsmodels.stats.multitest import multipletests
 
 def data_set_converter(df):
     names = list(string.ascii_lowercase)
-    key = list(df.keys())
     data_list = []
+    for treatment, condition_df in df.items():
+        for _, row in condition_df.iterrows():
+            domain = row['Domain_Name']
+            yields = row.drop('Domain_Name')
 
-    for x in range(len(df)):
-        Working_Experimental_Condition = df[key[x]]
-        Treatment = key[x]
-
-        for row in range(len(Working_Experimental_Condition)):
-            Data = Working_Experimental_Condition.iloc[row]
-            Domain = Data['Domain_Name']
-            Data = Data.drop(["Domain_Name"])
-
-            for line_index, Yield in enumerate(Data):
-                if line_index >= len(names):
-                    Individual = f"sample_{line_index}"
-                else:
-                    Individual = names[line_index]
+            for i, yield_val in enumerate(yields):
+                individual = names[i] if i < len(names) else f"sample_{i}"
                 data_list.append({
-                    'Individual': Individual,
-                    'Treatment': Treatment,
-                    'Domain_Name': Domain,
-                    'Yield': Yield
+                    'Individual': individual,
+                    'Treatment': treatment,
+                    'Domain_Name': domain,
+                    'Yield': yield_val
                 })
-    df_returned = pd.DataFrame(data_list)
-    return df_returned
+    return pd.DataFrame(data_list)
 
 
 
