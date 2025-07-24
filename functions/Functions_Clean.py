@@ -184,7 +184,7 @@ def MPLF_Domain_Quantifications(Protein=None, Domain_Types=None, Protein_Entries
             Domain_finish = int(row.finish)
             Domain_type = row.Type
 
-            susceptibility_of_domain, Domain_name, percentage_covered, peptides_found = analysed_domain_coverage(                #### with / without weighting
+            susceptibility_of_domain, Domain_name, percentage_covered, peptides_found = analysed_domain_coverage_with_weighting(                #### with / without weighting
                 Domain_name, Domain_start, Domain_finish, Protein_entries_experiment, Fasta
             )
             Experiment_Coverages.append({
