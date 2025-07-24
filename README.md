@@ -9,46 +9,51 @@
 (see tess PLF instructions txt file also)
 
 
-### Instalation
+### Installation (Windows)
 
 Python version 3.12 or 3.13 is required
-If you have a different default version and you got miniconda/miniforge/anaconda installed you can create a python3.12 env with:
-
-         conda create -n py312env python=3.12
-         conda activate py312env
-
-Then when you have checked that your python is 3.12 you can create a new virtual python enviroment
-
-         python -m venv mplf_venv
-
-Activate the enviroment (Linux and Mac):
-
-           source mplf_venv/bin/activate
-
-Activate the enviroment (Windows)
-
-           .\mplf_venv\Scripts\activate.bat
 
 Clone the PLF repo:
 
-          git clone https://github.com/maxozo/PLF.git
+          git clone --branch tess_work https://github.com/maxozo/PLF.git
+
+Create a new virtual Python enviroment:
+
+         cd PLF
+         python -m venv plf_venv
+
+Alternatively, if have virtualenv installed:
+
+         virtualenv plf_venv
+
+Or create venv with a non-global version of python:
+
+         virtualenv plf_venv --python=python3.12.11
+
+Activate the enviroment (Windows)
+
+         plf_venv\scripts\activate
 
 Install requirements:
 
-           cd PLF
-           pip install -r requirements.txt
+         pip install -r requirements.txt
 
 ### Test data
 
-To just try to run the analysis on test data please run (thats also available for download on our [MPLF website](https://www.manchesterproteome.manchester.ac.uk/#/MPLF) ):
+For a quick test that the program is functional, run:    (afterwards check that the output files contain data)
 
          python PLF.py --test --outname My_Test_Run
 
-Note: My_Test_Run can be a path/to/My_Test_Run/Filename
+Example full run with set parameters, using included sample data (open input files to see correct format)
+
+         python PLF.py --experimental_design tess_test_feed.tsv --peptides tess_test_input.csv --spiecies HUMAN --domain_types 50AA --paired True --outname tess_test_output --p_threshold 0.05
+
+
+
 
 ### Your own data
 
-1. Prepeare a file that lists **Protein** name (optional if source protein not determined), **Peptide** sequence (remove any special characters from these), **Sample** of protein belionging and **spectra** (can be multiple columns as per: **spectra_1**,**spectra_2**, etc. -- these will be added up): as per [this file](https://github.com/maxozo/MPLF/blob/mplf_package/Sample_Data/sample_inputs_small/Sample_Data_For_Analysis.csv).
+1. Prepare a file that lists **Protein** name (optional if source protein not determined), **Peptide** sequence (remove any special characters from these), **Sample** of protein belionging and **spectra** (can be multiple columns as per: **spectra_1**,**spectra_2**, etc. -- these will be added up): as per [this file](https://github.com/maxozo/MPLF/blob/mplf_package/Sample_Data/sample_inputs_small/Sample_Data_For_Analysis.csv).
 
 | Protein     | Sample                                      | Peptide          | spectra | spectra_2 | spectra_3 | spectra_4 |
 | ----------- | ------------------------------------------- | ---------------- | ------- | --------- | --------- | --------- |
@@ -88,6 +93,17 @@ Params:
           --p_threshold    (dafault=0.05) Only return proteins that has at least one domain with a significance threshold lover or equal to specified
 
 5. Results will produce two files **{outname specified}.tsv** and **{outname specified}.mplf** file. TSV file will list all the domains, their p values, quantified data, normalised data etc. MPLF file can be uploaded to [Manchester Proteome Location Fingerprinter (MPLF)](https://www.manchesterproteome.manchester.ac.uk/#/MPLF) to perform visualisations of the data.
+
+
+6. Optional: run the PLF segment coverage calculator. This will ammend results table with segment coverage - high segment coverage means the quality of the data is better, and results more useable.
+       Input file is the name of the PLF results tsv file. Enter experimental conditions as they appear in the experimental feed / PLF results
+
+         python plf_coverage_calc.py --input_file tess_test_output.tsv --condition1 Epi+ --condition2 Epi-
+
+
+
+
+
 
 ## Methods
 
