@@ -6,6 +6,9 @@
 
 ## Quick start
 
+(see tess PLF instructions txt file also)
+
+
 ### Instalation
 
 Python version 3.12 or 3.13 is required
