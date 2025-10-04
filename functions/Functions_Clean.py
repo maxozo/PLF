@@ -383,7 +383,7 @@ def MPLF_Statistical_Analyisis(experiment_feed=None, Results=None, Protein=None,
             p_values_adjusted = p_values_adjusted.set_index('Domain_Name')
             p_val_name = p_values_adjusted.columns.values[0]
             Combined_Data_Frame_for_this_experiment = pd.concat([All_Spectra, Differences, p_values_adjusted, Averages, Peptides_PD,All_initial_peptide_quantifications], axis=1)
-            Combined_Data_Frame_With_Statistics = pd.concat([Combined_Data_Frame_With_Statistics, Combined_Data_Frame_for_this_experiment],ignore_index=True)
+            Combined_Data_Frame_With_Statistics = pd.concat([Combined_Data_Frame_With_Statistics, Combined_Data_Frame_for_this_experiment],ignore_index=False)
         else:
             continue
     
