@@ -49,6 +49,16 @@ Example full run with set parameters, using included sample data (open input fil
          python PLF.py --experimental_design tess_test_feed.tsv --peptides tess_test_input.csv --spiecies HUMAN --domain_types 50AA --paired True --outname tess_test_output --p_threshold 0.05
 
 
+### User input options
+
+Options for different segment analyses (--domain_types):
+
+         50AA, 75AA, 100AA, DOMAINS, REGIONS, TOPO_DOM, TRANSMEM, REPEAT
+
+Options for different species (--spiecies):
+
+         HUMAN, HORSE, MOUSE, RAT, RABBIT, ZEBRAFISH
+
 
 
 ### Your own data
