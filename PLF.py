@@ -23,8 +23,8 @@ class PLF:
     # This is a main PLF analysis processing class.
     ######################
     
-    def __init__(self,Protein_peptides,experiment_feed,Spiecies='HUMAN',Domain_Types=['DOMAINS', 'REGIONS', 'TOPO_DOM', 'TRANSMEM', 'REPEAT', '50 AA STEP'],paired=False,cpus=1,p_threshold=0.05,protein_list=None):
-        self.Spiecies = Spiecies
+    def __init__(self,Protein_peptides,experiment_feed,Species='HUMAN',Domain_Types=['DOMAINS', 'REGIONS', 'TOPO_DOM', 'TRANSMEM', 'REPEAT', '50 AA STEP'],paired=False,cpus=1,p_threshold=0.05,protein_list=None):
+        self.Species = Species
         self.Domain_types = Domain_Types
         self.Protein_peptides=Protein_peptides
         self.Coverage_Json={}
@@ -143,8 +143,8 @@ class PLF:
         i=0
         import multiprocessing as mp
         import time
-        Reference_Proteome = pd.read_csv(f"{dir_path}/outputs/Uniprot_{self.Spiecies}.tsv",sep="\t",index_col=0)
-        Reference_Domains = pd.read_csv(f"{dir_path}/outputs/Domains_Uniprot_{self.Spiecies}.tsv",sep="\t",index_col=0)
+        Reference_Proteome = pd.read_csv(f"{dir_path}/outputs/Uniprot_{self.Species}.tsv",sep="\t",index_col=0)
+        Reference_Domains = pd.read_csv(f"{dir_path}/outputs/Domains_Uniprot_{self.Species}.tsv",sep="\t",index_col=0)
 
         print('Preparing file for analysis >>>')
         t = time.time()
@@ -199,7 +199,7 @@ class PLF:
         return (self.Coverage_Json,self.Structural_Json,self.Full_MPLF_Results)      
 
    
-def run_full_analysis( Domain_types, Protein_peptides, experiment_feed, cpus=1,paired=False, Spiecies="HUMAN",outname='Default_MPLF',p_threshold=0.05,protein_list=None):
+def run_full_analysis( Domain_types, Protein_peptides, experiment_feed, cpus=1,paired=False, Species="HUMAN",outname='Default_MPLF',p_threshold=0.05,protein_list=None):
     # If we do decide to remove the protein entry then we have to look up each peptide in the library and find all the peptides for the protein thatr are provided.
 
     if not 'Protein' in list(Protein_peptides.columns):
@@ -210,11 +210,11 @@ def run_full_analysis( Domain_types, Protein_peptides, experiment_feed, cpus=1,p
     Protein_peptides=Protein_peptides.dropna(subset=['spectra']) # Drop the NaN vales on spectra. ie - peptides are not detected in that sample
     Protein_peptides.Protein = Protein_peptides.Protein.str.replace(',',';').str.replace(' ',';')
     print(f'For analysis we are using: {cpus} cpus')
-    print(f'Species has been set to: {Spiecies}')
+    print(f'Species has been set to: {Species}')
     ##################
     # PLF processing of each of the proteins
     ##################
-    Coverage_Json,Structural_Json,Full_Results_TSV = PLF(Protein_peptides,experiment_feed,Spiecies=Spiecies,paired=paired,Domain_Types=Domain_types,cpus=cpus,p_threshold=p_threshold,protein_list=protein_list).PLF_Analysis()
+    Coverage_Json,Structural_Json,Full_Results_TSV = PLF(Protein_peptides,experiment_feed,Species=Species,paired=paired,Domain_Types=Domain_types,cpus=cpus,p_threshold=p_threshold,protein_list=protein_list).PLF_Analysis()
     Full_Results_TSV.to_csv(f'{outname}.tsv',sep='\t',index=False)
 
     mplf_export_data={}
@@ -223,7 +223,7 @@ def run_full_analysis( Domain_types, Protein_peptides, experiment_feed, cpus=1,p
     mplf_export_data['Domain_types']=Domain_types
     mplf_export_data['Significant_Protein_Count']=len(Structural_Json.keys())
     mplf_export_data['Paired']=paired
-    mplf_export_data['Spiecies']=Spiecies
+    mplf_export_data['Species']=Species
     with open(f'{outname}.mplf', 'w') as f:
         json.dump(mplf_export_data, f,allow_nan=False,)
     print('Analysis completed ... ') 
@@ -353,7 +353,7 @@ def PLF_run(options):
     print(f"Loaded {len(options.peptides)} peptides")
     print(f"Using domain types: {options.domain_types}")
     print(f"P-value threshold set to: {options.p_threshold}")
-    Spiecies=options.spiecies
+    Species=options.species
     Paired= not options.paired.lower()=='false'
     p_threshold=float(options.p_threshold)
     Domain_types_pre = set(options.domain_types.split(','))
@@ -383,13 +383,13 @@ def PLF_run(options):
     
 
     experiment_feed = pandas_to_experiment(pd.read_csv(options.experimental_design,sep='\t',index_col=False))
-    run_full_analysis(Domain_types, Protein_peptides, experiment_feed,cpus=cpus,paired=Paired, Spiecies=Spiecies,outname=outname,p_threshold=p_threshold,protein_list=options.protein_list)
+    run_full_analysis(Domain_types, Protein_peptides, experiment_feed,cpus=cpus,paired=Paired, Species=Species,outname=outname,p_threshold=p_threshold,protein_list=options.protein_list)
 
      
 def test_run(options):
     print('Test Run.......')
     dir1= os.path.dirname(os.path.abspath(sys.argv[0]))
-    Spiecies=options.spiecies
+    Species=options.species
     Paired=not options.paired.lower()=='false'
     p_threshold=options.p_threshold
     Domain_types_pre = set(options.domain_types.split(','))
@@ -418,7 +418,7 @@ def test_run(options):
         del summed_spectra
     
     experiment_feed = pandas_to_experiment(pd.read_csv(f'{dir1}/sample_data/sample_inputs_small/Experiment_feed.tsv',sep='\t',index_col=False))
-    run_full_analysis(Domain_types, Protein_peptides, experiment_feed,cpus=cpus,paired=Paired, Spiecies=Spiecies,outname=outname,p_threshold=p_threshold)
+    run_full_analysis(Domain_types, Protein_peptides, experiment_feed,cpus=cpus,paired=Paired, Species=Species,outname=outname,p_threshold=p_threshold)
 
 def cli():
     parser = argparse.ArgumentParser(
@@ -443,12 +443,12 @@ def cli():
         help='Path')
     
     parser.add_argument(
-        '--spiecies',
+        '--species',
         action='store',
-        dest='spiecies',
+        dest='species',
         required=False,
         default='HUMAN',
-        help='spiecies')
+        help='species')
     
     parser.add_argument(
         '--domain_types',
