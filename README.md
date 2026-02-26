@@ -6,7 +6,7 @@
 
 ## Quick start
 
-(see tess PLF instructions txt file also)
+(see PLF instructions txt file also)
 
 
 ### Installation (Windows)
@@ -46,7 +46,7 @@ For a quick test that the program is functional, run:    (afterwards check that 
 
 Example full run with set parameters, using included sample data (open input files to see correct format)
 
-         python PLF.py --experimental_design tess_test_feed.tsv --peptides tess_test_input.csv --species HUMAN --domain_types 50AA --paired True --outname tess_test_output --p_threshold 0.05
+         python PLF.py --experimental_design full_test_feed.tsv --peptides full_test_input.csv --species HUMAN --domain_types 50AA --paired True --outname full_test_output --p_threshold 0.05
 
 
 ### User input options
@@ -57,7 +57,7 @@ Options for different segment analyses (--domain_types):
 
 Options for different species (--species):
 
-         HUMAN, HORSE, MOUSE, RAT, RABBIT, ZEBRAFISH
+         HUMAN, HORSE, MOUSE, RAT, RABBIT, ZEBRAFISH, PIG, DROSOPHILA, CELEGANS
 
 
 
@@ -80,7 +80,7 @@ Options for different species (--species):
 
 3.  Run the MPLF pipeline:
 
-         python ../../PLF.py --experimental_design Experiment_feed.tsv --peptides Sample_Data_For_Analysis.csv --spiecies HUMAN --domain_types DOMAINS,REGIONS,TOPO_DOM,TRANSMEM,REPEAT,50AA,75AA,100AA --paired True --outname MPLF_RUN --p_threshold 0.05
+         python ../../PLF.py --experimental_design Experiment_feed.tsv --peptides Sample_Data_For_Analysis.csv --species HUMAN --domain_types DOMAINS,REGIONS,TOPO_DOM,TRANSMEM,REPEAT,50AA,75AA,100AA --paired True --outname MPLF_RUN --p_threshold 0.05
 
 Params:
 
