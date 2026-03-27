@@ -9,10 +9,10 @@ plf_venv\scripts\activate
 python PLF.py --test --outname My_Test_Run
 
 # run your own data: (need to choose one domain type, change input/output file names, p-val threshold, etc)
-python PLF.py --experimental_design full_test_feed.tsv --peptides full_test_input.csv --species HUMAN --domain_types DOMAINS,REGIONS,TOPO_DOM,TRANSMEM,REPEAT,50AA,75AA,100AA --paired True --outname MPLF_RUN --p_threshold 0.05
+python PLF.py --experimental_design full_test_feed.tsv --peptides full_test_input.csv --species HUMAN --domain_types DOMAINS,REGIONS,TOPO_DOM,TRANSMEM,REPEAT,50AA,75AA,100AA --paired True --outname PLF_RUN --p_threshold 0.05
 
 # run segment coverage calculator: (input file is the PLF results tsv file) (conditions as they are in your experiment feed / data)
-python plf_coverage_calc.py --input_file MPLF_RUN.tsv --condition1 Epi+ --condition2 Epi-
+python plf_coverage_calc.py --input_file PLF_RUN.tsv --condition1 Epi+ --condition2 Epi-
 
 
 
@@ -22,7 +22,6 @@ python plf_coverage_calc.py --input_file MPLF_RUN.tsv --condition1 Epi+ --condit
 
 # species options:
 HUMAN, HORSE, MOUSE, RAT, RABBIT, ZEBRAFISH, PIG, DROSOPHILA, CELEGANS
-
 
 
 
