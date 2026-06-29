@@ -4,6 +4,21 @@
 
 **Peptide location fingerprinting (PLF)** is a technique capable of identifying modified proteins and potential causal mechanisms in complex biological samples. In standard proteomics, proteins are trypsinised which generate peptides whose sequence identities and relative abundances are measured by LC-MS/MS. During this process most proteins are only partially digested, due to differing solubilities, stabilities and enzyme susceptibilities related to their higher order structures. By mapping and quantifying LC-MS/MS-detected peptides within specific regions, PLF enables the detection of statistical differences in the regional digestibility along the protein structure due to ageing and disease mechanisms.
 
+## Updates - PLF v2.0 is now launched!
+
+PLF v2.0 contains the following updates and improvements:
+* Peptide abundance weighting
+  * Previously, whole peptide abundance values were allocated to segments regardless of the degree of overlap. Now in v2.0, peptide abundance values are weighted and allocated to segments proportionally, based on the length of the peptide which overlaps each segment. For example, if a peptide falls across two segments, with 30% of its length in one, and 70% of its length in the other, the peptide abundance value will be split 30-70 and those values allocated to each respective segment. This is repeated for all peptides and thus summed segment values are calculated.
+  * Abundance weighting makes PLF v2.0 analysis more accurate.
+* New species available for analysis
+  * PLF v2.0 can now analyse peptide abundance data from Human, Horse, Mouse, Rat, Rabbit, Zebrafish, Drosophila, and C. Elegans.
+  * If you require an different species, please contact us.
+* Updated all protein sequence files, now up to date as of UniProt release 2026_01
+* Updated and optimised to run in Python v3.13
+* Small bug fixes
+  * Peptides which start or end exactly on segment limits are now included in analyses.
+
+
 ## Quick start
 
 (see PLF instructions txt file also)
