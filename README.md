@@ -8,8 +8,8 @@
 
 PLF v2.0 contains the following updates and improvements:
 * Peptide abundance weighting
-  * Previously, whole peptide abundance values were allocated to segments regardless of the degree of overlap. Now in v2.0, peptide abundance values are weighted and allocated to segments proportionally, based on the length of the peptide which overlaps each segment. For example, if a peptide falls across two segments, with 30% of its length in one, and 70% of its length in the other, the peptide abundance value will be split 30-70 and those values allocated to each respective segment. This is repeated for all peptides and thus summed segment values are calculated.
-  * Abundance weighting makes PLF v2.0 analysis more accurate.
+  * Previously, whole peptide abundance values were allocated to segments regardless of the degree of overlap. Now in v2.0, peptide abundance values are weighted and allocated to segments proportionally, based on the length of the peptide which overlaps each segment. For example, if a peptide falls across two segments, with 30% of its length in one, and 70% of its length in the other, the peptide abundance value will be split 30:70 and those values allocated to each respective segment. This is repeated for all peptides and thus summed segment values are calculated.
+  * Peptide abundance weighting makes PLF v2.0 analysis more accurate.
 * New species available for analysis
   * PLF v2.0 can now analyse peptide abundance data from Human, Horse, Mouse, Rat, Rabbit, Zebrafish, Drosophila, and C. Elegans.
   * If you require an different species, please contact us.
