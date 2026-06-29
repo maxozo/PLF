@@ -30,7 +30,7 @@ Python version 3.12 or 3.13 is required
 
 Clone the PLF repo:
 
-          git clone --branch tess_work https://github.com/maxozo/PLF.git
+          git clone https://github.com/maxozo/PLF.git
 
 Create a new virtual Python enviroment:
 
