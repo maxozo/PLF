@@ -78,14 +78,14 @@ Options for different species (--species):
 
 ### Your own data
 
-1. Prepare a file that lists **Protein** name (optional if source protein not determined), **Peptide** sequence (remove any special characters from these), **Sample** of protein belionging and **spectra** (can be multiple columns as per: **spectra_1**,**spectra_2**, etc. -- these will be added up): as per [this file](https://github.com/maxozo/MPLF/blob/mplf_package/Sample_Data/sample_inputs_small/Sample_Data_For_Analysis.csv).
+1. Prepare a file that lists **Protein** name (optional if source protein not determined), **Peptide** sequence (remove any special characters from these), **Sample** of protein belionging and **spectra** (can be spectral count or MS1 intensity values): as per the full_test_input.csv file in the repo.
 
-| Protein     | Sample                                      | Peptide          | spectra | spectra_2 | spectra_3 | spectra_4 |
-| ----------- | ------------------------------------------- | ---------------- | ------- | --------- | --------- | --------- |
-| FBLN1_HUMAN | 20180601_SherrattM_MO_15.raw (Full_Skin_15) | CLAFECPENYR      | 0       | 1         | 0         | 0         |
-| FBLN1_HUMAN | 20180601_SherrattM_MO_15.raw (Full_Skin_15) | CVDVDECAPPAEPCGK | 0       | 1         | 0         | 0         |
+| Protein     | Sample   | Peptide          | spectra |
+| ----------- | -------- | ---------------- | ------- |
+| FBLN1_HUMAN | sample_A | CLAFECPENYR      | 10486   |
+| FBLN1_HUMAN | sample_B | CVDVDECAPPAEPCGK | 12857   |
 
-2. Prepeare a tsv file that lists the experimental design - as per [this file](https://github.com/maxozo/MPLF/blob/mplf_package/Sample_Data/sample_inputs_small/Experiment_feed.tsv). If paired make sure that the rows list matching pairs, otherwise any order is ok.
+2. Prepeare a tsv file that lists the experimental design - as per the full_test_feed.tsv file in the repo. If paired make sure that the rows list matching pairs, otherwise any order is ok.
 
 | forearm | buttock |
 | ------- | ------- |
