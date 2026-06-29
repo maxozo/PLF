@@ -23,7 +23,7 @@ Activate the enviroment (Windows)
            .\mplf_venv\Scripts\activate.bat
 Clone the PLF repo:
 
-          git clone https://github.com/maxozo/PLF.git
+          git clone --branch v1.0 https://github.com/maxozo/PLF.git
 Install requirements:
 
            cd PLF
